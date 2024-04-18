@@ -7,7 +7,7 @@ See also the git repo [opencog/vision](https://github.com/opencog/vision)
 for OpenCV-based vision Atomese. (It is also at version 0.0.2)
 
 ### Status
-Version 0.0.2 Super experimental. Not sure how this will work out.
+Version 0.0.3 Super experimental. Not sure how this will work out.
 
 ### Overview
 The Atomese agent framework needs to have some way of interacting
