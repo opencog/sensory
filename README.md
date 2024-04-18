@@ -1,8 +1,14 @@
+Sensory Atomese
+---------------
+Implementation for low-level AtomSpace sensory I/O Atoms.
+Almost nothing here yet, see Status below.
 
-This directory contains C++ code for sensory interfaces.
-It follows the directory structure and coding conventions
+See also the git repo [opencog/vision](https://github.com/opencog/vision)
+for OpenCV-based vision Atomese.
+
+### Status
+Version 0.0.2 Super experimental. Not sure how this will work out.
+
+### Building
+This git repo follows the directory structure and coding conventions
 used in other OpenCog/AtomSpace projects.
-
-Version 0.0.1 Super experimental. Not sure how this will work out.
-
-ventually this should be moved to it's own git repo
