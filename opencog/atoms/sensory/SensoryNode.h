@@ -66,7 +66,7 @@ public:
 	 * be used to create the database, the tables in the database for
 	 * the first time.
 	 */
-	virtual void create(void) = 0;
+	virtual void create(void);
 
 	/**
 	 * Destroy the storage at the remote end. Empties the remote end of
@@ -74,13 +74,13 @@ public:
 	 * not honor this request, e.g. if other clients have open
 	 * connections.
 	 */
-	virtual void destroy(void) = 0;
+	virtual void destroy(void);
 
 	/**
 	 * Erase the entire contents of the remote end. Performs a bulk
 	 * deletion of all data.
 	 */
-	virtual void erase(void) = 0;
+	virtual void erase(void);
 
 	/**
 	 * Return debug diagnostics and/or performance monitoring stats.

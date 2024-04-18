@@ -23,21 +23,24 @@
 #ifndef _OPENCOG_FILE_NODE_H
 #define _OPENCOG_FILE_NODE_H
 
-#include <opencog/atoms/base/Node.h>
-#include <opencog/atoms/sensory-types/sensory_types.h>
+#include <opencog/atoms/sensory/SensoryNode.h>
 
 namespace opencog
 {
 /** \addtogroup grp_atomspace
  *  @{
  *
- * FileNode class. Opens files/sockets for reading.
+ * FileNode class. Basic File I/O.
  */
-
-class FileNode : public Node
+class FileNode : public SensoryNode
 {
 protected:
+	bool _is_open;
 	void init(void);
+
+	virtual void open(const std::string& flags);
+	virtual void close(void);
+	virtual bool connected(void);
 
 public:
 	// Please to NOT use this constructor!

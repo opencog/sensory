@@ -32,11 +32,12 @@ using namespace opencog;
 
 void FileNode::init(void)
 {
+	_is_open = false;
 	// TODO: check if the URL type is supported.
 }
 
 FileNode::FileNode(Type t, const std::string&& s)
-   : Node(t, std::move(s))
+   : SensoryNode(t, std::move(s))
 {
    OC_ASSERT(nameserver().isA(_type, FILE_NODE),
       "Bad FileNode constructor!");
@@ -44,9 +45,27 @@ FileNode::FileNode(Type t, const std::string&& s)
 }
 
 FileNode::FileNode(const std::string&& s)
-   : Node(FILE_NODE, std::move(s))
+   : SensoryNode(FILE_NODE, std::move(s))
 {
 	init();
+}
+
+void FileNode::open(const std::string& opts)
+{
+	printf("yo file open\n");
+	_is_open = true;
+}
+
+void FileNode::close(void)
+{
+	printf("yo file close\n");
+	_is_open = false;
+}
+
+bool FileNode::connected(void)
+{
+	printf("yo file connect query\n");
+	return _is_open;
 }
 
 // ============================================================

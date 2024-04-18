@@ -41,6 +41,21 @@ SensoryNode::~SensoryNode()
 {
 }
 
+void SensoryNode::create(void)
+{
+	throw RuntimeException(TRACE_INFO, "Not Implemented!");
+}
+
+void SensoryNode::destroy(void)
+{
+	throw RuntimeException(TRACE_INFO, "Not Implemented!");
+}
+
+void SensoryNode::erase(void)
+{
+	throw RuntimeException(TRACE_INFO, "Not Implemented!");
+}
+
 std::string SensoryNode::monitor(void)
 {
 	return "This SensoryNode does not implement a monitor.";
