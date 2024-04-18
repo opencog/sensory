@@ -23,6 +23,16 @@ to convert that stuff into Atomese Atoms that higher-layer Atomese
 agents make use of to comminicate with, interact with the external
 world.
 
+General system architecture is discussed in a number of places,
+including the various PDF and LyX files located at:
+* [AtomSpace Sheaves & Graphs](https://github.com/opencog/atomspace/tree/master/opencog/sheaf)
+* [OpenCog Learn Project](https://github.com/opencog/learn) and
+  especially the "diary" subdirectory there.
+
+See also:
+* [Atomese Agents Project](https://github.com/opencog/agents). This is
+  in the pre-prototype phase, but is the current focus of attention.
+
 ### Building
 This git repo follows the same directory structure and coding
 conventions used in other OpenCog/AtomSpace projects. This cannot be
