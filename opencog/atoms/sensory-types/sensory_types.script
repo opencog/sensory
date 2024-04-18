@@ -17,6 +17,7 @@ WRITE_LINK <- EXECUTABLE_LINK
 // What's the right base type for all sensory nodes?
 // LexicalNode, cause there's a collection of them.
 // TagNode cause base AtomSpace already calls them "data streams".
+// BondNode cause they are connector-like?
 SENSORY_NODE <- TAG_NODE
 
 FILE_NODE <- SENSORY_NODE

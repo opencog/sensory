@@ -61,8 +61,4 @@ NODE_PTR_DECL(FileNode)
 /** @}*/
 }
 
-extern "C" {
-void opencog_sensory_init(void);
-};
-
 #endif // _OPENCOG_FILE_NODE_H

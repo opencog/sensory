@@ -58,8 +58,3 @@ ValuePtr FileNode::execute(AtomSpace* as, bool silent)
 }
 
 DEFINE_NODE_FACTORY(FileNode, FILE_NODE)
-
-void opencog_sensory_init(void)
-{
-	// Force shared lib ctors to run
-};
