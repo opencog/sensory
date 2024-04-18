@@ -23,6 +23,9 @@ to convert that stuff into Atomese Atoms that higher-layer Atomese
 agents make use of to comminicate with, interact with the external
 world.
 
+A general overview can be found in the AGI 2022 paper:
+[Purely Symbolic Induction of Structure](https://github.com/opencog/learn/tree/master/learn-lang-diary/agi-2022/grammar-induction.pdf).
+
 General system architecture is discussed in a number of places,
 including the various PDF and LyX files located at:
 * [AtomSpace Sheaves & Graphs](https://github.com/opencog/atomspace/tree/master/opencog/sheaf)
