@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0.1)
 SET(CMAKE_INSTALL_MESSAGE LAZY)
 
-PROJECT(learn)
+PROJECT(sensory)
 
 # Cogutil
 FIND_PACKAGE(CogUtil 2.0.3 CONFIG REQUIRED)
@@ -29,18 +29,6 @@ IF(ATOMSPACE_FOUND)
 	SET(HAVE_ATOMSPACE 1)
 ENDIF()
 
-# CogServer
-FIND_PACKAGE(CogServer 1.0.0 CONFIG REQUIRED)
-IF (COGSERVER_FOUND)
-	SET(HAVE_COGSERVER 1)
-ENDIF (COGSERVER_FOUND)
-
-# RocksDB
-FIND_PACKAGE(AtomSpaceRocks 1.3.0 CONFIG REQUIRED)
-IF (ATOMSPACE_ROCKS_FOUND)
-	SET(HAVE_ATOMSPACE_ROCKS 1)
-ENDIF (ATOMSPACE_ROCKS_FOUND)
-
 # ----------------------------------------------------------
 # Guile Python and Cython
 
@@ -54,9 +42,6 @@ INCLUDE(OpenCogCython)
 
 # ----------------------------------------------------------
 ADD_SUBDIRECTORY (opencog)
-ADD_SUBDIRECTORY (fake)
-ADD_SUBDIRECTORY (scm)
-ADD_SUBDIRECTORY (run-common)
 
 # Unit tests
 ADD_CUSTOM_TARGET(tests)
