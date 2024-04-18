@@ -6,10 +6,17 @@
 // Stream of PhraseNodes
 PHRASE_STREAM <- LINK_STREAM_VALUE
 
+// Calling execute() performs the I/O
+// Should these inherit from FunctionLink instead?
+// The only benefit of FunctionLink is automated beta reduction of
+// expressions w/ variables. This can also be acheived by using Lambda,
+// and so there seems to be no benefit of using FunctionLink.
+READ_LINK <- EXECUTABLE_LINK
+WRITE_LINK <- EXECUTABLE_LINK
+
 // What's the right base type for all sensory nodes?
 // LexicalNode, cause there's a collection of them.
 // TagNode cause base AtomSpace already calls them "data streams".
-// Should we invent SENSORY_NODE <- TAG_NODE? Why?
+SENSORY_NODE <- TAG_NODE
 
-FILE_READ_NODE <- TAG_NODE
-FILE_WRITE_NODE <- TAG_NODE
+FILE_NODE <- SENSORY_NODE
