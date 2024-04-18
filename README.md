@@ -24,8 +24,13 @@ agents make use of to comminicate with, interact with the external
 world.
 
 ### Building
-This git repo follows the directory structure and coding conventions
-used in other OpenCog/AtomSpace projects.
+This git repo follows the same directory structure and coding
+conventions used in other OpenCog/AtomSpace projects. This cannot be
+compiled before installing the prerequisite
+[AtomSpace](https://github.com/opencog/atomspace). So build and
+install that first.
+
+Then:
 ```
 mkdir build; cd build; cmake ..
 make -j
