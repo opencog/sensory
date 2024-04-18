@@ -1,10 +1,12 @@
 
 # The atom_types.h file is written to the build directory
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
 
 ADD_LIBRARY (sensory SHARED
-	FileReadNode.cc
+	FileNode.cc
 	PhraseStream.cc
+	SensoryNode.cc
 )
 
 # Without this, parallel make will race and crap up the generated files.
@@ -21,8 +23,9 @@ INSTALL (TARGETS sensory EXPORT AtomSpaceTargets
 )
 
 INSTALL (FILES
-	FileReadNode.h
+	FileNode.h
 	PhraseStream.h
+	SensoryNode.h
 	DESTINATION "include/opencog/atoms/sensory"
 )
 

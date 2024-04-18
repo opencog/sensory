@@ -1,0 +1,44 @@
+Design notes
+------------
+For what the sensory I/O interface could be like.
+
+Needs to be generic, powerful, flexible, anticipate future IO
+requirements, be simple to use, simple to understand.
+
+(ExecutionOutput
+	(FileNode "///")  ; DefinedSchema  GroundedPredicate PROCEDURE_NODE
+	(ValueOf stuff))
+
+- nodes store state info with node
+- links can too, because outoging. Sort of ish.
+- links have args know how to execute.
+- Just be a FunctionLink instead of ExecutionOutput
+  Or ExecutableLink EXECUTABLE_LINK
+
+(FileWriteLink
+	(Node "file:///place")  ; Any Node at all can hold a string.
+	(ValueOf stuff))  ; stuff to write fetched from this.
+
+(WriteLink
+	(Node "url:///place") ; Dispatch, branch on url
+	(ValueOf stuff))
+
+(WriteLink
+	(FileNode "file:///place")  ; FileNode knows how to do it.
+	(ValueOf stuff))
+
+But how? WriteLink needs to grab stuff, and then call special
+method on FileNode. So this starts to look like BackingStore but
+with more limited special-purpose API's.
+
+(FileReadLink               ; Used to place read data somewhere.
+	(Node "file:///place")
+	(SetValue stuff))
+
+(ReadLink
+	(FileNode "file:///place"))
+
+(ReadLink
+	(IRCBotNode "irc:///place?config=stuff&more=stuff"))
+
+IONode

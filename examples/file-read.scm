@@ -11,10 +11,10 @@
 
 ; --------------------------------------------------------
 ; Basic demo: Open a file for reading, at a fixed absolute location
-; in the filesystem. Executing the FileReadNode will return a text
+; in the filesystem. Executing the FileNode will return a text
 ; stream value.
 (define txt-stream
-	(cog-execute! (FileReadNode "file:///tmp/demo.txt")))
+	(cog-execute! (FileNode "file:///tmp/demo.txt")))
 
 ; Repeated references to the stream will return single lines from
 ; the file.
@@ -32,14 +32,14 @@ txt-stream
 ;
 ; Open the file, get the stream, and place it somewhere.
 (cog-set-value! (Concept "foo") (Predicate "some place")
-	(cog-execute! (FileReadNode "file:///tmp/demo.txt")))
+	(cog-execute! (FileNode "file:///tmp/demo.txt")))
 
 ; A better, all-Atomese version of the above. Note that the SetValueLink
-; will execute the FileReadNode, grab whatever it gets from that exec,
+; will execute the FileNode, grab whatever it gets from that exec,
 ; and then places it at the indicated location.
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
-		(FileRead "file:///tmp/demo.txt")))
+		(File "file:///tmp/demo.txt")))
 
 ; Define an executable node that will feed the stream of text.
 (define txt-stream-gen
@@ -62,7 +62,7 @@ txt-stream
 ; As above: rewind the stream to the begining:
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
-		(FileRead "file:///tmp/demo.txt")))
+		(File "file:///tmp/demo.txt")))
 
 ; Parse the file contents, one line at a time. The "any" dict generates
 ; random word-pairs. The (Number 1) asks for only one parse per
