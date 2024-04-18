@@ -6,6 +6,10 @@
 // Stream of PhraseNodes
 PHRASE_STREAM <- LINK_STREAM_VALUE
 
-// The base type for all sensory nodes. Seems like BondNode is a
-// suitable base, I guess .. !?
-FILE_READ_NODE <- BOND_NODE
+// What's the right base type for all sensory nodes?
+// LexicalNode, cause there's a collection of them.
+// TagNode cause base AtomSpace already calls them "data streams".
+// Should we invent SENSORY_NODE <- TAG_NODE? Why?
+
+FILE_READ_NODE <- TAG_NODE
+FILE_WRITE_NODE <- TAG_NODE
