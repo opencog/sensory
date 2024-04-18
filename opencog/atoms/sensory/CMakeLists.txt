@@ -3,7 +3,7 @@
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
 ADD_LIBRARY (sensory SHARED
-	FileReadNode.cc
+	FileNode.cc
 	PhraseStream.cc
 )
 
@@ -21,7 +21,7 @@ INSTALL (TARGETS sensory EXPORT AtomSpaceTargets
 )
 
 INSTALL (FILES
-	FileReadNode.h
+	FileNode.h
 	PhraseStream.h
 	DESTINATION "include/opencog/atoms/sensory"
 )
