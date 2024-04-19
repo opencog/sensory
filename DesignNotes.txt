@@ -5,16 +5,20 @@ For what the sensory I/O interface could be like.
 Needs to be generic, powerful, flexible, anticipate future IO
 requirements, be simple to use, simple to understand.
 
+### First ideas
+Lets go. Lets start from nowhere.
+
+```
 (ExecutionOutput
 	(FileNode "///")  ; DefinedSchema  GroundedPredicate PROCEDURE_NODE
 	(ValueOf stuff))
-
+```
 - nodes store state info with node
 - links can too, because outoging. Sort of ish.
 - links have args know how to execute.
 - Just be a FunctionLink instead of ExecutionOutput
   Or ExecutableLink EXECUTABLE_LINK
-
+```
 (FileWriteLink
 	(Node "file:///place")  ; Any Node at all can hold a string.
 	(ValueOf stuff))  ; stuff to write fetched from this.
@@ -26,11 +30,11 @@ requirements, be simple to use, simple to understand.
 (WriteLink
 	(FileNode "file:///place")  ; FileNode knows how to do it.
 	(ValueOf stuff))
-
+```
 But how? WriteLink needs to grab stuff, and then call special
 method on FileNode. So this starts to look like BackingStore but
 with more limited special-purpose API's.
-
+```
 (FileReadLink               ; Used to place read data somewhere.
 	(Node "file:///place")
 	(SetValue stuff))
@@ -40,8 +44,7 @@ with more limited special-purpose API's.
 
 (ReadLink
 	(IRCBotNode "irc:///place?config=stuff&more=stuff"))
-
-SensoryNode
+```
 
 So how does it work?  `(cog-execute! (ReadLink ...))` needs to return
 a value holding an iterator holding a pointer into the stream. The
@@ -102,8 +105,11 @@ ValuePtr ReadLink::execute()
 }
 ```
 
-If TextFileNode wanted to refuse more than one read iterator, it could
+If `TextFileNode` wanted to refuse more than one read iterator, it could
 do the refusal in `make_new_read_iterator()`.
+
+This is all very nice, but a ReadLink does not seem to be needed.
+Just tapping the value is enough.
 
 Writing
 -------
@@ -169,3 +175,59 @@ that iterators must be Values.
 
 But having `(cog-io-open ...)` is icky. Can we do something flow-like
 instead?
+
+Sure. Just use the stream returned by `(cog-execute! (TextFileNode ...))`
+
+### Write final idea
+A `ReadLink` is not needed.
+
+If we use iterators for the output... then the WriteLink API needs
+to be
+```
+ (WriteLink
+    (TextStream)   ; iterator to write to.
+    (StringValue)) ; strings to write
+```
+Since links can't actualy store Values, the above have to be executable
+things that return the desired streams.
+
+How to write?
+```
+class OutputStream
+	: public LinkStreamValue
+{
+	virtual void write_stuff(const Handle&) = 0;
+};
+
+// Renamed version of PhraseStream today
+class TextFileStream : public OutputStream
+{
+private:
+	FILE* _fh;
+
+	void write_stuff(const Handle& cref)
+   {
+		ValuePtr content =  cref->execute();
+		StringValuePtr sv = StringValueCast(content);
+		fprintf(_fh, "%s", sv->get_value());
+	}
+};
+
+ValuePtr WriteLink::execute()
+{
+	TextStreamPtr = TextStreamCast(_outgoing[0]->execute());
+	return ->write_stuff(_outgoing[1]);
+}
+```
+That's it.
+
+So then, `TextFileNode::execute()` creates new iterator,
+and opens it for reading and writng, maybe both, make it
+URL-dependent. `file:mode//path` where mode is read, write,
+append, truncate, etc.
+
+https://en.wikipedia.org/wiki/File_URI_scheme
+file:/path
+file:///path
+file://./path   dot is localhost
+file://host/path
