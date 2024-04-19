@@ -41,4 +41,64 @@ with more limited special-purpose API's.
 (ReadLink
 	(IRCBotNode "irc:///place?config=stuff&more=stuff"))
 
-IONode
+SensoryNode
+
+So how does it work?  `(cog-execute! (ReadLink ...))` needs to return
+a value holding an iterator holding a pointer into the stream. The
+iterator is a StreamValue and each call to `update()` on that stream
+advances the iterator.
+
+Iterators depend on the actual IO device, and so there needs to be a
+`virtual ValuePtr SensoryNode::get_read_iterator();` that is called by
+`ValuePtr ReadLink::execute()` and returned to the caller. The specific
+iterator needs to know which stream it is reading from and other crap
+like that.
+
+A sufficiently general iterator can turn around and call methods on the
+SensoryNode, so that e.g. `GenericSensoryStream::update()` calls
+`SensoryNode::advance_iterator()` which does the actual reading.
+
+Except that we want to leave open the possibility of one SensoryNode
+being able to handle multiple iterators, so each instance needs to have
+a private class instantance that provides the actual i/o handles. So
+lets sketch this:
+```
+class GenericSensoryStream
+	: public LinkStreamValue
+{
+	virtual void update() const = 0;
+};
+
+// Renamed version of PhraseStream today
+class FileReadStream : public GenericSensoryStream
+{
+private:
+	FILE* _fh;
+
+	FileReadStream(std::string& file_to_open);
+
+public:
+	void update()
+	{
+		fread (_fh, ...);
+	}
+};
+
+class SensoryNode
+{
+	virtual ValuePtr make_new_read_iterator() = 0;
+};
+
+class FileNode : public SensoryNode
+{
+	ValuePtr make_new_read_iterator()
+	{
+		return createFileReadStream(_name);
+	}
+}
+
+ValuePtr ReadLink::execute()
+{
+	SensoryNodeCast(_outgoing[0])->make_new_read_iterator();
+}
+```
