@@ -58,24 +58,23 @@ A sufficiently general iterator can turn around and call methods on the
 SensoryNode, so that e.g. `GenericSensoryStream::update()` calls
 `SensoryNode::advance_iterator()` which does the actual reading.
 
-Except that we want to leave open the possibility of one SensoryNode
-being able to handle multiple iterators, so each instance needs to have
-a private class instantance that provides the actual i/o handles. So
-lets sketch this:
+We want to leave open the possibility of one SensoryNode being able to
+handle multiple iterators, so each instance needs to have a private
+class instance that provides the actual i/o handles. So lets sketch this:
 ```
-class GenericSensoryStream
+class TextStream
 	: public LinkStreamValue
 {
 	virtual void update() const = 0;
 };
 
 // Renamed version of PhraseStream today
-class FileReadStream : public GenericSensoryStream
+class TextFileStream : public TextStream
 {
 private:
 	FILE* _fh;
 
-	FileReadStream(std::string& file_to_open);
+	TextFileStream(std::string& file_to_open);
 
 public:
 	void update()
@@ -89,11 +88,11 @@ class SensoryNode
 	virtual ValuePtr make_new_read_iterator() = 0;
 };
 
-class FileNode : public SensoryNode
+class TextFileNode : public SensoryNode
 {
 	ValuePtr make_new_read_iterator()
 	{
-		return createFileReadStream(_name);
+		return createTextTextFileStream(_name);
 	}
 }
 
@@ -103,7 +102,7 @@ ValuePtr ReadLink::execute()
 }
 ```
 
-If FileNode wanted to refuse more than one read iterator, it could
+If TextFileNode wanted to refuse more than one read iterator, it could
 do the refusal in `make_new_read_iterator()`.
 
 What about writing? Calling `WriteLink::execute()` could eager-eval
@@ -120,7 +119,7 @@ class SensoryNode
 	virtual ValuePtr write_stuff(const Handle&) = 0;
 };
 
-class FileNode : public SensoryNode
+class TextFileNode : public SensoryNode
 {
 	ValuePtr write_stuff(const Handle& args)
    {
@@ -134,5 +133,12 @@ class FileNode : public SensoryNode
 The above is not stateful, which is maybe OK for a file, which we can
 open, append, close, but is bad for chatbot, which must stay open.
 When do we open? StorageNodes force user to call `cog-open` explicitly.
-Can we do same here? I think so, but then have to move the open, close
-to base AtomSpace, and have sensory inherit from that.
+Can we do same here?
+
+The perssit `cog-open` sets a global storage-node pointer. It's too much
+of a hassle to try to keep that API and still make everything work. So
+punt, and create `cog-io-open` etc instead.
+
+Placing open/close on the node de facto forces one iterator per node,
+because only one iterator per open/close. Unless open() returns the
+iterator... how can I write to iterator?
