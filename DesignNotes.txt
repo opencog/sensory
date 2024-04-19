@@ -102,3 +102,37 @@ ValuePtr ReadLink::execute()
 	SensoryNodeCast(_outgoing[0])->make_new_read_iterator();
 }
 ```
+
+If FileNode wanted to refuse more than one read iterator, it could
+do the refusal in `make_new_read_iterator()`.
+
+What about writing? Calling `WriteLink::execute()` could eager-eval
+the args and then pass them to the SensoryNode, or it could avoid
+that, doing lazy-eval.  So that would look like this:
+```
+ValuePtr WriteLink::execute()
+{
+	return SensoryNodeCast(_outgoing[0])->write_stuff(_outgoing[1]);
+}
+
+class SensoryNode
+{
+	virtual ValuePtr write_stuff(const Handle&) = 0;
+};
+
+class FileNode : public SensoryNode
+{
+	ValuePtr write_stuff(const Handle& args)
+   {
+		// Beta reduce and execute and etc.
+		ValuePtr vargs = args->execute();
+		fwrite(_fh, ..., vargs);
+		return vargs;
+	}
+}
+```
+The above is not stateful, which is maybe OK for a file, which we can
+open, append, close, but is bad for chatbot, which must stay open.
+When do we open? StorageNodes force user to call `cog-open` explicitly.
+Can we do same here? I think so, but then have to move the open, close
+to base AtomSpace, and have sensory inherit from that.
