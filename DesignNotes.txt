@@ -105,9 +105,14 @@ ValuePtr ReadLink::execute()
 If TextFileNode wanted to refuse more than one read iterator, it could
 do the refusal in `make_new_read_iterator()`.
 
+Writing
+-------
 What about writing? Calling `WriteLink::execute()` could eager-eval
 the args and then pass them to the SensoryNode, or it could avoid
-that, doing lazy-eval.  So that would look like this:
+that, doing lazy-eval.
+
+### Write bad idea
+First idea, but its broken. Above would look like this:
 ```
 ValuePtr WriteLink::execute()
 {
@@ -133,12 +138,34 @@ class TextFileNode : public SensoryNode
 The above is not stateful, which is maybe OK for a file, which we can
 open, append, close, but is bad for chatbot, which must stay open.
 When do we open? StorageNodes force user to call `cog-open` explicitly.
-Can we do same here?
+Can we do same here? Create an IONode class, which both StorageNode
+and also SensoryNode inherit from? That way, they share `cog-open`?
 
-The perssit `cog-open` sets a global storage-node pointer. It's too much
+The persist `cog-open` sets a global storage-node pointer. It's too much
 of a hassle to try to keep that API and still make everything work. So
-punt, and create `cog-io-open` etc instead.
+punt, and create `cog-io-open` etc. instead.
 
 Placing open/close on the node de facto forces one iterator per node,
-because only one iterator per open/close. Unless open() returns the
-iterator... how can I write to iterator?
+because only one iterator per open/close. Unless we set it up so that
+ech call to open() returns a new iterator. How can I write to iterator?
+
+### Write better idea
+If we use iterators for the output... then the WriteLink API needs
+to be
+```
+ (WriteLink
+    (TextFileNode "file:///tmp/foo")
+    (Value stream of things to write)
+    (Iterator to write to))
+```
+
+Where did the iterator come from?
+Maybe from `(cog-io-open (TextFileNode "file:///tmp/foo"))` ?
+
+Is the Iterator an Atom or a Stream? Easier if its an Atom. But then
+the usual globally-unique atom issues bite, which are inappropriate for
+iterators. Which are effectively private, like file handles. So seems
+that iterators must be Values.
+
+But having `(cog-io-open ...)` is icky. Can we do something flow-like
+instead?
