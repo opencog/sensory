@@ -8,6 +8,7 @@ OUTPUT_STREAM <- LINK_STREAM_VALUE
 
 // Stream of text
 TEXT_STREAM <- OUTPUT_STREAM
+TEXT_FILE_STREAM <- TEXT_STREAM
 
 // Calling execute() writes to output device.
 // Should these inherit from FunctionLink instead?

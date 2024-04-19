@@ -4,9 +4,9 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
 
 ADD_LIBRARY (sensory SHARED
-	PhraseStream.cc
 	SensoryNode.cc
 	TextFileNode.cc
+	TextFileStream.cc
 )
 
 # Without this, parallel make will race and crap up the generated files.
@@ -23,9 +23,9 @@ INSTALL (TARGETS sensory EXPORT AtomSpaceTargets
 )
 
 INSTALL (FILES
-	PhraseStream.h
 	SensoryNode.h
 	TextFileNode.h
+	TextFileStream.h
 	DESTINATION "include/opencog/atoms/sensory"
 )
 

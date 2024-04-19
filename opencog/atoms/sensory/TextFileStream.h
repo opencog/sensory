@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/PhraseStream.h
+ * opencog/atoms/sensory/TextFileStream.h
  *
  * Copyright (C) 2024 Linas Vepstas
  * All Rights Reserved
@@ -20,12 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_PHRASE_STREAM_H
-#define _OPENCOG_PHRASE_STREAM_H
+#ifndef _OPENCOG_TEXT_FILE_STREAM_H
+#define _OPENCOG_TEXT_FILE_STREAM_H
 
 #include <stdio.h>
 #include <opencog/atoms/value/LinkStreamValue.h>
-#include <opencog/atoms/sensory-types/sensory_types.h>
 
 namespace opencog
 {
@@ -35,38 +34,36 @@ namespace opencog
  */
 
 /**
- * PhraseStreams provide a stream of PhraseNodes from text file and,
- * more generally, from unix socket sources. This is experimental;
- * It might be better to have e.g. a TextStream inheriting from
- * QueueValue (for threading) and return StringValue streams instead
- * of PhraseNodes. I dunno, remains unclear.
+ * TextFileStreams provide a stream of PhraseNodes read from from
+ * a text file and, more generally, from unix socket sources. This
+ * is experimental.
  */
-class PhraseStream
+class TextFileStream
 	: public LinkStreamValue
 {
 protected:
-	PhraseStream(Type t, const std::string&);
+	TextFileStream(Type t, const std::string&);
 	void init(const std::string&);
 	virtual void update() const;
 
 	FILE* _fh;
 
 public:
-	PhraseStream(const std::string&);
-	virtual ~PhraseStream();
+	TextFileStream(const std::string&);
+	virtual ~TextFileStream();
 	virtual bool operator==(const Value&) const;
 };
 
-typedef std::shared_ptr<PhraseStream> PhraseStreamPtr;
-static inline PhraseStreamPtr PhraseStreamCast(ValuePtr& a)
-	{ return std::dynamic_pointer_cast<PhraseStream>(a); }
+typedef std::shared_ptr<TextFileStream> TextFileStreamPtr;
+static inline TextFileStreamPtr TextFileStreamCast(ValuePtr& a)
+	{ return std::dynamic_pointer_cast<TextFileStream>(a); }
 
 template<typename ... Type>
-static inline std::shared_ptr<PhraseStream> createPhraseStream(Type&&... args) {
-   return std::make_shared<PhraseStream>(std::forward<Type>(args)...);
+static inline std::shared_ptr<TextFileStream> createTextFileStream(Type&&... args) {
+   return std::make_shared<TextFileStream>(std::forward<Type>(args)...);
 }
 
 /** @}*/
 } // namespace opencog
 
-#endif // _OPENCOG_PHRASE_STREAM_H
+#endif // _OPENCOG_TEXT_FILE_STREAM_H

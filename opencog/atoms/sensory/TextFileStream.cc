@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/PhraseStream.cc
+ * opencog/atoms/sensory/TextFileStream.cc
  *
  * Copyright (C) 2020 Linas Vepstas
  * All Rights Reserved
@@ -27,31 +27,33 @@
 #include <opencog/util/oc_assert.h>
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/value/ValueFactory.h>
-#include "PhraseStream.h"
+
+#include <opencog/atoms/sensory-types/sensory_types.h>
+#include "TextFileStream.h"
 
 using namespace opencog;
 
-PhraseStream::PhraseStream(Type t, const std::string& str)
+TextFileStream::TextFileStream(Type t, const std::string& str)
 	: LinkStreamValue(t)
 {
-	OC_ASSERT(nameserver().isA(_type, PHRASE_STREAM),
-		"Bad PhraseStream constructor!");
+	OC_ASSERT(nameserver().isA(_type, TEXT_FILE_STREAM),
+		"Bad TextFileStream constructor!");
 	init(str);
 }
 
-PhraseStream::PhraseStream(const std::string& str)
-	: LinkStreamValue(PHRASE_STREAM)
+TextFileStream::TextFileStream(const std::string& str)
+	: LinkStreamValue(TEXT_FILE_STREAM)
 {
 	init(str);
 }
 
-PhraseStream::~PhraseStream()
+TextFileStream::~TextFileStream()
 {
 printf ("stream dtor\n");
 }
 
 // Attempt to open the URL for reading.
-void PhraseStream::init(const std::string& url)
+void TextFileStream::init(const std::string& url)
 {
 	_fh = nullptr;
 	if (0 != url.compare(0, 7, "file://"))
@@ -80,7 +82,7 @@ void PhraseStream::init(const std::string& url)
 
 // This will read one line from the file stream, and return that line.
 // So, a line-oriented, buffered interface. For now.
-void PhraseStream::update() const
+void TextFileStream::update() const
 {
 	if (nullptr == _fh) { _value.clear(); return; }
 
@@ -101,7 +103,7 @@ void PhraseStream::update() const
 
 // ==============================================================
 
-bool PhraseStream::operator==(const Value& other) const
+bool TextFileStream::operator==(const Value& other) const
 {
 	// Derived classes use this, so use get_type()
 	if (get_type() != other.get_type()) return false;
@@ -114,4 +116,4 @@ bool PhraseStream::operator==(const Value& other) const
 // ==============================================================
 
 // Adds factory when library is loaded.
-DEFINE_VALUE_FACTORY(PHRASE_STREAM, createPhraseStream, std::string)
+DEFINE_VALUE_FACTORY(TEXT_FILE_STREAM, createTextFileStream, std::string)

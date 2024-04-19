@@ -22,7 +22,7 @@
 
 #include <opencog/util/oc_assert.h>
 #include "TextFileNode.h"
-#include "PhraseStream.h"
+#include "TextFileStream.h"
 
 using namespace opencog;
 
@@ -72,7 +72,7 @@ bool TextFileNode::connected(void)
 ValuePtr TextFileNode::execute(AtomSpace* as, bool silent)
 {
 	// Pass the URL to the stream; the stream will open it.
-	return createPhraseStream(_name);
+	return createTextFileStream(_name);
 }
 
 DEFINE_NODE_FACTORY(TextFileNode, TEXT_FILE_NODE)
