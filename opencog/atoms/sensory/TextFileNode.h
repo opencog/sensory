@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/FileNode.h
+ * opencog/atoms/sensory/TextFileNode.h
  *
  * Copyright (C) 2024 Linas Vepstas
  * All Rights Reserved
@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_FILE_NODE_H
-#define _OPENCOG_FILE_NODE_H
+#ifndef _OPENCOG_TEXT_FILE_NODE_H
+#define _OPENCOG_TEXT_FILE_NODE_H
 
 #include <opencog/atoms/sensory/SensoryNode.h>
 
@@ -30,9 +30,9 @@ namespace opencog
 /** \addtogroup grp_atomspace
  *  @{
  *
- * FileNode class. Basic File I/O.
+ * TextFileNode class. Basic File I/O.
  */
-class FileNode : public SensoryNode
+class TextFileNode : public SensoryNode
 {
 protected:
 	bool _is_open;
@@ -44,13 +44,13 @@ protected:
 
 public:
 	// Please to NOT use this constructor!
-	FileNode(Type, const std::string&&);
+	TextFileNode(Type, const std::string&&);
 
 public:
-	FileNode(const std::string&&);
+	TextFileNode(const std::string&&);
 
-	FileNode(FileNode&) = delete;
-	FileNode& operator=(const FileNode&) = delete;
+	TextFileNode(TextFileNode&) = delete;
+	TextFileNode& operator=(const TextFileNode&) = delete;
 
 	virtual bool is_executable() const { return true; }
 	virtual ValuePtr execute(AtomSpace*, bool);
@@ -58,10 +58,10 @@ public:
 	static Handle factory(const Handle&);
 };
 
-NODE_PTR_DECL(FileNode)
-#define createFileNode CREATE_DECL(FileNode)
+NODE_PTR_DECL(TextFileNode)
+#define createTextFileNode CREATE_DECL(TextFileNode)
 
 /** @}*/
 }
 
-#endif // _OPENCOG_FILE_NODE_H
+#endif // _OPENCOG_TEXT_FILE_NODE_H

@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/FileNode.cc
+ * opencog/atoms/sensory/TextFileNode.cc
  *
  * Copyright (C) 2024 Linas Vepstas
  * All Rights Reserved
@@ -21,8 +21,7 @@
  */
 
 #include <opencog/util/oc_assert.h>
-#include <opencog/atoms/value/LinkStreamValue.h>
-#include "FileNode.h"
+#include "TextFileNode.h"
 #include "PhraseStream.h"
 
 using namespace opencog;
@@ -30,39 +29,39 @@ using namespace opencog;
 // ============================================================
 // Constructors
 
-void FileNode::init(void)
+void TextFileNode::init(void)
 {
 	_is_open = false;
 	// TODO: check if the URL type is supported.
 }
 
-FileNode::FileNode(Type t, const std::string&& s)
+TextFileNode::TextFileNode(Type t, const std::string&& s)
    : SensoryNode(t, std::move(s))
 {
-   OC_ASSERT(nameserver().isA(_type, FILE_NODE),
-      "Bad FileNode constructor!");
+   OC_ASSERT(nameserver().isA(_type, TEXT_FILE_NODE),
+      "Bad TextFileNode constructor!");
 	init();
 }
 
-FileNode::FileNode(const std::string&& s)
-   : SensoryNode(FILE_NODE, std::move(s))
+TextFileNode::TextFileNode(const std::string&& s)
+   : SensoryNode(TEXT_FILE_NODE, std::move(s))
 {
 	init();
 }
 
-void FileNode::open(const std::string& opts)
+void TextFileNode::open(const std::string& opts)
 {
 	printf("yo file open\n");
 	_is_open = true;
 }
 
-void FileNode::close(void)
+void TextFileNode::close(void)
 {
 	printf("yo file close\n");
 	_is_open = false;
 }
 
-bool FileNode::connected(void)
+bool TextFileNode::connected(void)
 {
 	printf("yo file connect query\n");
 	return _is_open;
@@ -70,10 +69,10 @@ bool FileNode::connected(void)
 
 // ============================================================
 
-ValuePtr FileNode::execute(AtomSpace* as, bool silent)
+ValuePtr TextFileNode::execute(AtomSpace* as, bool silent)
 {
 	// Pass the URL to the stream; the stream will open it.
 	return createPhraseStream(_name);
 }
 
-DEFINE_NODE_FACTORY(FileNode, FILE_NODE)
+DEFINE_NODE_FACTORY(TextFileNode, TEXT_FILE_NODE)
