@@ -218,7 +218,7 @@ private:
 ValuePtr WriteLink::execute()
 {
 	TextStreamPtr = TextStreamCast(_outgoing[0]->execute());
-	return ->write_stuff(_outgoing[1]);
+	return ->write_out(_outgoing[1]);
 }
 ```
 That's it.

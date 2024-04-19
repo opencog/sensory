@@ -56,11 +56,16 @@ TextFileStream::~TextFileStream()
 /// The URL format is described in
 /// https://en.wikipedia.org/wiki/File_URI_scheme
 /// and we adhere to that.
+///
 /// URI formats are:
 /// file:/path       ; Not currently supported
 /// file:///path     ; Yes, use this
 /// file://host/path ; Not currently supported
 /// file://./path    ; Dot means localhost
+///
+/// Possible extensions:
+/// file:mode//...
+/// where mode is one of the modes described in `man 3 fopen`
 
 void TextFileStream::init(const std::string& url)
 {
@@ -74,7 +79,7 @@ void TextFileStream::init(const std::string& url)
 
 	// Ignore the first 7 chars "file://"
 	const char* fpath = url.substr(7).c_str();
-	_fh = fopen(fpath, "r");
+	_fh = fopen(fpath, "a+");
 
 	if (nullptr == _fh)
 	{
@@ -124,7 +129,7 @@ ValuePtr TextFileStream::write_out(const Handle& cref)
 
 	ValuePtr content = cref;
 	if (cref->is_executable())
-		cref = content->execute(cref->getAtomSpace());
+		content = cref->execute(cref->getAtomSpace());
 
 	// For now, we expect cref to be a node or a StringValue
 	if (cref->is_type(STRING_VALUE))
