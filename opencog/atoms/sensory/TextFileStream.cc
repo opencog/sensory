@@ -34,7 +34,7 @@
 using namespace opencog;
 
 TextFileStream::TextFileStream(Type t, const std::string& str)
-	: LinkStreamValue(t)
+	: OutputStream(t)
 {
 	OC_ASSERT(nameserver().isA(_type, TEXT_FILE_STREAM),
 		"Bad TextFileStream constructor!");
@@ -42,7 +42,7 @@ TextFileStream::TextFileStream(Type t, const std::string& str)
 }
 
 TextFileStream::TextFileStream(const std::string& str)
-	: LinkStreamValue(TEXT_FILE_STREAM)
+	: OutputStream(TEXT_FILE_STREAM)
 {
 	init(str);
 }

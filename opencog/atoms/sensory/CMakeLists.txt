@@ -4,6 +4,7 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
 
 ADD_LIBRARY (sensory SHARED
+	OutputStream.cc
 	SensoryNode.cc
 	TextFileNode.cc
 	TextFileStream.cc
@@ -23,6 +24,7 @@ INSTALL (TARGETS sensory EXPORT AtomSpaceTargets
 )
 
 INSTALL (FILES
+	OutputStream.h
 	SensoryNode.h
 	TextFileNode.h
 	TextFileStream.h

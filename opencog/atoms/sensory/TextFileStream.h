@@ -24,7 +24,7 @@
 #define _OPENCOG_TEXT_FILE_STREAM_H
 
 #include <stdio.h>
-#include <opencog/atoms/value/LinkStreamValue.h>
+#include <opencog/atoms/sensory/OutputStream.h>
 
 namespace opencog
 {
@@ -39,7 +39,7 @@ namespace opencog
  * is experimental.
  */
 class TextFileStream
-	: public LinkStreamValue
+	: public OutputStream
 {
 protected:
 	TextFileStream(Type t, const std::string&);
@@ -51,6 +51,8 @@ protected:
 public:
 	TextFileStream(const std::string&);
 	virtual ~TextFileStream();
+
+	virtual ValuePtr write_out(const Handle&);
 	virtual bool operator==(const Value&) const;
 };
 
