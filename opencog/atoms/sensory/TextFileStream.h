@@ -46,6 +46,7 @@ protected:
 	void init(const std::string&);
 	virtual void update() const;
 
+	std::string _uri;
 	FILE* _fh;
 
 public:

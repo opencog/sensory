@@ -26,6 +26,7 @@
 #include <opencog/util/exceptions.h>
 #include <opencog/util/oc_assert.h>
 #include <opencog/atoms/base/Node.h>
+#include <opencog/atoms/value/StringValue.h>
 #include <opencog/atoms/value/ValueFactory.h>
 
 #include <opencog/atoms/sensory-types/sensory_types.h>
@@ -49,19 +50,30 @@ TextFileStream::TextFileStream(const std::string& str)
 
 TextFileStream::~TextFileStream()
 {
-printf ("stream dtor\n");
 }
 
-// Attempt to open the URL for reading.
+/// Attempt to open the URL for reading.
+/// The URL format is described in
+/// https://en.wikipedia.org/wiki/File_URI_scheme
+/// and we adhere to that.
+/// URI formats are:
+/// file:/path       ; Not currently supported
+/// file:///path     ; Yes, use this
+/// file://host/path ; Not currently supported
+/// file://./path    ; Dot means localhost
+
 void TextFileStream::init(const std::string& url)
 {
 	_fh = nullptr;
-	if (0 != url.compare(0, 7, "file://"))
+	if (0 != url.compare(0, 8, "file:///"))
 		throw RuntimeException(TRACE_INFO,
 			"Unsupported URL \"%s\"\n", url.c_str());
 
-	// Ignore the first 6 chars "file:/"
-	const char* fpath = url.substr(6).c_str();
+	// Make a copy, for debuggingg purposes.
+	_uri = url;
+
+	// Ignore the first 7 chars "file://"
+	const char* fpath = url.substr(7).c_str();
 	_fh = fopen(fpath, "r");
 
 	if (nullptr == _fh)
@@ -99,6 +111,43 @@ void TextFileStream::update() const
 
 	_value.resize(1);
 	_value[0] = createNode(ITEM_NODE, buff);
+}
+
+// ==============================================================
+
+// Write stuff to a file.
+ValuePtr TextFileStream::write_out(const Handle& cref)
+{
+	if (nullptr == _fh)
+		throw RuntimeException(TRACE_INFO,
+			"Text stream not open: URI \"%s\"\n", _uri.c_str());
+
+	ValuePtr content = cref;
+	if (cref->is_executable())
+		cref = content->execute(cref->getAtomSpace());
+
+	// For now, we expect cref to be a node or a StringValue
+	if (cref->is_type(STRING_VALUE))
+	{
+		StringValuePtr svp(StringValueCast(cref));
+		const std::vector<std::string>& strs = svp->value();
+		for (const std::string& str : strs)
+		{
+			fprintf(_fh, " %s", str.c_str());
+		}
+		fflush(_fh);
+		return cref;
+	}
+	if (cref->is_type(NODE))
+	{
+		const std::string& name = NodeCast(cref)->get_name();
+		fprintf(_fh, " %s", name.c_str());
+		fflush(_fh);
+		return cref;
+	}
+
+	throw RuntimeException(TRACE_INFO,
+		"Expecting strings, got %s\n", cref->to_string().c_str());
 }
 
 // ==============================================================
