@@ -1,5 +1,5 @@
 /*
- * opencog/persist/api/SensoryNode.cc
+ * opencog/atoms/sensory/SensoryNode.cc
  *
  * Copyright (c) 2008-2010 OpenCog Foundation
  * Copyright (c) 2009,2013,2020,2022 Linas Vepstas
@@ -41,32 +41,9 @@ SensoryNode::~SensoryNode()
 {
 }
 
-void SensoryNode::create(void)
-{
-	throw RuntimeException(TRACE_INFO, "Not Implemented!");
-}
-
-void SensoryNode::destroy(void)
-{
-	throw RuntimeException(TRACE_INFO, "Not Implemented!");
-}
-
-void SensoryNode::erase(void)
-{
-	throw RuntimeException(TRACE_INFO, "Not Implemented!");
-}
-
 std::string SensoryNode::monitor(void)
 {
 	return "This SensoryNode does not implement a monitor.";
-}
-
-// ====================================================================
-
-void SensoryNode::barrier(AtomSpace* as)
-{
-	if (nullptr == as) as = getAtomSpace();
-	as->barrier();
 }
 
 // ====================================================================
