@@ -45,7 +45,7 @@ protected:
 
 public:
 	virtual ~OutputStream();
-	virtual ValuePtr write_out(const Handle&) = 0;
+	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&) = 0;
 
 	// XXX Do we really need this?
 	virtual bool operator==(const Value&) const;

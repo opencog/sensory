@@ -68,7 +68,7 @@ ValuePtr WriteLink::execute(AtomSpace* as, bool silent)
 		throw RuntimeException(TRACE_INFO,
 			"Expecting an OutputStream, got %s", pap->to_string().c_str());
 
-	return ost->write_out(_outgoing[1]);
+	return ost->write_out(as, silent, _outgoing[1]);
 }
 
 DEFINE_LINK_FACTORY(WriteLink, WRITE_LINK)

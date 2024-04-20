@@ -53,7 +53,7 @@ public:
 	TextFileStream(const std::string&);
 	virtual ~TextFileStream();
 
-	virtual ValuePtr write_out(const Handle&);
+	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&);
 	virtual bool operator==(const Value&) const;
 };
 

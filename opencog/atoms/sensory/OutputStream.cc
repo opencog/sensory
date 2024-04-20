@@ -42,7 +42,7 @@ OutputStream::OutputStream(Type t)
 
 OutputStream::~OutputStream()
 {
-printf ("stream dtor\n");
+	printf ("OutputStream dtor\n");
 }
 
 // ==============================================================

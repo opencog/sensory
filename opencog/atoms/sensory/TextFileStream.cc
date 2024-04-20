@@ -121,7 +121,8 @@ void TextFileStream::update() const
 // ==============================================================
 
 // Write stuff to a file.
-ValuePtr TextFileStream::write_out(const Handle& cref)
+ValuePtr TextFileStream::write_out(AtomSpace* as, bool silent,
+                                   const Handle& cref)
 {
 	if (nullptr == _fh)
 		throw RuntimeException(TRACE_INFO,
@@ -129,7 +130,7 @@ ValuePtr TextFileStream::write_out(const Handle& cref)
 
 	ValuePtr content = cref;
 	if (cref->is_executable())
-		content = cref->execute(cref->getAtomSpace());
+		content = cref->execute(as, silent);
 
 	// For now, we expect cref to be a node or a StringValue
 	if (cref->is_type(STRING_VALUE))
