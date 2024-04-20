@@ -4,10 +4,11 @@ Implementation for low-level AtomSpace sensory I/O Atoms.
 Almost nothing here yet, see Status below.
 
 See also the git repo [opencog/vision](https://github.com/opencog/vision)
-for OpenCV-based vision Atomese. (It is also at version 0.0.2)
+for OpenCV-based vision Atomese. (Note: It is at version 0.0.2)
 
 ### Status
-Version 0.0.3 Super experimental. Not sure how this will work out.
+Version 0.1.0 -- Experimental. Starting to gel. There might be more design
+changes ahead.
 
 ### Overview
 The Atomese agent framework needs to have some way of interacting
