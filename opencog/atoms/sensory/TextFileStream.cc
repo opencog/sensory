@@ -69,6 +69,7 @@ TextFileStream::~TextFileStream()
 
 void TextFileStream::init(const std::string& url)
 {
+	_fresh = true;
 	_fh = nullptr;
 	if (0 != url.compare(0, 8, "file:///"))
 		throw RuntimeException(TRACE_INFO,
@@ -102,6 +103,18 @@ void TextFileStream::init(const std::string& url)
 void TextFileStream::update() const
 {
 	if (nullptr == _fh) { _value.clear(); return; }
+
+	// The very first call after opening a file will typically
+	// be a bogus update, so as to give the caller something,
+	// anything. There will be trouble down the line, when
+	// actually reading. So first time through, return the URL
+	if (_fresh)
+	{
+		_fresh = false;
+		_value.resize(1);
+		_value[0] = createNode(ITEM_NODE, _uri);
+		return;
+	}
 
 #define BUFSZ 4080
 	char buff[BUFSZ];

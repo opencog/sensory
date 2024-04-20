@@ -48,6 +48,7 @@ protected:
 
 	std::string _uri;
 	FILE* _fh;
+	mutable bool _fresh;
 	void prt_value(const ValuePtr&);
 
 public:
