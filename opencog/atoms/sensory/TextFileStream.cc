@@ -193,22 +193,38 @@ ValuePtr TextFileStream::write_out(AtomSpace* as, bool silent,
 				cref->to_string().c_str());
 	}
 
-	// If it is a stream, enter infinite loop, until it is exahausted.
-	if (content->is_type(LINK_STREAM_VALUE))
+	// If it is not a stream, then just print and return.
+	if (not content->is_type(LINK_STREAM_VALUE))
 	{
-		LinkValuePtr lvp(LinkValueCast(content));
-		while (true)
-		{
-			const ValueSeq& vals = lvp->value();
-			if (0 == vals.size()) break;
-			for (const ValuePtr& v : vals)
-				prt_value(v);
-			fflush(_fh);
-		}
+		prt_value(content);
+		fflush(_fh);
+		return content;
 	}
 
-	prt_value(content);
-	fflush(_fh);
+	// If it is a stream, enter infinite loop, until it is exhausted.
+	LinkValuePtr lvp(LinkValueCast(content));
+	while (true)
+	{
+		const ValueSeq& vals = lvp->value();
+
+		// If the stream is returning an empty list, assume we
+		// are done. Exit the loop.
+		if (0 == vals.size()) break;
+
+		// A different case arises if the stream keeps returning
+		// empty LinkValues. This is kind of pathological, and
+		// arguably, its a bug upstream somewhere, but for now,
+		// we catch this and handle it.
+		size_t nprinted = 0;
+		for (const ValuePtr& v : vals)
+		{
+			if (v->is_type(LINK_VALUE) and 0 == v->size()) continue;
+			prt_value(v);
+			nprinted ++;
+		}
+		fflush(_fh);
+		if (0 == nprinted) break;
+	}
 	return content;
 }
 
