@@ -66,24 +66,42 @@
 (cog-execute! writer)
 (cog-execute! writer)
 
+; Verify that it was written: `cat /tmp/foobar.txt`
+
 ; --------------------------------------------------------
 ; Demo: Combine the reader and the writer to perform a file copy.
 ; Just as in the `file-read.scm` demo, the demo file should be copied
 ; to the temp directory, first: `cp demo.txt /tmp`
 
-(define in-stream
-   (cog-execute! (TextFileNode "file:///tmp/demo.txt")))
+; Instead of using the custom scheme API `cog-set-value`, use the
+; generic cog-execute! instead, and the SetValueLink to wire things
+; into place.
+(cog-execute!
+	(SetValue
+		(Concept "source") (Predicate "key")
+		(TextFileNode "file:///tmp/demo.txt")))
 
-(cog-set-value!
-	; Same location as last time.
-	(Concept "source") (Predicate "key")
-	in-stream)
-
+; Running the writer will enter an infinite loop, pulling one line
+; at a time from the input file, and writing it to the output file.
+; The loop exits when end-of-file is reached.
 (cog-execute! writer)
 
-;;;; As above: rewind the stream to the begining:
-;;;(cog-execute!
-;;;	(SetValue (Concept "foo") (Predicate "some place")
-;;;		(File "file:///tmp/demo.txt")))
+; Verify that it was written: `cat /tmp/foobar.txt`
+
+; Try it again. Note that nothing will happen, because the input
+; file iterator is now sitting at the end-of-file. Verify that there
+; were no changes: `cat /tmp/foobar.txt`
+(cog-execute! writer)
+
+; Get a fresh handle to the input stream:
+(cog-execute!
+	(SetValue
+		(Concept "source") (Predicate "key")
+		(TextFileNode "file:///tmp/demo.txt")))
+
+; And now write again:
+(cog-execute! writer)
+
+; Verify that a second copy was written: `cat /tmp/foobar.txt`
 
 ; The End! That's All, Folks!

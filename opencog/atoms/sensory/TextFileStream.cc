@@ -128,18 +128,21 @@ void TextFileStream::prt_value(const ValuePtr& content)
 		const std::vector<std::string>& strs = svp->value();
 		for (const std::string& str : strs)
 			fprintf(_fh, "%s", str.c_str());
+		return;
 	}
-	else if (content->is_type(NODE))
+	if (content->is_type(NODE))
 	{
 		const std::string& name = HandleCast(content)->get_name();
 		fprintf(_fh, " %s", name.c_str());
+		return;
 	}
-	else if (content->is_type(LINK_VALUE))
+	if (content->is_type(LINK_VALUE))
 	{
 		LinkValuePtr lvp(LinkValueCast(content));
 		const ValueSeq& vals = lvp->value();
 		for (const ValuePtr& v : vals)
 			prt_value(v);
+		return;
 	}
 
 	throw RuntimeException(TRACE_INFO,

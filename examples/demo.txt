@@ -1,6 +1,10 @@
+This is the first text line in the file.
 This file is a part of the file-demo.scm example.
 It containins some lines of text.
 Copy this to /tmp/demo.txt before running
 the file-demo.scm code.
-That demo expects a text file os some kind, any kind
-in the temp dir with this name.
+
+Above is a blank line.
+The demo expects a text file of some kind, any kind
+in the tmp dir, having this name.
+-------------
