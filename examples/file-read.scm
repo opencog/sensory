@@ -39,9 +39,12 @@ txt-stream
 ; and then places it at the indicated location.
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
-		(File "file:///tmp/demo.txt")))
+		(TextFile "file:///tmp/demo.txt")))
 
 ; Define an executable node that will feed the stream of text.
+; The ValueOf Atom is a kind of promise about the future: when
+; it is executed, it will return the Value, whatever it is, at
+; that time (at the time when the executiion is done).
 (define txt-stream-gen
 	(ValueOf (Concept "foo") (Predicate "some place")))
 
@@ -54,6 +57,53 @@ txt-stream
 (cog-execute! txt-stream-gen)
 
 ; --------------------------------------------------------
+; Demo: Perform processing on the stream. For each line of the
+; input file, apply a rule to rewrite it into a different form.
+
+; This rule just makes two copies of each input line, interleaving
+; it with other text. It is built with the same ValueOf promise, as
+; above.
+(define rule-applier
+	; When a filter is executed, it applies the first argument
+	; to the second. The first argument here is a Rule, the
+	; second is the text file stream.
+	(Filter
+		; A rewrite rule has three parts: a variable declaration,
+		; a pattern to match, and the rewrite to apply. Here, the
+		; pattern match is trivial: `(Variable "$x")` matches
+		; everything, the entire body of the input, which will be
+		; a line from the text file. More pecisely, and ItemNode
+		; holding that line. The rewrite below is just some
+		; silliness that makes two copies of the input.
+		(Rule
+			(TypedVariable (Variable "$x") (Type 'ItemNode))
+			(Variable "$x")
+			(List
+				(Variable "$x")
+				(Item "yo the first\n")
+				(Variable "$x")
+				(Item "yo the second\n")
+				(Item "====\n")))
+		txt-stream-gen))
+
+; The previous demo ran the input file to end-of-file; we need to
+; restart at the begining.
+(cog-execute!
+	(SetValue (Concept "foo") (Predicate "some place")
+		(TextFile "file:///tmp/demo.txt")))
+
+; Run the rule, once.
+(cog-execute! rule-applier)
+
+; Repeat it again, over and over, till the end-of-file.
+(cog-execute! rule-applier)
+(cog-execute! rule-applier)
+(cog-execute! rule-applier)
+(cog-execute! rule-applier)
+(cog-execute! rule-applier)
+(cog-execute! rule-applier)
+
+; --------------------------------------------------------
 ; Demo: Perform processing on the stream. In this case, parse the
 ; input stream into token pairs. Use the LG "any" parser for this.
 
@@ -62,7 +112,7 @@ txt-stream
 ; As above: rewind the stream to the begining:
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
-		(File "file:///tmp/demo.txt")))
+		(TextFile "file:///tmp/demo.txt")))
 
 ; Parse the file contents, one line at a time. The "any" dict generates
 ; random word-pairs. The (Number 1) asks for only one parse per
@@ -71,4 +121,5 @@ txt-stream
 (cog-execute! (LgParseBonds txt-stream-gen (Number 1) (LgDict "any")))
 (cog-execute! (LgParseBonds txt-stream-gen (Number 1) (LgDict "any")))
 
+; --------------------------------------------------------
 ; The End! That's All, Folks!
