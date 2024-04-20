@@ -50,6 +50,8 @@ TextFileStream::TextFileStream(const std::string& str)
 
 TextFileStream::~TextFileStream()
 {
+	if (_fh)
+		fclose (_fh);
 }
 
 /// Attempt to open the URL for reading.
@@ -121,10 +123,10 @@ void TextFileStream::update() const
 	char* rd = fgets(buff, BUFSZ, _fh);
 	if (nullptr == rd)
 	{
-		// fclose(_fh);
-		// _fh = nullptr;
+		fclose(_fh);
+		_fh = nullptr;
 		_value.clear();
-		 return;
+		return;
 	}
 
 	_value.resize(1);
