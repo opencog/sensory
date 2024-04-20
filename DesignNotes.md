@@ -1,5 +1,54 @@
 Design notes
-------------
+============
+Thought process that went into current design.
+
+Current Implementation
+----------------------
+The WriteLink API is
+```
+ (WriteLink
+    (TextStream)   ; iterator to write to.
+    (StringValue)) ; strings to write
+```
+Since links can't actualy store Values, the above have to be executable
+things that return the desired streams.
+
+How does the C++ perform the write?
+```
+class OutputStream
+	: public LinkStreamValue
+{
+	virtual ValuePtr write_out(const Handle&) = 0;
+};
+
+class TextFileStream : public OutputStream
+{
+private:
+	FILE* _fh;
+
+	ValuePtr write_out(const Handle& cref)
+   {
+		ValuePtr content =  cref->execute();
+		StringValuePtr sv = StringValueCast(content);
+		fprintf(_fh, "%s", sv->get_value());
+		return sv;
+	}
+};
+
+ValuePtr WriteLink::execute()
+{
+	TextStreamPtr = TextStreamCast(_outgoing[0]->execute());
+	return ->write_out(_outgoing[1]);
+}
+```
+That's it.
+
+The `TextFileNode::execute()` creates new iterator,
+and opens it for reading and writing.
+
+Early draft notes
+-----------------
+Earlier ideas that lead up to the above.
 For what the sensory I/O interface could be like.
 
 Needs to be generic, powerful, flexible, anticipate future IO
@@ -224,7 +273,7 @@ ValuePtr WriteLink::execute()
 That's it.
 
 So then, `TextFileNode::execute()` creates new iterator,
-and opens it for reading and writng, maybe both, make it
+and opens it for reading or writing, or maybe both. Make it
 URL-dependent. `file:mode//path` where mode is read, write,
 append, truncate, etc.
 
@@ -233,3 +282,9 @@ file:/path
 file:///path
 file://./path   dot is localhost
 file://host/path
+
+### Streaming issues
+Issues with applying filtering to streams. FutureStream fails to unwrap
+enough times.
+
+FilterValueTest
