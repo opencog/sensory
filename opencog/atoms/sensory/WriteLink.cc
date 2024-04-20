@@ -21,8 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <opencog/atomspace/AtomSpace.h>
 #include "WriteLink.h"
+#include "OutputStream.h"
 
 using namespace opencog;
 
@@ -39,36 +39,36 @@ WriteLink::WriteLink(const HandleSeq&& oset, Type t)
 }
 
 WriteLink::WriteLink(const Handle& h)
-	: FunctionLink({h}, WRITE_LINK)
+	: Link({h}, WRITE_LINK)
 {
 	init();
 }
 
 void WriteLink::init(void)
 {
-	if (1 != _outgoing.size())
+	if (2 != _outgoing.size())
 		throw SyntaxException(TRACE_INFO,
-			"Expecting exactly one argument!");
+			"Expecting exactly two arguments!");
 
 	if (not _outgoing[0]->is_executable())
 		throw SyntaxException(TRACE_INFO,
-			"Expecting the argument to be executable!");
+			"Expecting the first argument to be executable!");
 }
 
 // ---------------------------------------------------------------
 
-/// When executed, execute the arg, and attempt to convert it
-/// to a NumberNode.
+/// When executed, obtain the steam to write to from the first
+/// elt in outgoing set, and the data to write from the second.
 ValuePtr WriteLink::execute(AtomSpace* as, bool silent)
 {
 	ValuePtr pap = _outgoing[0]->execute(as, silent);
+	OutputStreamPtr ost(OutputStreamCast(pap));
 
-	// No conversion needed!
-//	if (pap->is_type(NUMBER_NODE))
-//		return pap;
+	if (nullptr == ost)
+		throw RuntimeException(TRACE_INFO,
+			"Expecting an OutputStream, got %s", pap->to_string().c_str());
 
-
-	return createNumberNode(fvp->value());
+	return ost->write_out(_outgoing[1]);
 }
 
 DEFINE_LINK_FACTORY(WriteLink, WRITE_LINK)
