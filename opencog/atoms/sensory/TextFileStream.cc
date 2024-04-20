@@ -119,6 +119,32 @@ void TextFileStream::update() const
 }
 
 // ==============================================================
+// Write stuff to a file.
+void TextFileStream::prt_value(const ValuePtr& content)
+{
+	if (content->is_type(STRING_VALUE))
+	{
+		StringValuePtr svp(StringValueCast(content));
+		const std::vector<std::string>& strs = svp->value();
+		for (const std::string& str : strs)
+			fprintf(_fh, "%s", str.c_str());
+	}
+	else if (content->is_type(NODE))
+	{
+		const std::string& name = HandleCast(content)->get_name();
+		fprintf(_fh, " %s", name.c_str());
+	}
+	else if (content->is_type(LINK_VALUE))
+	{
+		LinkValuePtr lvp(LinkValueCast(content));
+		const ValueSeq& vals = lvp->value();
+		for (const ValuePtr& v : vals)
+			prt_value(v);
+	}
+
+	throw RuntimeException(TRACE_INFO,
+		"Expecting strings, got %s\n", content->to_string().c_str());
+}
 
 // Write stuff to a file.
 ValuePtr TextFileStream::write_out(AtomSpace* as, bool silent,
@@ -138,28 +164,23 @@ ValuePtr TextFileStream::write_out(AtomSpace* as, bool silent,
 				cref->to_string().c_str());
 	}
 
-	// For now, we expect cref to be a node or a StringValue
-	if (content->is_type(STRING_VALUE))
+	// If it is a stream, enter infinite loop, until it is exahausted.
+	if (content->is_type(LINK_STREAM_VALUE))
 	{
-		StringValuePtr svp(StringValueCast(content));
-		const std::vector<std::string>& strs = svp->value();
-		for (const std::string& str : strs)
+		LinkValuePtr lvp(LinkValueCast(content));
+		while (true)
 		{
-			fprintf(_fh, "%s", str.c_str());
+			const ValueSeq& vals = lvp->value();
+			if (0 == vals.size()) break;
+			for (const ValuePtr& v : vals)
+				prt_value(v);
+			fflush(_fh);
 		}
-		fflush(_fh);
-		return content;
-	}
-	if (content->is_type(NODE))
-	{
-		const std::string& name = HandleCast(content)->get_name();
-		fprintf(_fh, " %s", name.c_str());
-		fflush(_fh);
-		return content;
 	}
 
-	throw RuntimeException(TRACE_INFO,
-		"Expecting strings, got %s\n", content->to_string().c_str());
+	prt_value(content);
+	fflush(_fh);
+	return content;
 }
 
 // ==============================================================

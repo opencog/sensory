@@ -48,6 +48,7 @@ protected:
 
 	std::string _uri;
 	FILE* _fh;
+	void prt_value(const ValuePtr&);
 
 public:
 	TextFileStream(const std::string&);

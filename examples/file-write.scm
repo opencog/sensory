@@ -61,22 +61,29 @@
 		(ValueOf (Concept "file anchor") (Predicate "some key"))
 		(ValueOf (Concept "source") (Predicate "key"))))
 
+; Write it out.
+(cog-execute! writer)
+(cog-execute! writer)
 (cog-execute! writer)
 
-;;;; --------------------------------------------------------
-;;;; Demo: Perform processing on the stream. In this case, parse the
-;;;; input stream into token pairs. Use the LG "any" parser for this.
-;;;
-;;;(use-modules (opencog nlp) (opencog nlp lg-parse))
-;;;
+; --------------------------------------------------------
+; Demo: Combine the reader and the writer to perform a file copy.
+; Just as in the `file-read.scm` demo, the demo file should be copied
+; to the temp directory, first: `cp demo.txt /tmp`
+
+(define in-stream
+   (cog-execute! (TextFileNode "file:///tmp/demo.txt")))
+
+(cog-set-value!
+	; Same location as last time.
+	(Concept "source") (Predicate "key")
+	in-stream)
+
+(cog-execute! writer)
+
 ;;;; As above: rewind the stream to the begining:
 ;;;(cog-execute!
 ;;;	(SetValue (Concept "foo") (Predicate "some place")
 ;;;		(File "file:///tmp/demo.txt")))
-;;;
-;;;; Parse the file contents, one line at a time. The "any" dict generates
-;;;; random word-pairs. The (Number 1) asks for only one parse per
-;;;; sentence.
-;;;(cog-execute! (LgParseBonds txt-stream-gen (Number 1) (LgDict "any")))
-;;;(cog-execute! (LgParseBonds txt-stream-gen (Number 1) (LgDict "any")))
-;;;(cog-execute! (LgParseBonds txt-stream-gen (Number 1) (LgDict "any")))
+
+; The End! That's All, Folks!
