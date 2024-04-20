@@ -62,8 +62,12 @@ void WriteLink::init(void)
 ValuePtr WriteLink::execute(AtomSpace* as, bool silent)
 {
 	ValuePtr pap = _outgoing[0]->execute(as, silent);
-	OutputStreamPtr ost(OutputStreamCast(pap));
+	if (nullptr == pap)
+		throw RuntimeException(TRACE_INFO,
+			"Expecting an OutputStream, but have nothing from %s",
+			_outgoing[0]->to_string().c_str());
 
+	OutputStreamPtr ost(OutputStreamCast(pap));
 	if (nullptr == ost)
 		throw RuntimeException(TRACE_INFO,
 			"Expecting an OutputStream, got %s", pap->to_string().c_str());
