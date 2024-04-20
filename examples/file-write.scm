@@ -111,26 +111,6 @@
 ; Demo: Combine the reader and the writer to read, perform some
 ; processing, and then write the processed data out.
 
-; XXX This won't work.
-(cog-execute!
-	(SetValue
-		(Concept "source") (Predicate "key")
-		(Filter
-			(Rule
-				(TypedVariable (Variable "$x") (Type 'ItemNode))
-				(Variable "$x")
-				;(LinkSignature
-				;	(Type 'LinkValue)
-(List
-					(Variable "$x")
-					(Item "yo the first\n")
-					(Variable "$x")
-					(Item "yo the second\n")
-					(Item "====\n")))
-			(TextFileNode "file:///tmp/demo.txt"))))
-
-; --------------------------------------------------------
-
 ; Create a new file iterator for reading the demo text file.
 (cog-execute!
 	(SetValue
@@ -142,6 +122,10 @@
 ; two copies of each line. This is the same filter as in the
 ; `file-read.scm` demo. Review that demo if the below looks
 ; strange.
+;
+; Note that the `ValueOfLink` below behaves as a kind of promise:
+; when executed, it promises to get the current value. In this case,
+; it will be the next line of the input file.
 (define rule-applier
 	(Filter
 		(Rule
@@ -155,13 +139,50 @@
 				(Item "====\n")))
 		(ValueOf (Concept "source") (Predicate "raw file input key"))))
 
+; If we were to just `(cog-execute! rule-applier)`, we'd get exactly
+; one line of the input file processed. This was already demoed in the
+; `file-read.scm` demo. (If you're adventurous, you can try again here.
+; Just remember to reset the input file iterator, when done.)
+;
+; We don't want to do just one line: we want to process the entire
+; stream, until end-of-file. For that, create a promise to do that,
+; when executed.
 (define prom
 	(Promise (TypeNode 'FutureStream)  rule-applier))
 
+; Designate the promise as the source of data for the file writer.
 (cog-execute!
-	(SetValue (Concept "source") (Predicate "key")
-		prom))
+	(SetValue (Concept "source") (Predicate "key") prom))
 
+; Run the file-writer. This uses exactly the same definition as before.
+; Be sure to `ls -la /tmp/foobar.txt` before and after running this,
+; or just `cat` it, to see the output file contents change.
 (cog-execute! writer)
+
+; Do it again. Nothing happens, because the input file cursor is at
+; the end of file.
+(cog-execute! writer)
+
+; Reset the input file cursor. (or pick a new input file.)
+(cog-execute!
+	(SetValue
+		(Concept "source") (Predicate "raw file input key")
+		(TextFileNode "file:///tmp/demo.txt")))
+
+; Now, the writer will run again.
+(cog-execute! writer)
+
+; If unclear about the promise, you can explore it several ways.
+; One is to do this: (Be sure to reset the input file, first.)
+;    (cog-value->list (cog-execute! prom))
+; This will process one line at a time.
+;
+; Equivalently, use ValueOf to get the value:
+;    (cog-value->list (cog-execute!
+;        (ValueOf (Concept "source") (Predicate "key"))))
+;
+; The writer just invokes this second form in an infinite loop,
+; until the end-of-file is reached, and then it halts.
+
 ; --------------------------------------------------------
 ; The End! That's All, Folks!

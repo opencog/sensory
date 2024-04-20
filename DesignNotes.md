@@ -46,6 +46,15 @@ That's it.
 The `TextFileNode::execute()` creates new iterator,
 and opens it for reading and writing.
 
+TODO List
+---------
+* The text file reader should probably throw on end-of-file, instead
+  of returning empty content. This would allow intermediate processors
+  to have an easier time of it.
+* Use `(LinkSignature (Type 'LinkValue) ...)` instead of `(List ...)`
+  in the filter demo (both read and write demo).
+
+
 Early draft notes
 -----------------
 Earlier ideas that lead up to the above.
@@ -283,13 +292,15 @@ file:///path
 file://./path   dot is localhost
 file://host/path
 
-### Streaming issues
+Streaming issues
+----------------
+Test failures:
 ```
 FilterValueTest guile -s ../tests/atoms/flow/filter-value-test.scm
 FilterFloatTest guile -s ../tests/atoms/flow/filter-float-test.scm
 ```
 
-Generic idea of old atomspace code is this:
+Generic idea of how old atomspace code works is this:
 * Let `(Gen)` be an Atom that gens new values each time its executed.
   e.g. `(Time)`
 * For example `(define f (Time))` so then `(cog-execute! f)`
@@ -302,8 +313,8 @@ Generic idea of old atomspace code is this:
 * Filtering in this scenario is easy: For example,
   `(define f (Filter (Rule...) (Time)))` fits into above scenario.
 
-But this breakes for the current design because `TextFileNode` is
-already a promise, and the above process is exacly backwards: we
+But this breaks for the current design because `TextFileNode` is
+already a promise, and the above process is exactly backwards: we
 want to apply the filtering to the output of the promise, and not
 vice-versa.
 
@@ -315,12 +326,12 @@ so that `(cog-execute! f)` will create a stream from the promise,
 and apply rule to it. But the creation of the stream can only be
 performed once; repeated calls to execute the promise are not allowed.
 
-Except ??? How is the stream rewound to the beginning?
-
+Well, but that's easy: `ValueOf` behaves exctly like a promise:
+```
 (define f (Filter (Rule...) (ValueOf ...)))
-So ValueOf behaves like a future...
+(define p (Promise (TypeNode 'FutureStream) f))
+```
+and now, `p` can be used as a streaming source.
 
-For the demo, need this:
-(define f (Filter (Rule) (ValueShim stream)))
 
 --------------------------------
