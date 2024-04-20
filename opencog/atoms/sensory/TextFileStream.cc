@@ -130,30 +130,36 @@ ValuePtr TextFileStream::write_out(AtomSpace* as, bool silent,
 
 	ValuePtr content = cref;
 	if (cref->is_executable())
+	{
 		content = cref->execute(as, silent);
+		if (nullptr == content)
+			throw RuntimeException(TRACE_INFO,
+				"Expecting something to write from %s\n",
+				cref->to_string().c_str());
+	}
 
 	// For now, we expect cref to be a node or a StringValue
-	if (cref->is_type(STRING_VALUE))
+	if (content->is_type(STRING_VALUE))
 	{
-		StringValuePtr svp(StringValueCast(cref));
+		StringValuePtr svp(StringValueCast(content));
 		const std::vector<std::string>& strs = svp->value();
 		for (const std::string& str : strs)
 		{
-			fprintf(_fh, " %s", str.c_str());
+			fprintf(_fh, "%s", str.c_str());
 		}
 		fflush(_fh);
-		return cref;
+		return content;
 	}
-	if (cref->is_type(NODE))
+	if (content->is_type(NODE))
 	{
-		const std::string& name = NodeCast(cref)->get_name();
+		const std::string& name = HandleCast(content)->get_name();
 		fprintf(_fh, " %s", name.c_str());
 		fflush(_fh);
-		return cref;
+		return content;
 	}
 
 	throw RuntimeException(TRACE_INFO,
-		"Expecting strings, got %s\n", cref->to_string().c_str());
+		"Expecting strings, got %s\n", content->to_string().c_str());
 }
 
 // ==============================================================

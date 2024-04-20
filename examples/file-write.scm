@@ -35,35 +35,34 @@
 ; Write stuff to the file.
 (cog-execute! writer)
 
+; Verify that it was written: `cat /tmp/foobar.txt`
+(cog-execute! writer)
 
+; Do it a few more times.
+(cog-execute! writer)
+(cog-execute! writer)
+(cog-execute! writer)
 
-;;;; --------------------------------------------------------
-;;;; Demo: Perform indirect streaming. The file-stream will be placed
-;;;; as a Value on some Atom, where it can be accessed and processed.
-;;;;
-;;;; Open the file, get the stream, and place it somewhere.
-;;;(cog-set-value! (Concept "foo") (Predicate "some place")
-;;;	(cog-execute! (TextFileNode "file:///tmp/demo.txt")))
-;;;
-;;;; A better, all-Atomese version of the above. Note that the SetValueLink
-;;;; will execute the TextFileNode, grab whatever it gets from that exec,
-;;;; and then places it at the indicated location.
-;;;(cog-execute!
-;;;	(SetValue (Concept "foo") (Predicate "some place")
-;;;		(File "file:///tmp/demo.txt")))
-;;;
-;;;; Define an executable node that will feed the stream of text.
-;;;(define txt-stream-gen
-;;;	(ValueOf (Concept "foo") (Predicate "some place")))
-;;;
-;;;; Access the file contents. Each time this is executed, it gets the
-;;;; next line in the file.
-;;;(cog-execute! txt-stream-gen)
-;;;(cog-execute! txt-stream-gen)
-;;;(cog-execute! txt-stream-gen)
-;;;(cog-execute! txt-stream-gen)
-;;;(cog-execute! txt-stream-gen)
-;;;
+; --------------------------------------------------------
+; Demo: Perform indirect streaming. The text to write will be placed as
+; a StringValue at some location, and writing will be done from there.
+
+(cog-set-value!
+	(Concept "source") (Predicate "key")
+	(StringValue
+		"some text\n"
+		"without a newline"
+		"after it\n"
+		"Goodbye!\n"))
+
+; Redefine the writer.
+(define writer
+	(WriteLink
+		(ValueOf (Concept "file anchor") (Predicate "some key"))
+		(ValueOf (Concept "source") (Predicate "key"))))
+
+(cog-execute! writer)
+
 ;;;; --------------------------------------------------------
 ;;;; Demo: Perform processing on the stream. In this case, parse the
 ;;;; input stream into token pairs. Use the LG "any" parser for this.
