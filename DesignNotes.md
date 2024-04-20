@@ -284,7 +284,34 @@ file://./path   dot is localhost
 file://host/path
 
 ### Streaming issues
-Issues with applying filtering to streams. FutureStream fails to unwrap
-enough times.
+```
+FilterValueTest guile -s ../tests/atoms/flow/filter-value-test.scm
+FilterFloatTest guile -s ../tests/atoms/flow/filter-float-test.scm
+```
 
-FilterValueTest
+Generic idea of old atomspace code is this:
+* Let `(Gen)` be an Atom that gens new values each time its executed.
+  e.g. `(Time)`
+* For example `(define f (Time))` so then `(cog-execute! f)`
+* A `FutureStream` converts this function to a streaming value.
+  For example, `(define fs (FutureStream (Time)))` and then
+  `(cog-value->list fs)`
+* But streams cannot be stored in the AtomSpace, so `Promise` does this:
+  For example, `(define p (Promise (TypeNode 'FutureStream) f))`
+  so that `(cog-execute! p)` returns fs.
+* Filtering in this scenario is easy: For example,
+  `(define f (Filter (Rule...) (Time)))` fits into above scenario.
+
+But this breakes for the current design because `TextFileNode` is
+already a promise, and the above process is exacly backwards: we
+want to apply the filtering to the output of the promise, and not
+vice-versa.
+
+
+
+FutureStream should store rule plus value
+
+For the demo, need this:
+(define f (Filter (Rule) (ValueShim stream)))
+
+
