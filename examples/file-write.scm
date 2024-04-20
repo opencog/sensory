@@ -93,7 +93,8 @@
 ; were no changes: `cat /tmp/foobar.txt`
 (cog-execute! writer)
 
-; Get a fresh handle to the input stream:
+; Get a fresh handle to the input stream. Each call
+; to SetValue will create a new file handle.
 (cog-execute!
 	(SetValue
 		(Concept "source") (Predicate "key")
@@ -124,6 +125,70 @@
 					(Item "yo the second\n")
 					(Item "====\n")))
 			(TextFileNode "file:///tmp/demo.txt"))))
+
+; --------------------------------------------------------
+
+; For this demo, we will be reading the same demo file several times.
+; For each part of the demo, we want to start at the begining. Make
+; this easy be defining a rewind function, now.
+(define make-new-input-iterator
+	(SetValue
+		(Concept "source") (Predicate "raw file input key")
+		(TextFileNode "file:///tmp/demo.txt")))
+
+; Create a new file iterator for reading the demo text file.
+(cog-execute! make-new-input-iterator)
+
+; The ValueOf Atom is a kind of promise about the future: when
+; it is executed, it will return the Value, whatever it is, at
+; that time (at the time when the executiion is done).
+(define data-promise
+	(ValueOf (Concept "source") (Predicate "raw file input key")))
+
+; Verify that the file contents are being read as expected.
+; i.e. that the promise is being kept: each new execution returns
+; one line of text from the input file.
+(cog-execute! data-promise)
+
+; Repeat until end-of-file
+(cog-execute! data-promise)
+(cog-execute! data-promise)
+(cog-execute! data-promise)
+(cog-execute! data-promise)
+(cog-execute! data-promise)
+(cog-execute! data-promise)
+
+; Define a rule that will take each line of input text, and
+; process it in some way. In this case, it will just make
+; two copies of each line.
+(define rule-applier
+	(Filter
+		(Rule
+			(TypedVariable (Variable "$x") (Type 'ItemNode))
+			(Variable "$x")
+			(List
+				(Variable "$x")
+				(Item "yo the first\n")
+				(Variable "$x")
+				(Item "yo the second\n")
+				(Item "====\n")))
+		data-promise))
+
+; Before running the above, reset the input file to the begining,
+; again. We'd left it at end of file in the last part.
+(cog-execute! make-new-input-iterator)
+
+; Run the rule, once.
+(cog-execute! rule-applier)
+
+; Repeat it again, over and over, till the end-of-file.
+(cog-execute! rule-applier)
+(cog-execute! rule-applier)
+(cog-execute! rule-applier)
+(cog-execute! rule-applier)
+(cog-execute! rule-applier)
+(cog-execute! rule-applier)
+
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!

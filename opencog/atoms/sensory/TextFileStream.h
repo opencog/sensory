@@ -47,7 +47,7 @@ protected:
 	virtual void update() const;
 
 	std::string _uri;
-	FILE* _fh;
+	mutable FILE* _fh;
 	mutable bool _fresh;
 	void prt_value(const ValuePtr&);
 

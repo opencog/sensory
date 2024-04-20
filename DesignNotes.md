@@ -307,11 +307,20 @@ already a promise, and the above process is exacly backwards: we
 want to apply the filtering to the output of the promise, and not
 vice-versa.
 
+So we need something like this:
+```
+(define f (Filter (Rule...) (Promise ...)))
+```
+so that `(cog-execute! f)` will create a stream from the promise,
+and apply rule to it. But the creation of the stream can only be
+performed once; repeated calls to execute the promise are not allowed.
 
+Except ??? How is the stream rewound to the beginning?
 
-FutureStream should store rule plus value
+(define f (Filter (Rule...) (ValueOf ...)))
+So ValueOf behaves like a future...
 
 For the demo, need this:
 (define f (Filter (Rule) (ValueShim stream)))
 
-
+--------------------------------
