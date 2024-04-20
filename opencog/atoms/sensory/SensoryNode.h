@@ -42,23 +42,11 @@ public:
 	virtual ~SensoryNode();
 
 	// ----------------------------------------------------------------
-	// Operations regarding the connection to the remote URI.
-	/**
-	 * Open a connection to the indicated URI.
-	 */
-	virtual void open(const std::string& flags) = 0;
 
-	/**
-	 * Close an active connection.
-	 */
-	virtual void close(void) = 0;
-
-	/**
-	 * Return true if the connection to the remote end appears to
-	 * be established and functioning.
-	 */
-	virtual bool connected(void) = 0;
-
+#ifdef MAYBE_LATER
+// Stuff below is copied from StorageNode and is maybe a good
+// idea and maybe a bad idea. Scaffolding for now. Deal with this
+// later, as appropriate.
 	/**
 	 * Initialize storage at the remote end. There must already be
 	 * an open connection to the remote end; and the remote end must
@@ -81,24 +69,12 @@ public:
 	 * deletion of all data.
 	 */
 	virtual void erase(void);
+#endif
 
 	/**
 	 * Return debug diagnostics and/or performance monitoring stats.
 	 */
 	virtual std::string monitor(void);
-
-	// ----------------------------------------------------------------
-	// Operations regarding specific atomspace contents.
-
-	/**
-	 * Make sure all atom writes have completed, before returning.
-	 * This only has an effect when the atomspace is backed by some
-	 * sort of storage, or is sending atoms to some remote location
-	 * asynchronously. This simply guarantees that the asynch
-	 * operations have completed.
-	 * NB: at this time, we don't distinguish barrier and flush.
-	 */
-	void barrier(AtomSpace* = nullptr);
 };
 
 NODE_PTR_DECL(SensoryNode)

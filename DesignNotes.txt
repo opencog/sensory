@@ -196,7 +196,7 @@ How to write?
 class OutputStream
 	: public LinkStreamValue
 {
-	virtual void write_stuff(const Handle&) = 0;
+	virtual ValuePtr write_out(const Handle&) = 0;
 };
 
 // Renamed version of PhraseStream today
@@ -205,18 +205,20 @@ class TextFileStream : public OutputStream
 private:
 	FILE* _fh;
 
-	void write_stuff(const Handle& cref)
+	ValuePtr write_out(const Handle& cref)
    {
 		ValuePtr content =  cref->execute();
 		StringValuePtr sv = StringValueCast(content);
 		fprintf(_fh, "%s", sv->get_value());
+
+		return sv;
 	}
 };
 
 ValuePtr WriteLink::execute()
 {
 	TextStreamPtr = TextStreamCast(_outgoing[0]->execute());
-	return ->write_stuff(_outgoing[1]);
+	return ->write_out(_outgoing[1]);
 }
 ```
 That's it.

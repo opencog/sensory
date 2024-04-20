@@ -14,7 +14,7 @@
 ; in the filesystem. Executing the FileNode will return a text
 ; stream value.
 (define txt-stream
-	(cog-execute! (FileNode "file:///tmp/demo.txt")))
+	(cog-execute! (TextFileNode "file:///tmp/demo.txt")))
 
 ; Repeated references to the stream will return single lines from
 ; the file.
@@ -32,10 +32,10 @@ txt-stream
 ;
 ; Open the file, get the stream, and place it somewhere.
 (cog-set-value! (Concept "foo") (Predicate "some place")
-	(cog-execute! (FileNode "file:///tmp/demo.txt")))
+	(cog-execute! (TextFileNode "file:///tmp/demo.txt")))
 
 ; A better, all-Atomese version of the above. Note that the SetValueLink
-; will execute the FileNode, grab whatever it gets from that exec,
+; will execute the TextFileNode, grab whatever it gets from that exec,
 ; and then places it at the indicated location.
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
@@ -70,3 +70,5 @@ txt-stream
 (cog-execute! (LgParseBonds txt-stream-gen (Number 1) (LgDict "any")))
 (cog-execute! (LgParseBonds txt-stream-gen (Number 1) (LgDict "any")))
 (cog-execute! (LgParseBonds txt-stream-gen (Number 1) (LgDict "any")))
+
+; The End! That's All, Folks!
