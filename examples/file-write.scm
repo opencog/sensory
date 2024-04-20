@@ -104,4 +104,26 @@
 
 ; Verify that a second copy was written: `cat /tmp/foobar.txt`
 
+; --------------------------------------------------------
+; Demo: Combine the reader and the writer to read, perform some
+; processing, and then write the processed data out.
+
+(cog-execute!
+	(SetValue
+		(Concept "source") (Predicate "key")
+		(Filter
+			(Rule
+				(TypedVariable (Variable "$x") (Type 'ItemNode))
+				(Variable "$x")
+				;(LinkSignature
+				;	(Type 'LinkValue)
+(List
+					(Variable "$x")
+					(Item "yo the first\n")
+					(Variable "$x")
+					(Item "yo the second\n")
+					(Item "====\n")))
+			(TextFileNode "file:///tmp/demo.txt"))))
+
+; --------------------------------------------------------
 ; The End! That's All, Folks!

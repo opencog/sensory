@@ -158,6 +158,17 @@ void TextFileStream::prt_value(const ValuePtr& content)
 		return;
 	}
 
+	// Backwards-compat: AllowListLink and SetLink (only!?)
+	// Why restrict? I dunno. Seems like the right thing to do.
+	Type tc = content->get_type();
+	if (LIST_LINK == tc or SET_LINK == tc)
+	{
+		const HandleSeq& oset = HandleCast(content)->getOutgoingSet();
+		for (const Handle& h : oset)
+			prt_value(h);
+		return;
+	}
+
 	throw RuntimeException(TRACE_INFO,
 		"Expecting strings, got %s\n", content->to_string().c_str());
 }
