@@ -14,19 +14,21 @@
 (define txt-stream
 	(cog-execute! (TextFileNode "file:///tmp/foobar.txt")))
 
-; Perform `ls -la /tmp/foo*` and you should zee a file of zero length.
+; Perform `ls -la /tmp/foo*` and you should see a file of zero length.
 
 ; A WriteLink consists of two parts: where to write, and what
 ; to write. Since the write cursor is a Value, not an Atom, we
 ; cannot specifiy it directly. Thus, we place it at an anchor
-; point.
+; point. (Neither the name "file anchor", nor the key "output place"
+; matter. They can be anything, and any atom can be used in their
+; place, including Links.)
 (cog-set-value!
-	(Concept "file anchor") (Predicate "some key") txt-stream)
+	(Concept "file anchor") (Predicate "output place") txt-stream)
 
 ; Create a WriteLink
 (define writer
 	(WriteLink
-		(ValueOf (Concept "file anchor") (Predicate "some key"))
+		(ValueOf (Concept "file anchor") (Predicate "output place"))
 		(Concept "stuff to write to the file\n")))
 
 ; Creating above does not write anything to the file.
@@ -58,7 +60,7 @@
 ; Redefine the writer.
 (define writer
 	(WriteLink
-		(ValueOf (Concept "file anchor") (Predicate "some key"))
+		(ValueOf (Concept "file anchor") (Predicate "output place"))
 		(ValueOf (Concept "source") (Predicate "key"))))
 
 ; Write it out.
@@ -109,6 +111,7 @@
 ; Demo: Combine the reader and the writer to read, perform some
 ; processing, and then write the processed data out.
 
+; XXX This won't work.
 (cog-execute!
 	(SetValue
 		(Concept "source") (Predicate "key")
@@ -128,39 +131,17 @@
 
 ; --------------------------------------------------------
 
-; For this demo, we will be reading the same demo file several times.
-; For each part of the demo, we want to start at the begining. Make
-; this easy be defining a rewind function, now.
-(define make-new-input-iterator
+; Create a new file iterator for reading the demo text file.
+(cog-execute!
 	(SetValue
 		(Concept "source") (Predicate "raw file input key")
 		(TextFileNode "file:///tmp/demo.txt")))
 
-; Create a new file iterator for reading the demo text file.
-(cog-execute! make-new-input-iterator)
-
-; The ValueOf Atom is a kind of promise about the future: when
-; it is executed, it will return the Value, whatever it is, at
-; that time (at the time when the executiion is done).
-(define data-promise
-	(ValueOf (Concept "source") (Predicate "raw file input key")))
-
-; Verify that the file contents are being read as expected.
-; i.e. that the promise is being kept: each new execution returns
-; one line of text from the input file.
-(cog-execute! data-promise)
-
-; Repeat until end-of-file
-(cog-execute! data-promise)
-(cog-execute! data-promise)
-(cog-execute! data-promise)
-(cog-execute! data-promise)
-(cog-execute! data-promise)
-(cog-execute! data-promise)
-
 ; Define a rule that will take each line of input text, and
 ; process it in some way. In this case, it will just make
-; two copies of each line.
+; two copies of each line. This is the same filter as in the
+; `file-read.scm` demo. Review that demo if the below looks
+; strange.
 (define rule-applier
 	(Filter
 		(Rule
@@ -172,23 +153,15 @@
 				(Variable "$x")
 				(Item "yo the second\n")
 				(Item "====\n")))
-		data-promise))
+		(ValueOf (Concept "source") (Predicate "raw file input key"))))
 
-; Before running the above, reset the input file to the begining,
-; again. We'd left it at end of file in the last part.
-(cog-execute! make-new-input-iterator)
+(define prom
+	(Promise (TypeNode 'FutureStream)  rule-applier))
 
-; Run the rule, once.
-(cog-execute! rule-applier)
+(cog-execute!
+	(SetValue (Concept "source") (Predicate "key")
+		prom))
 
-; Repeat it again, over and over, till the end-of-file.
-(cog-execute! rule-applier)
-(cog-execute! rule-applier)
-(cog-execute! rule-applier)
-(cog-execute! rule-applier)
-(cog-execute! rule-applier)
-(cog-execute! rule-applier)
-
-
+(cog-execute! writer)
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
