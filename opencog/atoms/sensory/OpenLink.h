@@ -37,6 +37,7 @@ namespace opencog
 class OpenLink : public Link
 {
 private:
+	Type _kind;
 	void init(void);
 
 public:
@@ -45,6 +46,8 @@ public:
 
 	OpenLink(const OpenLink&) = delete;
 	OpenLink& operator=(const OpenLink&) = delete;
+
+	Type get_kind(void) { return _kind; }
 
 	// Return a pointer to what was written.
 	virtual ValuePtr execute(AtomSpace*, bool);

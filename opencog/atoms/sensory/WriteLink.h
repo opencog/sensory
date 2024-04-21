@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/flow/WriteLink.h
+ * opencog/atoms/sensory/WriteLink.h
  *
  * Copyright (C) 2018 Linas Vepstas
  * All Rights Reserved

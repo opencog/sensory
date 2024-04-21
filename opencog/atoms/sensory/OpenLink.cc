@@ -21,6 +21,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <opencog/atoms/core/TypeNode.h>
 #include "OpenLink.h"
 #include "OutputStream.h"
 
@@ -50,29 +51,29 @@ void OpenLink::init(void)
 		throw SyntaxException(TRACE_INFO,
 			"Expecting exactly two arguments!");
 
-	if (not _outgoing[0]->is_executable())
+	if (TYPE_NODE != _outgoing[0]->get_type())
 		throw SyntaxException(TRACE_INFO,
-			"Expecting the first argument to be executable!");
+			"Expecting the first argument to be a type!");
+
+	_kind = TypeNodeCast(_outgoing[0])->get_kind();
+
+	// TODO: perhaps second argument is an executable link that
+	// returns a SensoryNode. So fix me later, someday.
+	if (not _outgoing[1]->is_type(SENSORY_NODE))
+		throw SyntaxException(TRACE_INFO,
+			"Expecting the second argument to be a SensoryNode!");
 }
 
 // ---------------------------------------------------------------
 
-/// When executed, obtain the steam to write to from the first
-/// elt in outgoing set, and the data to write from the second.
+/// When executed, create an iterator stream for the given URL.
 ValuePtr OpenLink::execute(AtomSpace* as, bool silent)
 {
-	ValuePtr pap = _outgoing[0]->execute(as, silent);
-	if (nullptr == pap)
-		throw RuntimeException(TRACE_INFO,
-			"Expecting an OutputStream, but have nothing from %s",
-			_outgoing[0]->to_string().c_str());
-
-	OutputStreamPtr ost(OutputStreamCast(pap));
+	OutputStreamPtr ost;
 	if (nullptr == ost)
 		throw RuntimeException(TRACE_INFO,
 			"Expecting an OutputStream, got %s", pap->to_string().c_str());
-
-	return ost->write_out(as, silent, _outgoing[1]);
+	return ost;
 }
 
 DEFINE_LINK_FACTORY(OpenLink, OPEN_LINK)

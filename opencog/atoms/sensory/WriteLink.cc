@@ -1,5 +1,5 @@
 /*
- * WriteLink.cc
+ * opencog/atoms/sensory/WriteLink.cc
  *
  * Copyright (C) 2022 Linas Vepstas
  *
@@ -57,7 +57,7 @@ void WriteLink::init(void)
 
 // ---------------------------------------------------------------
 
-/// When executed, obtain the steam to write to from the first
+/// When executed, obtain the stream to write to, from the first
 /// elt in outgoing set, and the data to write from the second.
 ValuePtr WriteLink::execute(AtomSpace* as, bool silent)
 {
