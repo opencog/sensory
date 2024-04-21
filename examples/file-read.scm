@@ -75,10 +75,17 @@ txt-stream
 		; a line from the text file. More pecisely, and ItemNode
 		; holding that line. The rewrite below is just some
 		; silliness that makes two copies of the input.
+		;
+		; The LinkSignatureLink is a constructor: it creates either
+		; a LinkValue or a Link of the specified type. In this demo,
+		; just using a plain-old List (instead of the LinkSignature)
+		; would have been OK. But if the Variable had been a Value,
+		; then using the LinkSignature would have been required.
 		(Rule
 			(TypedVariable (Variable "$x") (Type 'ItemNode))
 			(Variable "$x")
-			(List
+			(LinkSignature       ; Or use List here and skip next line.
+				(Type 'LinkValue)
 				(Variable "$x")
 				(Item "yo the first\n")
 				(Variable "$x")

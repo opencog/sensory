@@ -51,8 +51,6 @@ TODO List
 * The text file reader should probably throw on end-of-file, instead
   of returning empty content. This would allow intermediate processors
   to have an easier time of it.
-* Use `(LinkSignature (Type 'LinkValue) ...)` instead of `(List ...)`
-  in the filter demo (both read and write demo).
 
 
 Early draft notes

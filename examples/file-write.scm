@@ -131,7 +131,8 @@
 		(Rule
 			(TypedVariable (Variable "$x") (Type 'ItemNode))
 			(Variable "$x")
-			(List
+			(LinkSignature
+				(Type 'LinkValue)
 				(Variable "$x")
 				(Item "yo the first\n")
 				(Variable "$x")
