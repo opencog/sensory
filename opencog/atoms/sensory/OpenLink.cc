@@ -22,6 +22,7 @@
  */
 
 #include <opencog/atoms/core/TypeNode.h>
+#include <opencog/atoms/value/ValueFactory.h>
 #include "OpenLink.h"
 #include "OutputStream.h"
 
@@ -69,10 +70,12 @@ void OpenLink::init(void)
 /// When executed, create an iterator stream for the given URL.
 ValuePtr OpenLink::execute(AtomSpace* as, bool silent)
 {
-	OutputStreamPtr ost;
+	ValuePtr svp = valueserver().create(_kind, _outgoing[1]);
+
+	OutputStreamPtr ost(OutputStreamCast(svp));
 	if (nullptr == ost)
 		throw RuntimeException(TRACE_INFO,
-			"Expecting an OutputStream, got %s", pap->to_string().c_str());
+			"No support for %s", _outgoing[0]->to_string().c_str());
 	return ost;
 }
 
