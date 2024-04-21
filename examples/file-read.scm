@@ -103,7 +103,8 @@ txt-stream
 ; restart at the begining.
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
-		(TextFile "file:///tmp/demo.txt")))
+		(Open (Type 'TextFileStream)
+			(Sensory "file:///tmp/demo.txt"))))
 
 ; Run the rule, once.
 (cog-execute! rule-applier)
@@ -125,14 +126,15 @@ txt-stream
 ; As above: rewind the stream to the begining:
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
-		(TextFile "file:///tmp/demo.txt")))
+		(Open (Type 'TextFileStream)
+			(Sensory "file:///tmp/demo.txt"))))
 
 ; Parse the file contents, one line at a time. The "any" dict generates
 ; random word-pairs. The (Number 1) asks for only one parse per
 ; sentence.
-(cog-execute! (LgParseBonds txt-stream-gen (Number 1) (LgDict "any")))
-(cog-execute! (LgParseBonds txt-stream-gen (Number 1) (LgDict "any")))
-(cog-execute! (LgParseBonds txt-stream-gen (Number 1) (LgDict "any")))
+(cog-execute! (LgParseBonds txt-stream-gen (LgDict "any") (Number 1)))
+(cog-execute! (LgParseBonds txt-stream-gen (LgDict "any") (Number 1)))
+(cog-execute! (LgParseBonds txt-stream-gen (LgDict "any") (Number 1)))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
