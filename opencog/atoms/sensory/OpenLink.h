@@ -51,7 +51,7 @@ public:
 
 	// Return a pointer to what was written.
 	virtual ValuePtr execute(AtomSpace*, bool);
-	virtual bool is_executable(void) { return true; }
+	virtual bool is_executable(void) const { return true; }
 
 	static Handle factory(const Handle&);
 };
