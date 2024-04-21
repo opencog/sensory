@@ -38,10 +38,6 @@ protected:
 	bool _is_open;
 	void init(void);
 
-	virtual void open(const std::string& flags);
-	virtual void close(void);
-	virtual bool connected(void);
-
 public:
 	// Please to NOT use this constructor!
 	TextFileNode(Type, const std::string&&);

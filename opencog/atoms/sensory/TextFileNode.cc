@@ -49,24 +49,6 @@ TextFileNode::TextFileNode(const std::string&& s)
 	init();
 }
 
-void TextFileNode::open(const std::string& opts)
-{
-	printf("yo file open\n");
-	_is_open = true;
-}
-
-void TextFileNode::close(void)
-{
-	printf("yo file close\n");
-	_is_open = false;
-}
-
-bool TextFileNode::connected(void)
-{
-	printf("yo file connect query\n");
-	return _is_open;
-}
-
 // ============================================================
 
 ValuePtr TextFileNode::execute(AtomSpace* as, bool silent)
