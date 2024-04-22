@@ -11,6 +11,7 @@ ADD_LIBRARY (sensory-filedir SHARED
 ADD_DEPENDENCIES(sensory-filedir sensory_atom_types)
 
 TARGET_LINK_LIBRARIES(sensory-filedir
+	sensory
 	sensory-types
 	${ATOMSPACE_LIBRARIES}
 	${COGUTIL_LIBRARY}
