@@ -48,7 +48,7 @@ protected:
 	std::string _uri;
 	mutable FILE* _fh;
 	mutable bool _fresh;
-	void prt_value(const ValuePtr&);
+	virtual void do_write(const std::string&);
 
 public:
 	TextFileStream(const Handle&);
@@ -56,7 +56,6 @@ public:
 	virtual ~TextFileStream();
 
 	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&);
-	virtual bool operator==(const Value&) const;
 };
 
 typedef std::shared_ptr<TextFileStream> TextFileStreamPtr;
