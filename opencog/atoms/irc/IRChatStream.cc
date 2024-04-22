@@ -132,16 +132,17 @@ int IRChatStream::end_of_motd(const char* params, irc_reply_data* ird)
 int IRChatStream::got_privmsg(const char* params, irc_reply_data* ird)
 {
 	fixup_reply(ird);
+#ifdef DEBUG
 	printf(">>> priv motd nick=%s ident=%s host=%s target=%s\n",
 		ird->nick, ird->ident, ird->host, ird->target);
+#endif
 
-	const char * start = params;
+	// Skip over leading colon.
+	const char * start = params + 1;
+
 	bool priv = false;
 	if (0 == _nick.compare (ird->target))
-	{
-		start = params+1;
 		priv = true;
-	}
 
 	// Reply to request for chat client version.
 	// Needed under rare situations?
@@ -157,7 +158,9 @@ int IRChatStream::got_privmsg(const char* params, irc_reply_data* ird)
 		return 0;
 	}
 
-	printf(">>> priv messag=%s\n", start);
+printf(">>> priv messag=%s\n", start);
+	ValuePtr svp(createStringValue(start));
+	push(svp); // concurrent_queue<ValutePtr>::push(svp);
 
 	return 0;
 }
@@ -263,21 +266,23 @@ void IRChatStream::update() const
 {
 	if (nullptr == _conn) { _value.clear(); return; }
 
-#if 0
-#define BUFSZ 4080
-	char buff[BUFSZ];
-	char* rd = fgets(buff, BUFSZ, _fh);
-	if (nullptr == rd)
+	// XXX When is it ever closed ???
+	if (is_closed() and 0 == concurrent_queue<ValuePtr>::size()) return;
+
+	// Read one at a time. (???)
+	// This will hang, untill there's something to read.
+	try
 	{
-		fclose(_fh);
-		_fh = nullptr;
-		_value.clear();
+		ValuePtr val;
+		const_cast<IRChatStream*>(this) -> pop(val);
+		_value.resize(1);
+		_value[0] = val;
 		return;
 	}
+	catch (typename concurrent_queue<ValuePtr>::Canceled& e)
+	{}
 
-	_value.resize(1);
-	_value[0] = createNode(ITEM_NODE, buff);
-#endif
+	// If we are here, the queue closed up. Should never happen...
 }
 
 // ==============================================================

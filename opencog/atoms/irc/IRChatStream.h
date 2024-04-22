@@ -24,6 +24,7 @@
 #define _OPENCOG_I_R_CHAT_STREAM_H
 
 #include <thread>
+#include <opencog/util/concurrent_queue.h>
 #include <opencog/atoms/sensory/OutputStream.h>
 
 class IRC;
@@ -41,7 +42,7 @@ namespace opencog
  * channel. This is experimental.
  */
 class IRChatStream
-	: public OutputStream
+	: public OutputStream, protected concurrent_queue<ValuePtr>
 {
 private:
 	IRC* _conn;
