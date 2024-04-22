@@ -34,9 +34,8 @@ namespace opencog
  */
 
 /**
- * TextFileStreams provide a stream of PhraseNodes read from from
- * a text file and, more generally, from unix socket sources. This
- * is experimental.
+ * TextFileStreams provide a stream of ItemNodes read from a text file,
+ * and, more generally, from unix socket sources. This is experimental.
  */
 class TextFileStream
 	: public OutputStream

@@ -48,6 +48,8 @@ and opens it for reading and writing.
 
 TODO List
 ---------
+* The text API should porbably be changed to use StringValue instead
+  of ItemNode. But this breaks LG parser, for now. FIXME
 * The text file reader should probably throw on end-of-file, instead
   of returning empty content. This would allow intermediate processors
   to have an easier time of it.
