@@ -7,7 +7,6 @@ ADD_LIBRARY (sensory SHARED
 	OpenLink.cc
 	OutputStream.cc
 	SensoryNode.cc
-	TextFileStream.cc
 	WriteLink.cc
 )
 
@@ -28,7 +27,6 @@ INSTALL (FILES
 	OpenLink.h
 	OutputStream.h
 	SensoryNode.h
-	TextFileStream.h
 	WriteLink.h
 	DESTINATION "include/opencog/atoms/sensory"
 )
