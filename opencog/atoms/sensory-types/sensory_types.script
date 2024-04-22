@@ -10,6 +10,9 @@ OUTPUT_STREAM <- LINK_STREAM_VALUE
 TEXT_STREAM <- OUTPUT_STREAM
 TEXT_FILE_STREAM <- TEXT_STREAM
 
+// IRC chatbot API
+I_R_CHAT_STREAM <- TEXT_STREAM
+
 // SensoryNodes hold URL's/URI's to some given I/O device.
 // They do not perform the I/O directly.
 //

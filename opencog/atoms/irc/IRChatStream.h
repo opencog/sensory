@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/TextFileStream.h
+ * opencog/atoms/sensory/IRChatStream.h
  *
  * Copyright (C) 2024 Linas Vepstas
  * All Rights Reserved
@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_TEXT_FILE_STREAM_H
-#define _OPENCOG_TEXT_FILE_STREAM_H
+#ifndef _OPENCOG_I_R_CHAT_STREAM_H
+#define _OPENCOG_I_R_CHAT_STREAM_H
 
 #include <stdio.h>
 #include <opencog/atoms/sensory/OutputStream.h>
@@ -34,14 +34,14 @@ namespace opencog
  */
 
 /**
- * TextFileStreams provide a stream of ItemNodes read from a text file,
- * and, more generally, from unix socket sources. This is experimental.
+ * IRChatStreams provide a stream of ItemNodes read from an IRC chat
+ * channel. This is experimental.
  */
-class TextFileStream
+class IRChatStream
 	: public OutputStream
 {
 protected:
-	TextFileStream(Type t, const std::string&);
+	IRChatStream(Type t, const std::string&);
 	void init(const std::string&);
 	virtual void update() const;
 
@@ -51,24 +51,24 @@ protected:
 	void prt_value(const ValuePtr&);
 
 public:
-	TextFileStream(const Handle&);
-	TextFileStream(const std::string&);
-	virtual ~TextFileStream();
+	IRChatStream(const Handle&);
+	IRChatStream(const std::string&);
+	virtual ~IRChatStream();
 
 	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&);
 	virtual bool operator==(const Value&) const;
 };
 
-typedef std::shared_ptr<TextFileStream> TextFileStreamPtr;
-static inline TextFileStreamPtr TextFileStreamCast(ValuePtr& a)
-	{ return std::dynamic_pointer_cast<TextFileStream>(a); }
+typedef std::shared_ptr<IRChatStream> IRChatStreamPtr;
+static inline IRChatStreamPtr IRChatStreamCast(ValuePtr& a)
+	{ return std::dynamic_pointer_cast<IRChatStream>(a); }
 
 template<typename ... Type>
-static inline std::shared_ptr<TextFileStream> createTextFileStream(Type&&... args) {
-   return std::make_shared<TextFileStream>(std::forward<Type>(args)...);
+static inline std::shared_ptr<IRChatStream> createIRChatStream(Type&&... args) {
+   return std::make_shared<IRChatStream>(std::forward<Type>(args)...);
 }
 
 /** @}*/
 } // namespace opencog
 
-#endif // _OPENCOG_TEXT_FILE_STREAM_H
+#endif // _OPENCOG_I_R_CHAT_STREAM_H
