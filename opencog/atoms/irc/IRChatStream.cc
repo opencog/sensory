@@ -119,11 +119,7 @@ int IRChatStream::end_of_motd(const char* params, irc_reply_data* ird)
 		ird->nick, ird->ident, ird->host, ird->target);
 #endif
 
-	int rc = _conn->join(_channel.c_str());
-	if (rc)
-		throw RuntimeException(TRACE_INFO,
-			"Unable to join channel (%d) to URL \"%s\"\n", rc, _uri.c_str());
-
+	_conn->join(_channel.c_str());
 	return 0;
 }
 
@@ -132,7 +128,7 @@ int IRChatStream::end_of_motd(const char* params, irc_reply_data* ird)
 int IRChatStream::got_privmsg(const char* params, irc_reply_data* ird)
 {
 	fixup_reply(ird);
-#ifdef DEBUG
+#if 1 //def DEBUG
 	printf(">>> priv motd nick=%s ident=%s host=%s target=%s\n",
 		ird->nick, ird->ident, ird->host, ird->target);
 #endif
@@ -180,9 +176,7 @@ int IRChatStream::got_kick(const char* params, irc_reply_data* ird)
 // XXX Needs major redesign. Works for now.
 void IRChatStream::looper(void)
 {
-printf("duuud enter looper\n");
 	// Defaults
-	const char* nick = "sensor";
 	const char* user = "botski";
 	const char* name = "Atomese Sensory Stream";
 	const char* pass = "";
@@ -192,9 +186,10 @@ printf("duuud enter looper\n");
 	while (true)
 	{
 		printf("Joining network=%s port=%d nick=%s user=%s\n",
-			_host.c_str(), _port, nick, user);
+			_host.c_str(), _port, _nick.c_str(), user);
 
-		int rc = _conn->start(_host.c_str(), _port, nick, user, name, pass);
+		int rc = _conn->start(_host.c_str(), _port, _nick.c_str(),
+		                      user, name, pass);
 		if (rc)
 			throw RuntimeException(TRACE_INFO,
 				"Unable to connect (%d) to URL \"%s\"\n", rc, _uri.c_str());
@@ -207,12 +202,12 @@ printf("duuud enter looper\n");
 }
 
 /// IRC URL format is described here:
-/// ???
+/// RFC ???
 /// The URL format is described in
 /// https://en.wikipedia.org/wiki/IRC
 /// and we adhere to that.
 ///
-/// URI formats are:
+/// Official URI formats are:
 /// irc://<host>[:<port>]/[<channel>[?<channel_keyword>]]
 /// ircs://<host>[:<port>]/[<channel>[?<channel_keyword>]]
 /// irc6://<host>[:<port>]/[<channel>[?<channel_keyword>]]
@@ -237,7 +232,8 @@ void IRChatStream::init(const std::string& url)
 	size_t col = url.find(':', base);
 	if (std::string::npos == sls)
 		throw RuntimeException(TRACE_INFO,
-			"Invalid IRC URL \"%s\"\n", url.c_str());
+			"Invalid IRC URL \"%s\" expecting irc://host/channel/nick\n",
+			url.c_str());
 
 	_port = 6667;
 	if (std::string::npos == col or sls < col)
@@ -248,7 +244,16 @@ void IRChatStream::init(const std::string& url)
 		_host = url.substr(base, col-base);
 		_port = atoi(url.substr(col+1, sls-col-1).c_str());
 	}
-	_channel = url.substr(sls+1);
+
+	size_t sln = url.find('/', sls+1);
+	if (std::string::npos == sln)
+		throw RuntimeException(TRACE_INFO,
+			"Invalid IRC URL \"%s\" expecting irc://host/channel/nick\n",
+			url.c_str());
+	_channel = url.substr(sls+1, sln-sls-1);
+	_nick = url.substr(sln+1);
+	if ('#' != _channel[0])
+		_channel = "#" + _channel;
 
 	_conn = new IRC;
 	_conn->context = this;

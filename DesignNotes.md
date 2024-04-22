@@ -53,6 +53,8 @@ TODO List
 * The text file reader should probably throw on end-of-file, instead
   of returning empty content. This would allow intermediate processors
   to have an easier time of it.
+* The concurrent queue should be changed to finite-size buffer and
+  discard old data.
 
 
 Early draft notes
