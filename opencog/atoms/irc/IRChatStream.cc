@@ -267,41 +267,21 @@ int IRChatStream::got_misc(const char* params, irc_reply_data* ird)
 int IRChatStream::got_privmsg(const char* params, irc_reply_data* ird)
 {
 	fixup_reply(ird);
-#ifdef DEBUG
-	printf(">>> priv msg nick=%s ident=%s host=%s target=%s\n",
-		ird->nick, ird->ident, ird->host, ird->target);
-#endif
+printf(">>> IRC msg from %s to %s =%s\n", ird->nick, ird->target, params);
 
 	// Skip over leading colon.
 	const char * start = params + 1;
 
-#ifdef UNUSED
-	// if ird->target is my nick, then the message is private to me.
-	bool priv = false;
-	if (0 == _nick.compare (ird->target))
-		priv = true;
-#endif
-
-#ifdef IS_THIS_JUNK_XXX
-	// Reply to request for chat client version.
-	// Needed under rare situations?
-	if ((0x1 == start[0]) && !strncmp (&start[1], "VERSION", 7))
-	{
-		const char* version =
-			"Atomese Sensory Stream (https://github.com/opencog/sensory)";
-
-		char * msg_target = ird->target;
-		if (priv) msg_target = ird->nick;
-
-		_conn->privmsg (msg_target, version);
-		return 0;
-	}
-#endif
-
-printf(">>> message from %s to %s =%s\n", ird->nick, ird->target, start);
-	ValuePtr svp(createStringValue(start));
+	// ird->nick is who the message is from.
+	// ird->target is who the message is to. It typically has one
+	// of two values: the channel name, and so a public message, or
+	// my nick, in which case its a private message to me.
+	std::vector<std::string> msg;
+	msg.push_back(ird->nick);
+	msg.push_back(ird->target);
+	msg.push_back(start);
+	ValuePtr svp(createStringValue(msg));
 	push(svp); // concurrent_queue<ValutePtr>::push(svp);
-
 	return 0;
 }
 
