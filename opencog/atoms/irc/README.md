@@ -121,9 +121,22 @@ It also overlaps with the other way of doing directives:
 		(ActionNode "join")
 		(ItemNode "#opencog"))
 ```
-
 OK so here we have a distinction: `Open` is a kind of movement,
 taking us to a new place, opening a new stream. `Write` keeps us
 on the current stream, simply advancing the time-like cursor/iterator
 on that stream.
 
+Still: it's ambiguous. We can use `Open` to create a new stream
+dedicated to a specific channel. Or we can use `Write` to alter
+the state/mode of the current stream. Writes then make the stream
+behave in a modal way, which is perhaps confusing to the agent?
+
+IRC GUI's do hade/abstract statefulness: there is a server tab, and
+there are zero or more channel tabs. We'll do the same: one stream per
+conventional IRC GUI tab.
+
+Hang on. Under the covers, we have to have just one connection server.
+... how does this work?
+
+
+---------------------
