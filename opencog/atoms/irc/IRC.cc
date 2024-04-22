@@ -137,7 +137,9 @@ int IRC::start(const char* server, int port, const char* nick,
 		close(irc_socket);
 		return 1;
 	}
-	// printf("SO_KEEPALIVE turned ON\n");
+	#ifdef __IRC_DEBUG__
+	printf("SO_KEEPALIVE turned ON\n");
+	#endif
 
 	/* Verify that it worked. */
 	rc=getsockopt(irc_socket, SOL_SOCKET, SO_KEEPALIVE, &optval, &optlen);
@@ -147,7 +149,9 @@ int IRC::start(const char* server, int port, const char* nick,
 		close(irc_socket);
 		return 1;
 	}
-	// printf("SO_KEEPALIVE is %s\n", (optval ? "ON" : "OFF"));
+	#ifdef __IRC_DEBUG__
+	printf("SO_KEEPALIVE is %s\n", (optval ? "ON" : "OFF"));
+	#endif
 
 	/* Ping every .. I dunno -- 5 minutes? */
 	optval = 300;
@@ -158,7 +162,9 @@ int IRC::start(const char* server, int port, const char* nick,
 		close(irc_socket);
 		return 1;
 	}
-	// printf("tcp_keepalive_time set to %d seconds\n", optval);
+	#ifdef __IRC_DEBUG__
+	printf("tcp_keepalive_time set to %d seconds\n", optval);
+	#endif
 
 	/* Ping every 10 seconds (for 9 tries == 90 seconds total) */
 	optval = 10;
@@ -169,7 +175,9 @@ int IRC::start(const char* server, int port, const char* nick,
 		close(irc_socket);
 		return 1;
 	}
-	// printf("tcp_keepalive_intvl set to %d seconds\n", optval);
+	#ifdef __IRC_DEBUG__
+	printf("tcp_keepalive_intvl set to %d seconds\n", optval);
+	#endif
 
 	resolv=gethostbyname(server);
 	if (!resolv)
@@ -329,7 +337,9 @@ void IRC::parse_irc_reply(char* data)
 
 	hostd_tmp.target=0;
 
-	// printf("%s\n", data);
+	#ifdef __IRC_DEBUG__
+	printf("%s\n", data);
+	#endif
 
 	if (data[0]==':')
 	{

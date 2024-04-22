@@ -112,10 +112,12 @@ static void fixup_reply(irc_reply_data* ird)
 // Do not attempt to join any channels, until MOTD has arrived.
 int IRChatStream::end_of_motd(const char* params, irc_reply_data* ird)
 {
+#if DEBUG
 	fixup_reply(ird);
 	printf("chatbot got params=%s\n", params);
 	printf("chatbot got motd nick=%s ident=%s host=%s target=%s\n",
 		ird->nick, ird->ident, ird->host, ird->target);
+#endif
 
 	int rc = _conn->join(_channel.c_str());
 	if (rc)
