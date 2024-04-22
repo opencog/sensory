@@ -6,8 +6,8 @@ might work with the [AtomSpace](https://github.com/opencog/atomspace).
 TL;DR: Implementation for low-level AtomSpace sensory I/O Atoms.
 Provides a basic file I/O stream, and an IRC chat stream.
 
-Overview
---------
+Philosophical Overview
+----------------------
 The issue for any agent is being able to perceive the environment that
 it is in, and then being able to interact with this environment.
 
@@ -55,6 +55,13 @@ Or is this like eating excrement? What part of the "external world"
 a world like this? What's the fundamental nature of action and
 perception?
 
+When an agent "looks at" a file, or "looks at" the list of users on
+a chat channel, is this an action, or a perception? Both, of course:
+the agent must make a conscious decision to look (take an action) and
+then, upon taking that action, sense the results (get the text in the
+file or the chat text). After this, it must "perceive" the results:
+figure out what they "mean".
+
 These are the questions that seem to matter, for agent design. The code
 in this git repo is some extremely low-level, crude Atomese interfaces
 that try to expose these issues up into the AtomSpace.
@@ -78,7 +85,7 @@ Provides:
 
 See the [examples](examples) directory.
 
-### Overview
+### Design Overview
 The Atomese agent framework needs to have some way of interacting
 with it's environment. Obviously, reading, writing, seeing, hearing.
 More narrowly: the ability to read a text file in the local file system.
@@ -104,6 +111,12 @@ including the various PDF and LyX files located at:
 See also:
 * [Atomese Agents Project](https://github.com/opencog/agents). This is
   in the pre-prototype phase, but is the current focus of attention.
+
+### Design specifics
+Details of the design in this git repo are explored in several places:
+
+* [DesignNotes](DesignNotes.md) -- Design of WriteLink
+* [IRChatStream](opencog/atoms/irc/README.md) -- IRC chat design.
 
 ### Building
 This git repo follows the same directory structure and coding
