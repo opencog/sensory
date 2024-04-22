@@ -255,3 +255,10 @@ bool TextFileStream::operator==(const Value& other) const
 // Adds factory when library is loaded.
 DEFINE_VALUE_FACTORY(TEXT_FILE_STREAM, createTextFileStream, std::string)
 DEFINE_VALUE_FACTORY(TEXT_FILE_STREAM, createTextFileStream, Handle)
+
+// ====================================================================
+
+void opencog_sensory_filedir_init(void)
+{
+   // Force shared lib ctors to run
+};
