@@ -332,4 +332,18 @@ Well, but that's easy: `ValueOf` behaves exctly like a promise:
 and now, `p` can be used as a streaming source.
 
 
+Constructors
+------------
+The current `TextFileNode` class is almost useless. Surely we can do
+better. How about this, instead:
+```
+	(OpenLink
+		(TypeNode 'TextFileStream)
+		(SensoryNode "file:///file/system/path"))
+```
+
+This would return an instance of the given stream. It's a generic stream
+constructor. Hopefully, the current ValueFactory can handle this.
+
+
 --------------------------------

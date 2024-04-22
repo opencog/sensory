@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/flow/WriteLink.h
+ * opencog/atoms/sensory/WriteLink.h
  *
  * Copyright (C) 2018 Linas Vepstas
  * All Rights Reserved
@@ -48,7 +48,7 @@ public:
 
 	// Return a pointer to what was written.
 	virtual ValuePtr execute(AtomSpace*, bool);
-	virtual bool is_executable(void) { return true; }
+	virtual bool is_executable(void) const { return true; }
 
 	static Handle factory(const Handle&);
 };

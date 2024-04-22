@@ -14,7 +14,10 @@
 ; in the filesystem. Executing the FileNode will return a text
 ; stream value.
 (define txt-stream
-	(cog-execute! (TextFileNode "file:///tmp/demo.txt")))
+	(cog-execute!
+		(Open
+			(Type 'TextFileStream)
+			(SensoryNode "file:///tmp/demo.txt"))))
 
 ; Repeated references to the stream will return single lines from
 ; the file.
@@ -24,7 +27,7 @@ txt-stream
 txt-stream
 txt-stream
 
-; The above reads until end-of-file.
+; Eventually, this will return an empty stream. This denotes end-of-file.
 
 ; --------------------------------------------------------
 ; Demo: Perform indirect streaming. The file-stream will be placed
@@ -32,14 +35,17 @@ txt-stream
 ;
 ; Open the file, get the stream, and place it somewhere.
 (cog-set-value! (Concept "foo") (Predicate "some place")
-	(cog-execute! (TextFileNode "file:///tmp/demo.txt")))
+	(cog-execute!
+		(Open (Type 'TextFileStream)
+			(Sensory "file:///tmp/demo.txt"))))
 
 ; A better, all-Atomese version of the above. Note that the SetValueLink
 ; will execute the TextFileNode, grab whatever it gets from that exec,
 ; and then places it at the indicated location.
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
-		(TextFile "file:///tmp/demo.txt")))
+		(Open (Type 'TextFileStream)
+			(Sensory "file:///tmp/demo.txt"))))
 
 ; Define an executable node that will feed the stream of text.
 ; The ValueOf Atom is a kind of promise about the future: when
@@ -97,7 +103,8 @@ txt-stream
 ; restart at the begining.
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
-		(TextFile "file:///tmp/demo.txt")))
+		(Open (Type 'TextFileStream)
+			(Sensory "file:///tmp/demo.txt"))))
 
 ; Run the rule, once.
 (cog-execute! rule-applier)
@@ -119,14 +126,15 @@ txt-stream
 ; As above: rewind the stream to the begining:
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
-		(TextFile "file:///tmp/demo.txt")))
+		(Open (Type 'TextFileStream)
+			(Sensory "file:///tmp/demo.txt"))))
 
 ; Parse the file contents, one line at a time. The "any" dict generates
 ; random word-pairs. The (Number 1) asks for only one parse per
 ; sentence.
-(cog-execute! (LgParseBonds txt-stream-gen (Number 1) (LgDict "any")))
-(cog-execute! (LgParseBonds txt-stream-gen (Number 1) (LgDict "any")))
-(cog-execute! (LgParseBonds txt-stream-gen (Number 1) (LgDict "any")))
+(cog-execute! (LgParseBonds txt-stream-gen (LgDict "any") (Number 1)))
+(cog-execute! (LgParseBonds txt-stream-gen (LgDict "any") (Number 1)))
+(cog-execute! (LgParseBonds txt-stream-gen (LgDict "any") (Number 1)))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!

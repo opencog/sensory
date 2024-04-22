@@ -52,6 +52,7 @@ protected:
 	void prt_value(const ValuePtr&);
 
 public:
+	TextFileStream(const Handle&);
 	TextFileStream(const std::string&);
 	virtual ~TextFileStream();
 

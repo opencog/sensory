@@ -10,18 +10,17 @@ OUTPUT_STREAM <- LINK_STREAM_VALUE
 TEXT_STREAM <- OUTPUT_STREAM
 TEXT_FILE_STREAM <- TEXT_STREAM
 
-// Calling execute() writes to output device.
-// Should these inherit from FunctionLink instead?
-// The only benefit of FunctionLink is automated beta reduction of
-// expressions w/ variables. This can also be acheived by using Lambda,
-// and so there seems to be no benefit of using FunctionLink.
-WRITE_LINK <- EXECUTABLE_LINK
-
+// SensoryNodes hold URL's/URI's to some given I/O device.
+// They do not perform the I/O directly.
+//
 // What's the right base type for all sensory nodes?
 // LexicalNode, cause there's a collection of them.
 // TagNode cause base AtomSpace already calls them "data streams".
 // BondNode cause they are connector-like?
 SENSORY_NODE <- TAG_NODE
 
-// Reserve the name FILE_NODE for future non-text files!?
-TEXT_FILE_NODE <- SENSORY_NODE
+// Calling execute() creates a new stream of the given type.
+OPEN_LINK <- EXECUTABLE_LINK
+
+// Calling execute() writes to output device.
+WRITE_LINK <- EXECUTABLE_LINK

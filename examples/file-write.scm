@@ -12,7 +12,8 @@
 ; Position cursor at the end of the file (for appending).
 ; The returned stream should be thought of as a cursor into the file.
 (define txt-stream
-	(cog-execute! (TextFileNode "file:///tmp/foobar.txt")))
+	(cog-execute!
+		(Open (Type 'TextFileStream) (Sensory "file:///tmp/foobar.txt"))))
 
 ; Perform `ls -la /tmp/foo*` and you should see a file of zero length.
 
@@ -81,7 +82,7 @@
 (cog-execute!
 	(SetValue
 		(Concept "source") (Predicate "key")
-		(TextFileNode "file:///tmp/demo.txt")))
+		(Open (Type 'TextFileStream) (Sensory "file:///tmp/demo.txt"))))
 
 ; Running the writer will enter an infinite loop, pulling one line
 ; at a time from the input file, and writing it to the output file.
@@ -100,7 +101,7 @@
 (cog-execute!
 	(SetValue
 		(Concept "source") (Predicate "key")
-		(TextFileNode "file:///tmp/demo.txt")))
+		(Open (Type 'TextFileStream) (Sensory "file:///tmp/demo.txt"))))
 
 ; And now write again:
 (cog-execute! writer)
@@ -115,7 +116,7 @@
 (cog-execute!
 	(SetValue
 		(Concept "source") (Predicate "raw file input key")
-		(TextFileNode "file:///tmp/demo.txt")))
+		(Open (Type 'TextFileStream) (Sensory "file:///tmp/demo.txt"))))
 
 ; Define a rule that will take each line of input text, and
 ; process it in some way. In this case, it will just make
@@ -168,7 +169,7 @@
 (cog-execute!
 	(SetValue
 		(Concept "source") (Predicate "raw file input key")
-		(TextFileNode "file:///tmp/demo.txt")))
+		(Open (Type 'TextFileStream) (Sensory "file:///tmp/demo.txt"))))
 
 ; Now, the writer will run again.
 (cog-execute! writer)
