@@ -1,7 +1,7 @@
 
 Internet Relay Chat
 -------------------
-IRC chat API demo.
+IRC chat API. Can connect to IRC, read, and write. Works but still
+a rough prototype.
 
-todo:
-full functional and a demo
+See the [irc-chat.scm](../../../examples/irc-chat.scm) demo.

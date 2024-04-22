@@ -29,6 +29,8 @@ txt-stream
       (ValueOf (Anchor "IRC Bot") (Predicate "tester"))
       (Concept "I just said something on IRC")))
 
+; Write to the chat channel.
+(cog-execute! writer)
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
