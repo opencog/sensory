@@ -63,12 +63,133 @@ IRChatStream::IRChatStream(const Handle& senso)
 
 IRChatStream::~IRChatStream()
 {
-	// XXX TODO kill the looper thread, too
-	if (_conn)
+	if (nullptr == _conn) return;
+	_cancel = true;
+
+	// We can send a quit, but then we never actually
+	// wait for the quit reply. So .. whatever.
+	_conn->quit("Adios");
+	_conn->disconnect();
+
+printf("duude join looper thread\n");
+	_loop->join();
+printf("duude done join looper thread\n");
+	delete _loop;
+
+}
+
+// ==================================================================
+/// IRC URL format is described here:
+/// RFC ???
+/// The URL format is described in
+/// https://en.wikipedia.org/wiki/IRC
+/// and we adhere to that.
+///
+/// Official URI formats are:
+/// irc://<host>[:<port>]/[<channel>[?<channel_keyword>]]
+/// ircs://<host>[:<port>]/[<channel>[?<channel_keyword>]]
+/// irc6://<host>[:<port>]/[<channel>[?<channel_keyword>]]
+///
+/// What I need:
+/// irc://<host>[:<port>]/<channel>/<nick>
+///
+void IRChatStream::init(const std::string& url)
+{
+	_conn = nullptr;
+	_cancel = false;
+
+	if (0 != url.compare(0, 6, "irc://"))
+		throw RuntimeException(TRACE_INFO,
+			"Unsupported URL \"%s\"\n", url.c_str());
+
+	// Make a copy, for debuggingg purposes.
+	_uri = url;
+
+	// Ignore the first 6 chars "irc://"
+	size_t base = 6;
+	size_t sls = url.find('/', base);
+	size_t col = url.find(':', base);
+	if (std::string::npos == sls)
+		throw RuntimeException(TRACE_INFO,
+			"Invalid IRC URL \"%s\" expecting irc://host/channel/nick\n",
+			url.c_str());
+
+	_port = 6667;
+	if (std::string::npos == col or sls < col)
+		_host = url.substr(base, sls-base);
+	else
 	{
-		_conn->quit("Adios");
+		// const char *ho = url.substr(base, col-base).c_str();
+		_host = url.substr(base, col-base);
+		_port = atoi(url.substr(col+1, sls-col-1).c_str());
+	}
+
+	size_t sln = url.find('/', sls+1);
+	if (std::string::npos == sln)
+		throw RuntimeException(TRACE_INFO,
+			"Invalid IRC URL \"%s\" expecting irc://host/channel/nick\n",
+			url.c_str());
+	_channel = url.substr(sls+1, sln-sls-1);
+	_nick = url.substr(sln+1);
+
+	// Channels must always start with hash mark.
+	if ('#' != _channel[0]) _channel = "#" + _channel;
+
+	_conn = new IRC;
+	_conn->context = this;
+
+	// Hooks run in order. Privmsg will be most common.
+	_conn->hook_irc_command("PRIVMSG", &xgot_privmsg);
+	_conn->hook_irc_command("376", &xend_of_motd);
+	_conn->hook_irc_command("KICK", &xgot_kick);
+	_conn->hook_irc_command("403", &xgot_misc);
+
+	// Other messages:
+	// NOTICE - server notices
+	// 001-005 - server info
+	// 250-265 - channel info
+	// 375 - start of motd
+	// 372 - motd
+	// 353 - channel members
+	// 366 - end of list of channel members
+	// 328 - channel title?
+	// 403 - channnel not found
+	// MODE - read-write modes
+
+	// Run I/O loop in it's own thread.
+	_loop = new std::thread(&IRChatStream::looper, this);
+}
+
+// ==================================================================
+
+// Infinite loop.
+// XXX Needs major redesign. Works for now.
+void IRChatStream::looper(void)
+{
+	// Defaults
+	const char* user = "botski";
+	const char* name = "Atomese Sensory Stream";
+	const char* pass = "";
+
+	// Loop forever. When the IRC network burps and closes our
+	// connection, just log in again.
+	while (true)
+	{
+		printf("Joining network=%s port=%d nick=%s user=%s\n",
+			_host.c_str(), _port, _nick.c_str(), user);
+
+		int rc = _conn->start(_host.c_str(), _port, _nick.c_str(),
+		                      user, name, pass);
+		if (rc)
+			throw RuntimeException(TRACE_INFO,
+				"Unable to connect (%d) to URL \"%s\"\n", rc, _uri.c_str());
+
+		_conn->message_loop();
+		if (_cancel) return;
+
+		fprintf(stderr, "IRChatStream Error: Remote side closed socket\n");
 		_conn->disconnect();
-		delete _conn;
+		sleep(20);
 	}
 }
 
@@ -192,117 +313,6 @@ int IRChatStream::got_kick(const char* params, irc_reply_data* ird)
 	printf("nick=%s ident=%s host=%s target=%s\n",
 	       ird->nick, ird->ident, ird->host, ird->target);
 	return 0;
-}
-
-// ==================================================================
-
-// Infinite loop.
-// XXX Needs major redesign. Works for now.
-void IRChatStream::looper(void)
-{
-	// Defaults
-	const char* user = "botski";
-	const char* name = "Atomese Sensory Stream";
-	const char* pass = "";
-
-	// Loop forever. When the IRC network burps and closes our
-	// connection, just log in again.
-	while (true)
-	{
-		printf("Joining network=%s port=%d nick=%s user=%s\n",
-			_host.c_str(), _port, _nick.c_str(), user);
-
-		int rc = _conn->start(_host.c_str(), _port, _nick.c_str(),
-		                      user, name, pass);
-		if (rc)
-			throw RuntimeException(TRACE_INFO,
-				"Unable to connect (%d) to URL \"%s\"\n", rc, _uri.c_str());
-
-		_conn->message_loop();
-		fprintf(stderr, "Fatal Error: Remote side closed socket\n");
-		_conn->disconnect();
-		sleep(20);
-	}
-}
-
-/// IRC URL format is described here:
-/// RFC ???
-/// The URL format is described in
-/// https://en.wikipedia.org/wiki/IRC
-/// and we adhere to that.
-///
-/// Official URI formats are:
-/// irc://<host>[:<port>]/[<channel>[?<channel_keyword>]]
-/// ircs://<host>[:<port>]/[<channel>[?<channel_keyword>]]
-/// irc6://<host>[:<port>]/[<channel>[?<channel_keyword>]]
-///
-/// What I need:
-/// irc://<host>[:<port>]/<channel>/<nick>
-///
-void IRChatStream::init(const std::string& url)
-{
-	_conn = nullptr;
-
-	if (0 != url.compare(0, 6, "irc://"))
-		throw RuntimeException(TRACE_INFO,
-			"Unsupported URL \"%s\"\n", url.c_str());
-
-	// Make a copy, for debuggingg purposes.
-	_uri = url;
-
-	// Ignore the first 6 chars "irc://"
-	size_t base = 6;
-	size_t sls = url.find('/', base);
-	size_t col = url.find(':', base);
-	if (std::string::npos == sls)
-		throw RuntimeException(TRACE_INFO,
-			"Invalid IRC URL \"%s\" expecting irc://host/channel/nick\n",
-			url.c_str());
-
-	_port = 6667;
-	if (std::string::npos == col or sls < col)
-		_host = url.substr(base, sls-base);
-	else
-	{
-		// const char *ho = url.substr(base, col-base).c_str();
-		_host = url.substr(base, col-base);
-		_port = atoi(url.substr(col+1, sls-col-1).c_str());
-	}
-
-	size_t sln = url.find('/', sls+1);
-	if (std::string::npos == sln)
-		throw RuntimeException(TRACE_INFO,
-			"Invalid IRC URL \"%s\" expecting irc://host/channel/nick\n",
-			url.c_str());
-	_channel = url.substr(sls+1, sln-sls-1);
-	_nick = url.substr(sln+1);
-
-	// Channels must always start with hash mark.
-	if ('#' != _channel[0]) _channel = "#" + _channel;
-
-	_conn = new IRC;
-	_conn->context = this;
-
-	// Hooks run in order. Privmsg will be most common.
-	_conn->hook_irc_command("PRIVMSG", &xgot_privmsg);
-	_conn->hook_irc_command("376", &xend_of_motd);
-	_conn->hook_irc_command("KICK", &xgot_kick);
-	_conn->hook_irc_command("403", &xgot_misc);
-
-	// Other messages:
-	// NOTICE - server notices
-	// 001-005 - server info
-	// 250-265 - channel info
-	// 375 - start of motd
-	// 372 - motd
-	// 353 - channel members
-	// 366 - end of list of channel members
-	// 328 - channel title?
-	// 403 - channnel not found
-	// MODE - read-write modes
-
-	// Run I/O loop in it's own thread.
-	_loop = new std::thread(&IRChatStream::looper, this);
 }
 
 // ==============================================================
