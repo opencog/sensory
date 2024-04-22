@@ -23,6 +23,7 @@
 #ifndef _OPENCOG_I_R_CHAT_STREAM_H
 #define _OPENCOG_I_R_CHAT_STREAM_H
 
+#include <thread>
 #include <opencog/atoms/sensory/OutputStream.h>
 
 class IRC;
@@ -42,6 +43,8 @@ class IRChatStream
 {
 private:
 	IRC* _conn;
+	std::thread* _loop;
+	void looper(void);
 
 protected:
 	IRChatStream(Type t, const std::string&);

@@ -63,7 +63,40 @@ IRChatStream::IRChatStream(const Handle& senso)
 
 IRChatStream::~IRChatStream()
 {
-	if (_conn) delete _conn;
+	if (_conn)
+	{
+		_conn->disconnect();
+		delete _conn;
+	}
+}
+
+/* printf can puke if these fields are NULL */
+void fixup_reply(irc_reply_data* ird)
+{
+	ird->nick = (NULL == ird->nick) ? (char *) "" : ird->nick;
+	ird->ident = (NULL == ird->ident) ? (char *) "" : ird->ident;
+	ird->host = (NULL == ird->host) ? (char *) "" : ird->host;
+	ird->target = (NULL == ird->target) ? (char *) "" : ird->target;
+}
+
+int stuff(const char* params, irc_reply_data* ird, void* data)
+{
+printf("duude got stuff\n");
+
+	IRC* conn = static_cast<IRC*>(data);
+	fixup_reply(ird);
+
+	printf("chatbot got params=%s\n", params);
+	printf("chatbot got motd nick=%s ident=%s host=%s target=%s\n",
+		ird->nick, ird->ident, ird->host, ird->target);
+
+	return 0;
+}
+
+void IRChatStream::looper(void)
+{
+	printf("duuud enter looper\n");
+	_conn->message_loop();
 }
 
 /// IRC URL format is described here:
@@ -111,32 +144,27 @@ void IRChatStream::init(const std::string& url)
 	}
 	channel = url.substr(sls+1);
 
-printf ("duuude host=%s port=%d chan=%s\n", host.c_str(), port,
-channel.c_str());
+	// Defaults
+	const char* nick = "tester";
+	const char* user = "botski";
+	const char* name = "Atomese Sensory Node";
+	const char* pass = "";
 
 	_conn = new IRC;
-	int rc = _conn->start(host.c_str(), port, "stream",
-		"no-controlling-tty", "Testing 1 2 3", "");
 
-printf("duude connected rc=%d\n", rc);
-	rc = _conn->join(channel.c_str());
-printf("duude joined rc=%d\n", rc);
+	_conn->hook_irc_command("376", &stuff);
+	_conn->hook_irc_command("PRIVMSG", &stuff);
 
-
-#if 0
-	if (nullptr == _fh)
-	{
-		int norr = errno;
-		char buff[80];
-		buff[0] = 0;
-		// Apparently, we are getting the Gnu version of strerror_r
-		// and not the XSI version. I suppose it doesn't matter.
-		char * ers = strerror_r(norr, buff, 80);
+	int rc = _conn->start(host.c_str(), port, nick, user, name, pass);
+	if (rc)
 		throw RuntimeException(TRACE_INFO,
-			"Unable to open URL \"%s\"\nError was \"%s\"\n",
-			url.c_str(), ers);
-	}
-#endif
+			"Unable to connect (%d) to URL \"%s\"\n", rc, url.c_str());
+	rc = _conn->join(channel.c_str());
+	if (rc)
+		throw RuntimeException(TRACE_INFO,
+			"Unable to join channel (%d) to URL \"%s\"\n", rc, url.c_str());
+
+	_loop = new std::thread(&IRChatStream::looper, this);
 }
 
 // ==============================================================
@@ -145,21 +173,9 @@ printf("duude joined rc=%d\n", rc);
 // So, a line-oriented, buffered interface. For now.
 void IRChatStream::update() const
 {
+	if (nullptr == _conn) { _value.clear(); return; }
+
 #if 0
-	if (nullptr == _fh) { _value.clear(); return; }
-
-	// The very first call after opening a file will typically
-	// be a bogus update, so as to give the caller something,
-	// anything. There will be trouble down the line, when
-	// actually reading. So first time through, return the URL
-	if (_fresh)
-	{
-		_fresh = false;
-		_value.resize(1);
-		_value[0] = createNode(ITEM_NODE, _uri);
-		return;
-	}
-
 #define BUFSZ 4080
 	char buff[BUFSZ];
 	char* rd = fgets(buff, BUFSZ, _fh);
