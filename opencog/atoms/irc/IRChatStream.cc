@@ -70,8 +70,37 @@ IRChatStream::~IRChatStream()
 	}
 }
 
+// ==================================================================
+// thunks
+
+int IRChatStream::xend_of_motd(const char* params, irc_reply_data* ird,
+                               void* data)
+{
+	IRC* conn = static_cast<IRC*>(data);
+	IRChatStream* that = static_cast<IRChatStream*>(conn->context);
+	return that->end_of_motd(params, ird);
+}
+
+int IRChatStream::xgot_privmsg(const char* params, irc_reply_data* ird,
+                               void* data)
+{
+	IRC* conn = static_cast<IRC*>(data);
+	IRChatStream* that = static_cast<IRChatStream*>(conn->context);
+	return that->got_privmsg(params, ird);
+}
+
+int IRChatStream::xgot_kick(const char* params, irc_reply_data* ird,
+                               void* data)
+{
+	IRC* conn = static_cast<IRC*>(data);
+	IRChatStream* that = static_cast<IRChatStream*>(conn->context);
+	return that->got_kick(params, ird);
+}
+
+// ==================================================================
+
 /* printf can puke if these fields are NULL */
-void fixup_reply(irc_reply_data* ird)
+static void fixup_reply(irc_reply_data* ird)
 {
 	ird->nick = (NULL == ird->nick) ? (char *) "" : ird->nick;
 	ird->ident = (NULL == ird->ident) ? (char *) "" : ird->ident;
@@ -79,20 +108,40 @@ void fixup_reply(irc_reply_data* ird)
 	ird->target = (NULL == ird->target) ? (char *) "" : ird->target;
 }
 
-int stuff(const char* params, irc_reply_data* ird, void* data)
+// Do not attempt to join any channels, until MOTD has arrived.
+int IRChatStream::end_of_motd(const char* params, irc_reply_data* ird)
 {
-printf("duude got stuff\n");
-
-	IRC* conn = static_cast<IRC*>(data);
 	fixup_reply(ird);
-
 	printf("chatbot got params=%s\n", params);
 	printf("chatbot got motd nick=%s ident=%s host=%s target=%s\n",
+		ird->nick, ird->ident, ird->host, ird->target);
+
+	int rc = _conn->join(_channel.c_str());
+	if (rc)
+		throw RuntimeException(TRACE_INFO,
+			"Unable to join channel (%d) to URL \"%s\"\n", rc, _uri.c_str());
+
+	return 0;
+}
+
+// ==================================================================
+
+int IRChatStream::got_privmsg(const char* params, irc_reply_data* ird)
+{
+	fixup_reply(ird);
+	printf("chatbot priv params=%s\n", params);
+	printf("chatbot priv motd nick=%s ident=%s host=%s target=%s\n",
 		ird->nick, ird->ident, ird->host, ird->target);
 
 	return 0;
 }
 
+int IRChatStream::got_kick(const char* params, irc_reply_data* ird)
+{
+	return 0;
+}
+
+// ==================================================================
 void IRChatStream::looper(void)
 {
 	printf("duuud enter looper\n");
@@ -131,7 +180,6 @@ void IRChatStream::init(const std::string& url)
 
 	std::string host;
 	int port = 6667;
-	std::string channel;
 	if (std::string::npos == col or sls < col)
 	{
 		host = url.substr(base, sls-base);
@@ -142,28 +190,27 @@ void IRChatStream::init(const std::string& url)
 		host = url.substr(base, col-base);
 		port = atoi(url.substr(col+1, sls-col-1).c_str());
 	}
-	channel = url.substr(sls+1);
+	_channel = url.substr(sls+1);
 
 	// Defaults
-	const char* nick = "tester";
+	const char* nick = "sensor";
 	const char* user = "botski";
 	const char* name = "Atomese Sensory Node";
 	const char* pass = "";
 
 	_conn = new IRC;
+	_conn->context = this;
 
-	_conn->hook_irc_command("376", &stuff);
-	_conn->hook_irc_command("PRIVMSG", &stuff);
+	_conn->hook_irc_command("376", &xend_of_motd);
+	_conn->hook_irc_command("PRIVMSG", &xgot_privmsg);
+	_conn->hook_irc_command("KICK", &xgot_kick);
 
 	int rc = _conn->start(host.c_str(), port, nick, user, name, pass);
 	if (rc)
 		throw RuntimeException(TRACE_INFO,
 			"Unable to connect (%d) to URL \"%s\"\n", rc, url.c_str());
-	rc = _conn->join(channel.c_str());
-	if (rc)
-		throw RuntimeException(TRACE_INFO,
-			"Unable to join channel (%d) to URL \"%s\"\n", rc, url.c_str());
 
+	// Run I/O loop in it's own thread.
 	_loop = new std::thread(&IRChatStream::looper, this);
 }
 

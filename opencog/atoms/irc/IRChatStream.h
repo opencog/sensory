@@ -27,6 +27,8 @@
 #include <opencog/atoms/sensory/OutputStream.h>
 
 class IRC;
+struct irc_reply_data;
+
 namespace opencog
 {
 
@@ -46,12 +48,21 @@ private:
 	std::thread* _loop;
 	void looper(void);
 
+	static int xend_of_motd(const char*, irc_reply_data*, void*);
+	static int xgot_privmsg(const char*, irc_reply_data*, void*);
+	static int xgot_kick(const char*, irc_reply_data*, void*);
+
+	int end_of_motd(const char*, irc_reply_data*);
+	int got_privmsg(const char*, irc_reply_data*);
+	int got_kick(const char*, irc_reply_data*);
+
 protected:
 	IRChatStream(Type t, const std::string&);
 	void init(const std::string&);
 	virtual void update() const;
 
 	std::string _uri;
+	std::string _channel;
 	void prt_value(const ValuePtr&);
 
 public:

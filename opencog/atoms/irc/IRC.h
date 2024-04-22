@@ -81,6 +81,10 @@ public:
 	int is_op(const char* channel, const char* nick);
 	int is_voice(const char* channel, const char* nick);
 	const char* current_nick(void);
+
+	// User data hook
+	void* context;
+
 private:
 	void call_hook(const char* irc_command, const char*params, irc_reply_data* hostd);
 	/*void call_the_hook(irc_command_hook* hook, const char* irc_command, const char*params, irc_host_data* hostd);*/
