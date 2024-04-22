@@ -72,7 +72,6 @@ protected:
 	std::string _nick;
 
 	virtual void do_write(const std::string&);
-	virtual void prt_value(const ValuePtr&);
 
 public:
 	IRChatStream(const Handle&);
@@ -80,7 +79,6 @@ public:
 	virtual ~IRChatStream();
 
 	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&);
-	virtual bool operator==(const Value&) const;
 };
 
 typedef std::shared_ptr<IRChatStream> IRChatStreamPtr;
