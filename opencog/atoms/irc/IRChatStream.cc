@@ -90,6 +90,8 @@ IRChatStream::~IRChatStream()
 /// I'll use the below approximate simplified form:
 /// irc://nick[:pass]@host[:port]/#chan
 ///
+/// See also: https://ircv3.net/irc/index.html
+///
 void IRChatStream::init(const std::string& url)
 {
 	_conn = nullptr;

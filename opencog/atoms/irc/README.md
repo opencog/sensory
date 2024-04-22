@@ -39,3 +39,34 @@ the (public) channel.
 The sub-actions are modal: they do not become possible or available,
 until certain earlier actions have been performed. The menu of possible
 actions also changes modally: some actions might disappear over time.
+
+### Actions
+What kind of actions are possible?
+
+* Menu selection: This is like a file system directory listing; a
+  discrete list of options are presented. The result of selecting
+  from that list returns an open connection/file-handle, which can
+  be read, and maybe can be written to.
+
+Constraints and equivalences are ad-hoc: sometimes menus change,
+sometimes they don't. Some things are still possible after taking an
+action; other things become impossible. This is not like a free group
+(where anything is possible at any time) nor is it like a group
+presentation (where what can currently be done is described by a set of
+equivalences, possibly commutative equivalences.) There are no a priori
+equivalences.
+
+* Continuous space: Movement in a space with arbitrarily small movement
+  increments. The shape of the space is contrained by equivalences (e.g.
+  group presentation equivalences that convert a free group into Eucliden
+  space). This includes holonomic constraints: the joint-angle space of
+  a robot arm.
+
+There is no "continuos movement" in IRC. So punt on that.
+
+### Perception of possibilities
+The menu of actions needs to be perceived: one must explicitly "look at"
+the menu of possible actions that lead to possible future worlds. To
+have a consistent paradigm of what we've done so far, the answer seems to
+be: open the object (like a directory listing) and read whats there, and
+pick one.
