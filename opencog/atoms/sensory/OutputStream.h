@@ -43,6 +43,10 @@ class OutputStream
 protected:
 	OutputStream(Type t);
 
+	virtual void do_write(const std::string&);
+	virtual void prt_value(const ValuePtr&);
+	virtual ValuePtr do_write_out(AtomSpace*, bool, const Handle&);
+
 public:
 	virtual ~OutputStream();
 	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&) = 0;

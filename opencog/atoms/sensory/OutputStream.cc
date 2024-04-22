@@ -26,7 +26,7 @@
 #include <opencog/util/exceptions.h>
 #include <opencog/util/oc_assert.h>
 #include <opencog/atoms/base/Node.h>
-#include <opencog/atoms/value/ValueFactory.h>
+#include <opencog/atoms/value/StringValue.h>
 
 #include <opencog/atoms/sensory-types/sensory_types.h>
 #include "OutputStream.h"
@@ -43,6 +43,102 @@ OutputStream::OutputStream(Type t)
 OutputStream::~OutputStream()
 {
 	printf ("OutputStream dtor\n");
+}
+
+// ==============================================================
+
+// Provide an unreasonable default implementation
+void OutputStream::do_write(const std::string& str)
+{
+	throw RuntimeException(TRACE_INFO,
+		"Not implemented! What are you doing?");
+}
+
+// Provide a reasonable default implementation
+void OutputStream::prt_value(const ValuePtr& content)
+{
+	if (content->is_type(STRING_VALUE))
+	{
+		StringValuePtr svp(StringValueCast(content));
+		const std::vector<std::string>& strs = svp->value();
+		for (const std::string& str : strs)
+			do_write(str);
+		return;
+	}
+	if (content->is_type(NODE))
+	{
+		do_write(HandleCast(content)->get_name());
+		return;
+	}
+	if (content->is_type(LINK_VALUE))
+	{
+		LinkValuePtr lvp(LinkValueCast(content));
+		const ValueSeq& vals = lvp->value();
+		for (const ValuePtr& v : vals)
+			prt_value(v);
+		return;
+	}
+
+	// Backwards-compat: AllowListLink and SetLink (only!?)
+	// Why restrict? I dunno. Seems like the right thing to do.
+	Type tc = content->get_type();
+	if (LIST_LINK == tc or SET_LINK == tc)
+	{
+		const HandleSeq& oset = HandleCast(content)->getOutgoingSet();
+		for (const Handle& h : oset)
+			prt_value(h);
+		return;
+	}
+
+	throw RuntimeException(TRACE_INFO,
+		"Expecting strings, got %s\n", content->to_string().c_str());
+}
+
+// Provide a reasonable default implementation.
+ValuePtr OutputStream::do_write_out(AtomSpace* as, bool silent,
+                                    const Handle& cref)
+{
+	ValuePtr content = cref;
+	if (cref->is_executable())
+	{
+		content = cref->execute(as, silent);
+		if (nullptr == content)
+			throw RuntimeException(TRACE_INFO,
+				"Expecting something to write from %s\n",
+				cref->to_string().c_str());
+	}
+
+	// If it is not a stream, then just print and return.
+	if (not content->is_type(LINK_STREAM_VALUE))
+	{
+		prt_value(content);
+		return content;
+	}
+
+	// If it is a stream, enter infinite loop, until it is exhausted.
+	LinkValuePtr lvp(LinkValueCast(content));
+	while (true)
+	{
+		const ValueSeq& vals = lvp->value();
+
+		// If the stream is returning an empty list, assume we
+		// are done. Exit the loop.
+		if (0 == vals.size()) break;
+
+		// A different case arises if the stream keeps returning
+		// empty LinkValues. This is kind of pathological, and
+		// arguably, its a bug upstream somewhere, but for now,
+		// we catch this and handle it.
+		size_t nprinted = 0;
+		for (const ValuePtr& v : vals)
+		{
+			if (v->is_type(LINK_VALUE) and 0 == v->size()) continue;
+			prt_value(v);
+			nprinted ++;
+		}
+		if (0 == nprinted) break;
+	}
+	return content;
 }
 
 // ==============================================================
