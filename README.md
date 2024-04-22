@@ -1,13 +1,75 @@
 Sensory Atomese
----------------
-Implementation for low-level AtomSpace sensory I/O Atoms.
+===============
+This repo explores how perception and action with an external world
+might work with the [AtomSpace](https://github.com/opencog/atomspace).
+
+TL;DR: Implementation for low-level AtomSpace sensory I/O Atoms.
 Provides a basic file I/O stream, and an IRC chat stream.
 
-See also the git repo [opencog/vision](https://github.com/opencog/vision)
+Overview
+--------
+The issue for any agent is being able to perceive the environment that
+it is in, and then being able to interact with this environment.
+
+For OpenCog, and, specifically, for OpenCog Atomese, all interaction,
+knowledge, data and reasoning is represented with and performed by
+Atoms (stored in a hypergraph database) and Values (transient data
+flowing through a network defined by Atoms).
+
+It is not hard to generate Atoms, flow some Values around, and perform
+some action (control a robot, say some words). The hard part is to
+(conceptually, philosophically) understand how an agent can represent
+the external world (with Atoms and Values), and how it should go about
+doing things. The agent needs to perceive the environment in some way
+that results in an AtomSpace representation that is easy for agent
+subsystems to work with. This perception must include the agents
+awareness of the different kinds of actions it might be able to perform
+upon interacting with the external world.  That is, before one can
+attempt to model the external world, one must be able to model ones own
+ability to perform action. This is where the boundary between the agent
+and the external world lies: the boundary of the controllable.
+
+Traditional human conceptions of senses include sight and hearing;
+traditional ideas consist of moving (robot) limbs. See, for example,
+the git repo [opencog/vision](https://github.com/opencog/vision)
 for OpenCV-based vision Atomese. (Note: It is at version 0.0.2)
 
+The task being tackled here is at once much simpler and much harder:
+exploring the unix filesystem, and interacting via chat. This might
+sound easy, trivially easy, even, if you're a software developer.
+The hard part is this: how does an agent know what a "file" is?
+What a "directoy" is? Actions it can perform are to walk the directory
+tree; but why? Is it somehow "fun" for the agent to walk directories
+and look at files? What should it do next? Read the same file again,
+or maybe try some other file? Will the agent notice that maybe some
+file has changed? If it notices, what should it do? What does it mean,
+personally, to the agent, that some file changed? Should it care? Should
+it be curious?
+
+The agent can create files. Does it notice that it has created them?
+Does it recognize those files as works of it's own making? Should it
+read them, and admire the contents? Or perform some processing on them?
+Or is this like eating excrement? What part of the "external world"
+(the filesystem) is perceived to be truly external, and what part is
+"part of the agent itself"? What does it mean to exist and operate in
+a world like this? What's the fundamental nature of action and
+perception?
+
+These are the questions that seem to matter, for agent design. The code
+in this git repo is some extremely low-level, crude Atomese interfaces
+that try to expose these issues up into the AtomSpace.
+
+Currently, two interfaces are bing explored: a unix filesystem
+interface, and an IRC chat interface. Hopefully, this is broad enough to
+expose some of the design issues. Basically, chat is not like a
+filesystem: there are public channels, there are private conversations.
+The kind of sensory information coming from chat is just different than
+the sensory information comeing from files (even though, as a software
+engineer, one could map chat I/O to a filesystem-style interface.)
+Trying to support both keeps us honest.
+
 ### Status
-Version 0.2.0 -- Experimental. Starting to gel. There might be more
+Version 0.2.1 -- Experimental. Starting to gel. There might be more
 design changes ahead.
 
 Provides:
