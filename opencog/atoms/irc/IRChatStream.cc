@@ -86,20 +86,26 @@ void IRChatStream::init(const std::string& url)
 	_uri = url;
 
 	// Ignore the first 6 chars "irc://"
-	size_t sls = url.find('/', 6);
-	size_t col = url.find(':', 6);
-	const char* host;
+	size_t base = 6;
+	size_t sls = url.find('/', base);
+	size_t col = url.find(':', base);
+	std::string host;
 	int port = 6667;
+	if (std::string::npos == sls)
+		throw RuntimeException(TRACE_INFO,
+			"Invalid IRC URL \"%s\"\n", url.c_str());
+
 	if (std::string::npos == col or sls < col)
 	{
-		host = url.substr(6, sls).c_str();
+		host = url.substr(base, sls-base);
 	}
 	else
 	{
-		host = url.substr(6, col).c_str();
-		port = atoi(url.substr(col+1, sls).c_str());
+		// const char *ho = url.substr(base, col-base).c_str();
+		host = url.substr(base, col-base);
+		port = atoi(url.substr(col+1, sls-col-1).c_str());
 	}
-printf ("duuude host=%s port=%d\n", host, port);
+printf ("duuude host=%s port=%d\n", host.c_str(), port);
 
 
 #if 0
