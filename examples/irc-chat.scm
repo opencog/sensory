@@ -13,7 +13,7 @@
 	(cog-execute!
 		(Open
 			(Type 'IRChatStream)
-			(SensoryNode "irc://libera.chat:6667/opencog"))))
+			(SensoryNode "irc://irc.libera.chat:6667/#opencog"))))
 
 ; Repeated references to the stream will return single lines from
 ; the file.

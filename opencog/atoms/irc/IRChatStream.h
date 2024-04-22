@@ -23,9 +23,9 @@
 #ifndef _OPENCOG_I_R_CHAT_STREAM_H
 #define _OPENCOG_I_R_CHAT_STREAM_H
 
-#include <stdio.h>
 #include <opencog/atoms/sensory/OutputStream.h>
 
+class IRC;
 namespace opencog
 {
 
@@ -40,6 +40,9 @@ namespace opencog
 class IRChatStream
 	: public OutputStream
 {
+private:
+	IRC* _conn;
+
 protected:
 	IRChatStream(Type t, const std::string&);
 	void init(const std::string&);

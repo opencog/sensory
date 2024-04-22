@@ -63,6 +63,7 @@ IRChatStream::IRChatStream(const Handle& senso)
 
 IRChatStream::~IRChatStream()
 {
+	if (_conn) delete _conn;
 }
 
 /// IRC URL format is described here:
@@ -78,6 +79,8 @@ IRChatStream::~IRChatStream()
 ///
 void IRChatStream::init(const std::string& url)
 {
+	_conn = nullptr;
+
 	if (0 != url.compare(0, 6, "irc://"))
 		throw RuntimeException(TRACE_INFO,
 			"Unsupported URL \"%s\"\n", url.c_str());
@@ -89,12 +92,13 @@ void IRChatStream::init(const std::string& url)
 	size_t base = 6;
 	size_t sls = url.find('/', base);
 	size_t col = url.find(':', base);
-	std::string host;
-	int port = 6667;
 	if (std::string::npos == sls)
 		throw RuntimeException(TRACE_INFO,
 			"Invalid IRC URL \"%s\"\n", url.c_str());
 
+	std::string host;
+	int port = 6667;
+	std::string channel;
 	if (std::string::npos == col or sls < col)
 	{
 		host = url.substr(base, sls-base);
@@ -105,7 +109,18 @@ void IRChatStream::init(const std::string& url)
 		host = url.substr(base, col-base);
 		port = atoi(url.substr(col+1, sls-col-1).c_str());
 	}
-printf ("duuude host=%s port=%d\n", host.c_str(), port);
+	channel = url.substr(sls+1);
+
+printf ("duuude host=%s port=%d chan=%s\n", host.c_str(), port,
+channel.c_str());
+
+	_conn = new IRC;
+	int rc = _conn->start(host.c_str(), port, "stream",
+		"no-controlling-tty", "Testing 1 2 3", "");
+
+printf("duude connected rc=%d\n", rc);
+	rc = _conn->join(channel.c_str());
+printf("duude joined rc=%d\n", rc);
 
 
 #if 0
