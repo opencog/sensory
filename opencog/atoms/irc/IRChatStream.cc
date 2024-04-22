@@ -76,19 +76,19 @@ IRChatStream::~IRChatStream()
 }
 
 // ==================================================================
-/// IRC URL format is described here:
-/// RFC ???
 /// The URL format is described in
 /// https://en.wikipedia.org/wiki/IRC
-/// and we adhere to that.
 ///
-/// Official URI formats are:
+/// According to wikipedia, URI formats are:
 /// irc://<host>[:<port>]/[<channel>[?<channel_keyword>]]
 /// ircs://<host>[:<port>]/[<channel>[?<channel_keyword>]]
 /// irc6://<host>[:<port>]/[<channel>[?<channel_keyword>]]
 ///
-/// What I need:
-/// irc://<host>[:<port>]/<channel>/<nick>
+/// IRC URL format is described here:
+/// https://datatracker.ietf.org/doc/html/draft-butcher-irc-url
+///
+/// I'll use the below approximate simplified form:
+/// irc://nick[:pass]@host[:port]/#chan
 ///
 void IRChatStream::init(const std::string& url)
 {
@@ -104,32 +104,34 @@ void IRChatStream::init(const std::string& url)
 
 	// Ignore the first 6 chars "irc://"
 	size_t base = 6;
-	size_t sls = url.find('/', base);
-	size_t col = url.find(':', base);
+	size_t nck = url.find('@', base);
+
+	if (std::string::npos == nck)
+		throw RuntimeException(TRACE_INFO,
+			"Invalid IRC URL \"%s\" expecting irc://nick@host[:port]/#channel\n",
+			url.c_str());
+	_nick = url.substr(base, nck-base);
+
+	// There may or may not be a port number.
+	size_t sls = url.find('/', nck);
+	size_t col = url.find(':', nck);
 	if (std::string::npos == sls)
 		throw RuntimeException(TRACE_INFO,
-			"Invalid IRC URL \"%s\" expecting irc://host/channel/nick\n",
+			"Invalid IRC URL \"%s\" expecting irc://nick@host[:port]/#channel\n",
 			url.c_str());
 
 	_port = 6667;
+	nck ++;
 	if (std::string::npos == col or sls < col)
-		_host = url.substr(base, sls-base);
+		_host = url.substr(nck, sls-nck);
 	else
 	{
-		// const char *ho = url.substr(base, col-base).c_str();
-		_host = url.substr(base, col-base);
+		_host = url.substr(nck, col-nck);
 		_port = atoi(url.substr(col+1, sls-col-1).c_str());
 	}
 
-	size_t sln = url.find('/', sls+1);
-	if (std::string::npos == sln)
-		throw RuntimeException(TRACE_INFO,
-			"Invalid IRC URL \"%s\" expecting irc://host/channel/nick\n",
-			url.c_str());
-	_channel = url.substr(sls+1, sln-sls-1);
-	_nick = url.substr(sln+1);
-
 	// Channels must always start with hash mark.
+	_channel = url.substr(sls+1);
 	if ('#' != _channel[0]) _channel = "#" + _channel;
 
 	_conn = new IRC;

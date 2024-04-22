@@ -11,8 +11,8 @@
 
 ; --------------------------------------------------------
 ; Basic demo: Open a file for reading, at a fixed absolute location
-; in the filesystem. Executing the FileNode will return a text
-; stream value.
+; in the filesystem. Executing the OpenLink will return a stream
+; value that will deliver text strings, one line at a time.
 (define txt-stream
 	(cog-execute!
 		(Open

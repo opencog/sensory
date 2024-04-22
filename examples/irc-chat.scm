@@ -6,14 +6,15 @@
 (use-modules (opencog) (opencog exec) (opencog sensory))
 
 ; --------------------------------------------------------
-; Basic demo: Open a file for reading, at a fixed absolute location
-; in the filesystem. Executing the FileNode will return a text
-; stream value.
+; Basic demo: Open a connection to an IRC node. The connection
+; is given by a URL of the form
+; irc://nick[:pass]@host[:port]/#channel
+;
 (define txt-stream
 	(cog-execute!
 		(Open
 			(Type 'IRChatStream)
-			(SensoryNode "irc://irc.libera.chat:6667/#opencog/botty"))))
+			(SensoryNode "irc://botty@irc.libera.chat:6667/#opencog"))))
 
 ; Repeated references to the stream will return single lines from
 ; the file.
