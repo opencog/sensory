@@ -253,6 +253,7 @@ int IRChatStream::end_of_motd(const char* params, irc_reply_data* ird)
 #endif
 
 	_conn->join(_channel.c_str());
+	_conn->join("#boguschan");
 	return 0;
 }
 

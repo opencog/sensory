@@ -118,7 +118,7 @@ It also overlaps with the other way of doing directives:
 ```
    (Write
 		irc-stream
-		(ActionNode "join")
+		(ActionNode "JOIN")
 		(ItemNode "#opencog"))
 ```
 OK so here we have a distinction: `Open` is a kind of movement,
@@ -131,12 +131,25 @@ dedicated to a specific channel. Or we can use `Write` to alter
 the state/mode of the current stream. Writes then make the stream
 behave in a modal way, which is perhaps confusing to the agent?
 
-IRC GUI's do hade/abstract statefulness: there is a server tab, and
-there are zero or more channel tabs. We'll do the same: one stream per
-conventional IRC GUI tab.
+The problem here is that the IRC protocol hides some of this modality:
+each message shows the sender and the receiver.  The result is a
+multi-threaded stream. The JOIN command is more of a "listen to this"
+command.
 
-Hang on. Under the covers, we have to have just one connection server.
-... how does this work?
+So two things: the robot-command of "send this message to this device on
+this control stream", and the attention-allocation issue of "listen to
+this particular thing" or even "pay attention to this, and perhaps
+respond to this" as a sub-item in the open channel. Ugh.
 
+Some IRC commands are triplets:
+```
+   (Write
+		irc-stream
+		(ActionNode "PRIVMSG")
+		(ItemNode "#opencog")
+		(String "blal blah text to say out loud"))
+```
+
+For now, hand-code these by force.
 
 ---------------------
