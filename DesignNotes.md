@@ -1,10 +1,32 @@
 Design notes
 ============
-Thought process that went into current design.
+(Some of the) Thought process that went into current design.
+
+See the [examples](examples) directory for actual demos that should
+actually work.
 
 Current Implementation
 ----------------------
-The WriteLink API is
+There are two basic Atoms: `OpenLink` and `WriteLink`. The `OpenLink`
+command is used to create a new I/O stream, and `WriteLink` is used to
+write to the stream. Philosophically, `OpenLink` is a command that says
+"go to a new place/location in the environment/exterior world, and open
+a sensory stream at that location."  By contrast, `WriteLink` says "stay
+at the current location, but spew text there." Write does not create a
+new stream.
+
+The `OpenLink` API is
+```
+	(OpenLink
+		(TypeNode 'FoobarStream) ; e.g. TextFileStream or IRChatStream
+		(SensoryNode "url://of/some/sort")) ; e.g file:// or irc://
+```
+The `TypeNode` must indicate a valid Atomese type that can be created.
+The `SensoryNode` is just some text passed into the stream constructor.
+
+Currently supported are `TextFileStream` and `IRChatStream`
+
+The `WriteLink` API is
 ```
  (WriteLink
     (TextStream)   ; iterator to write to.
@@ -347,7 +369,7 @@ better. How about this, instead:
 ```
 
 This would return an instance of the given stream. It's a generic stream
-constructor. Hopefully, the current ValueFactory can handle this.
-
+constructor. The ValueFactory is used to create an instance of the
+stream, and pass the SensoryNode as an argument.
 
 --------------------------------

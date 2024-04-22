@@ -70,3 +70,60 @@ the menu of possible actions that lead to possible future worlds. To
 have a consistent paradigm of what we've done so far, the answer seems to
 be: open the object (like a directory listing) and read whats there, and
 pick one.
+
+### Designating actions
+How do we designate which action to take?  Currently, both IRC and files
+are designated with URL's. Three problems:
+* How do we get a channel listing? Do we open a URL
+  "irc://server/do-channel-list"? Since we're already connected the
+  first part of the URL is redundant.
+* On receipt of channel listing, how do we join a specific channel?
+* We want to avoid string string concatenation of building custom URL's
+  because nothing in Atomese so far does sting stuff. Its hypergraphs,
+  always. Don't want to invent a string-concatenator.
+
+The conventional object-oriented style is to "send a message". What are
+the allowed messages? Chat text messages are free-form. Directory
+listings are specific commands chosen from the given command menu.
+When opening a connection, how do we know if the things that are read
+are command options, vs free-form text input?
+
+Conclude: the format needs to be:
+```
+	(define irc-stream (cog-execute!
+		(Open
+			(TypeNode 'IRChatStream)
+			(SensoryNode "irc://nick@server/"))))
+
+	irc-stream ; list available commands, e.g. list channels, join
+	; Return will be
+	(LinkValue
+		(ActionNode "help")   ; help menu
+		(ActionNode "list")   ; listing of channels
+		(ActionNode "join"))  ; channel to join
+```
+Now what? One obvious mode would be:
+```
+	(define look-stream (cog-execute!
+		(Open
+			irc-stream  ; this provides context
+			(ActionNode "join")
+			(ItemNode "#opencog")))
+```
+But this has problems: how did we know that the action "join" needs
+an argument, and how do we know that the argument must be a valid
+choice from the "list" command?
+
+It also overlaps with the other way of doing directives:
+```
+   (Write
+		irc-stream
+		(ActionNode "join")
+		(ItemNode "#opencog"))
+```
+
+OK so here we have a distinction: `Open` is a kind of movement,
+taking us to a new place, opening a new stream. `Write` keeps us
+on the current stream, simply advancing the time-like cursor/iterator
+on that stream.
+

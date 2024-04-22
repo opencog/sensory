@@ -329,16 +329,8 @@ void IRChatStream::update() const
 // Write stuff to a file.
 void IRChatStream::do_write(const std::string& str)
 {
-#if 0
-	bool priv = true;
-	char * msg_target;
-	if (priv)
-		msg_target = ird->nick;
-	else
-		msg_target = ird->target;
-#endif
-	// const char * msg_target = "linas";
-	const char * msg_target = "#opencog";
+	const char * msg_target = "linas";
+	// const char * msg_target = "#opencog";
 
 	_conn->privmsg(msg_target, str.c_str());
 }
