@@ -52,10 +52,12 @@ private:
 	static int xend_of_motd(const char*, irc_reply_data*, void*);
 	static int xgot_privmsg(const char*, irc_reply_data*, void*);
 	static int xgot_kick(const char*, irc_reply_data*, void*);
+	static int xgot_misc(const char*, irc_reply_data*, void*);
 
 	int end_of_motd(const char*, irc_reply_data*);
 	int got_privmsg(const char*, irc_reply_data*);
 	int got_kick(const char*, irc_reply_data*);
+	int got_misc(const char*, irc_reply_data*);
 
 protected:
 	IRChatStream(Type t, const std::string&);

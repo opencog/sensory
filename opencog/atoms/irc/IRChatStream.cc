@@ -66,6 +66,7 @@ IRChatStream::~IRChatStream()
 	// XXX TODO kill the looper thread, too
 	if (_conn)
 	{
+		_conn->quit("Adios");
 		_conn->disconnect();
 		delete _conn;
 	}
@@ -98,6 +99,14 @@ int IRChatStream::xgot_kick(const char* params, irc_reply_data* ird,
 	return that->got_kick(params, ird);
 }
 
+int IRChatStream::xgot_misc(const char* params, irc_reply_data* ird,
+                               void* data)
+{
+	IRC* conn = static_cast<IRC*>(data);
+	IRChatStream* that = static_cast<IRChatStream*>(conn->context);
+	return that->got_misc(params, ird);
+}
+
 // ==================================================================
 
 /* printf can puke if these fields are NULL */
@@ -123,23 +132,37 @@ int IRChatStream::end_of_motd(const char* params, irc_reply_data* ird)
 	return 0;
 }
 
+int IRChatStream::got_misc(const char* params, irc_reply_data* ird)
+{
+	fixup_reply(ird);
+	printf("Misc reply: nick=%s ident=%s host=%s target=%s\n",
+		ird->nick, ird->ident, ird->host, ird->target);
+	printf("Misc params=%s\n", params);
+
+	return 0;
+}
+
 // ==================================================================
 
 int IRChatStream::got_privmsg(const char* params, irc_reply_data* ird)
 {
 	fixup_reply(ird);
-#if 1 //def DEBUG
-	printf(">>> priv motd nick=%s ident=%s host=%s target=%s\n",
+#ifdef DEBUG
+	printf(">>> priv msg nick=%s ident=%s host=%s target=%s\n",
 		ird->nick, ird->ident, ird->host, ird->target);
 #endif
 
 	// Skip over leading colon.
 	const char * start = params + 1;
 
+#ifdef UNUSED
+	// if ird->target is my nick, then the message is private to me.
 	bool priv = false;
 	if (0 == _nick.compare (ird->target))
 		priv = true;
+#endif
 
+#ifdef IS_THIS_JUNK_XXX
 	// Reply to request for chat client version.
 	// Needed under rare situations?
 	if ((0x1 == start[0]) && !strncmp (&start[1], "VERSION", 7))
@@ -153,8 +176,9 @@ int IRChatStream::got_privmsg(const char* params, irc_reply_data* ird)
 		_conn->privmsg (msg_target, version);
 		return 0;
 	}
+#endif
 
-printf(">>> priv messag=%s\n", start);
+printf(">>> message from %s to %s =%s\n", ird->nick, ird->target, start);
 	ValuePtr svp(createStringValue(start));
 	push(svp); // concurrent_queue<ValutePtr>::push(svp);
 
@@ -252,15 +276,30 @@ void IRChatStream::init(const std::string& url)
 			url.c_str());
 	_channel = url.substr(sls+1, sln-sls-1);
 	_nick = url.substr(sln+1);
-	if ('#' != _channel[0])
-		_channel = "#" + _channel;
+
+	// Channels must always start with hash mark.
+	if ('#' != _channel[0]) _channel = "#" + _channel;
 
 	_conn = new IRC;
 	_conn->context = this;
 
-	_conn->hook_irc_command("376", &xend_of_motd);
+	// Hooks run in order. Privmsg will be most common.
 	_conn->hook_irc_command("PRIVMSG", &xgot_privmsg);
+	_conn->hook_irc_command("376", &xend_of_motd);
 	_conn->hook_irc_command("KICK", &xgot_kick);
+	_conn->hook_irc_command("403", &xgot_misc);
+
+	// Other messages:
+	// NOTICE - server notices
+	// 001-005 - server info
+	// 250-265 - channel info
+	// 375 - start of motd
+	// 372 - motd
+	// 353 - channel members
+	// 366 - end of list of channel members
+	// 328 - channel title?
+	// 403 - channnel not found
+	// MODE - read-write modes
 
 	// Run I/O loop in it's own thread.
 	_loop = new std::thread(&IRChatStream::looper, this);

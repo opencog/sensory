@@ -59,6 +59,7 @@ IRC::~IRC()
 		delete_irc_command_hook(hooks);
 }
 
+// Append to tail.
 void IRC::insert_irc_command_hook(irc_command_hook* hook, const char* cmd_name,
          int (*function_ptr)(const char*, irc_reply_data*, void*))
 {
@@ -226,10 +227,10 @@ void IRC::disconnect()
 {
 	if (connected)
 	{
+		// quit("Leaving");
 		fclose(dataout);
 		printf("Disconnected from server.\n");
 		connected=false;
-		quit("Leaving");
 		#ifdef WIN32_NOT_UNIX
 		shutdown(irc_socket, 2);
 		#endif
