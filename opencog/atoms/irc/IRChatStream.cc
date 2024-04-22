@@ -20,8 +20,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <errno.h>
-#include <string.h> // for strerror()
 
 #include <opencog/util/exceptions.h>
 #include <opencog/util/oc_assert.h>
@@ -31,6 +29,11 @@
 
 #include <opencog/atoms/sensory-types/sensory_types.h>
 #include "IRChatStream.h"
+
+#include "IRC.h"
+
+#include <errno.h>
+#include <string.h> // for strerror()
 
 using namespace opencog;
 
@@ -60,40 +63,46 @@ IRChatStream::IRChatStream(const Handle& senso)
 
 IRChatStream::~IRChatStream()
 {
-	if (_fh)
-		fclose (_fh);
 }
 
-/// Attempt to open the URL for reading.
+/// IRC URL format is described here:
+/// ???
 /// The URL format is described in
-/// https://en.wikipedia.org/wiki/File_URI_scheme
+/// https://en.wikipedia.org/wiki/IRC
 /// and we adhere to that.
 ///
 /// URI formats are:
-/// file:/path       ; Not currently supported
-/// file:///path     ; Yes, use this
-/// file://host/path ; Not currently supported
-/// file://./path    ; Dot means localhost
+/// irc://<host>[:<port>]/[<channel>[?<channel_keyword>]]
+/// ircs://<host>[:<port>]/[<channel>[?<channel_keyword>]]
+/// irc6://<host>[:<port>]/[<channel>[?<channel_keyword>]]
 ///
-/// Possible extensions:
-/// file:mode//...
-/// where mode is one of the modes described in `man 3 fopen`
-
 void IRChatStream::init(const std::string& url)
 {
-	_fresh = true;
-	_fh = nullptr;
-	if (0 != url.compare(0, 8, "file:///"))
+	if (0 != url.compare(0, 6, "irc://"))
 		throw RuntimeException(TRACE_INFO,
 			"Unsupported URL \"%s\"\n", url.c_str());
 
 	// Make a copy, for debuggingg purposes.
 	_uri = url;
 
-	// Ignore the first 7 chars "file://"
-	const char* fpath = url.substr(7).c_str();
-	_fh = fopen(fpath, "a+");
+	// Ignore the first 6 chars "irc://"
+	size_t sls = url.find('/', 6);
+	size_t col = url.find(':', 6);
+	const char* host;
+	int port = 6667;
+	if (std::string::npos == col or sls < col)
+	{
+		host = url.substr(6, sls).c_str();
+	}
+	else
+	{
+		host = url.substr(6, col).c_str();
+		port = atoi(url.substr(col+1, sls).c_str());
+	}
+printf ("duuude host=%s port=%d\n", host, port);
 
+
+#if 0
 	if (nullptr == _fh)
 	{
 		int norr = errno;
@@ -106,6 +115,7 @@ void IRChatStream::init(const std::string& url)
 			"Unable to open URL \"%s\"\nError was \"%s\"\n",
 			url.c_str(), ers);
 	}
+#endif
 }
 
 // ==============================================================
@@ -114,6 +124,7 @@ void IRChatStream::init(const std::string& url)
 // So, a line-oriented, buffered interface. For now.
 void IRChatStream::update() const
 {
+#if 0
 	if (nullptr == _fh) { _value.clear(); return; }
 
 	// The very first call after opening a file will typically
@@ -141,12 +152,14 @@ void IRChatStream::update() const
 
 	_value.resize(1);
 	_value[0] = createNode(ITEM_NODE, buff);
+#endif
 }
 
 // ==============================================================
 // Write stuff to a file.
 void IRChatStream::prt_value(const ValuePtr& content)
 {
+#if 0
 	if (content->is_type(STRING_VALUE))
 	{
 		StringValuePtr svp(StringValueCast(content));
@@ -183,17 +196,19 @@ void IRChatStream::prt_value(const ValuePtr& content)
 
 	throw RuntimeException(TRACE_INFO,
 		"Expecting strings, got %s\n", content->to_string().c_str());
+#endif
 }
 
 // Write stuff to a file.
 ValuePtr IRChatStream::write_out(AtomSpace* as, bool silent,
                                    const Handle& cref)
 {
+	ValuePtr content = cref;
+#if 0
 	if (nullptr == _fh)
 		throw RuntimeException(TRACE_INFO,
 			"Text stream not open: URI \"%s\"\n", _uri.c_str());
 
-	ValuePtr content = cref;
 	if (cref->is_executable())
 	{
 		content = cref->execute(as, silent);
@@ -235,6 +250,7 @@ ValuePtr IRChatStream::write_out(AtomSpace* as, bool silent,
 		fflush(_fh);
 		if (0 == nprinted) break;
 	}
+#endif
 	return content;
 }
 
@@ -255,3 +271,10 @@ bool IRChatStream::operator==(const Value& other) const
 // Adds factory when library is loaded.
 DEFINE_VALUE_FACTORY(I_R_CHAT_STREAM, createIRChatStream, std::string)
 DEFINE_VALUE_FACTORY(I_R_CHAT_STREAM, createIRChatStream, Handle)
+
+// ====================================================================
+
+void opencog_sensory_irc_init(void)
+{
+	// Force shared lib ctors to run
+};
