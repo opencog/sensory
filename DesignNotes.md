@@ -10,7 +10,7 @@ The WriteLink API is
     (TextStream)   ; iterator to write to.
     (StringValue)) ; strings to write
 ```
-Since links can't actualy store Values, the above have to be executable
+Since links can't actually store Values, the above have to be executable
 things that return the desired streams.
 
 How does the C++ perform the write?
@@ -48,7 +48,7 @@ and opens it for reading and writing.
 
 TODO List
 ---------
-* The text API should porbably be changed to use StringValue instead
+* The text API should probably be changed to use StringValue instead
   of ItemNode. But this breaks LG parser, for now. FIXME
 * The text file reader should probably throw on end-of-file, instead
   of returning empty content. This would allow intermediate processors
@@ -248,7 +248,7 @@ to be
     (TextStream)   ; iterator to write to.
     (StringValue)) ; strings to write
 ```
-Since links can't actualy store Values, the above have to be executable
+Since links can't actually store Values, the above have to be executable
 things that return the desired streams.
 
 How to write?

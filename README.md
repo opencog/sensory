@@ -38,7 +38,7 @@ The task being tackled here is at once much simpler and much harder:
 exploring the unix filesystem, and interacting via chat. This might
 sound easy, trivially easy, even, if you're a software developer.
 The hard part is this: how does an agent know what a "file" is?
-What a "directoy" is? Actions it can perform are to walk the directory
+What a "directory" is? Actions it can perform are to walk the directory
 tree; but why? Is it somehow "fun" for the agent to walk directories
 and look at files? What should it do next? Read the same file again,
 or maybe try some other file? Will the agent notice that maybe some

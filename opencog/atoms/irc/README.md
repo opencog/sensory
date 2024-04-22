@@ -22,3 +22,20 @@ Design Issues
 -------------
 What's the right way to do the above, using Atomese Atoms and Values?
 what is the API that is natural for an agent to work with? I don't know.
+
+The basic "action" seems to be "Open", which philosophically is "look
+at". The result of "open" is a data stream that can be sampled. But this
+data stream is complex: it has structure. If the stream is chat
+conversation, then how do we represent the different users talking,
+their nicks, hosts, etc.?
+
+What about sub-actions? After taking the action to join a server, one
+has several subactions. One is to list all of the channels. Another
+action is to select one channel and join it. After joining a channel,
+there are several more sub-actions possible: list all of the users,
+start a private conversation with a single user, or spew stuff into
+the (public) channel.
+
+The sub-actions are modal: they do not become possible or available,
+until certain earlier actions have been performed. The menu of possible
+actions also changes modally: some actions might disappear over time.
