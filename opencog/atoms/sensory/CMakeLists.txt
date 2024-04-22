@@ -4,9 +4,9 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
 
 ADD_LIBRARY (sensory SHARED
+	OpenLink.cc
 	OutputStream.cc
 	SensoryNode.cc
-	TextFileNode.cc
 	TextFileStream.cc
 	WriteLink.cc
 )
@@ -25,9 +25,9 @@ INSTALL (TARGETS sensory EXPORT AtomSpaceTargets
 )
 
 INSTALL (FILES
+	OpenLink.h
 	OutputStream.h
 	SensoryNode.h
-	TextFileNode.h
 	TextFileStream.h
 	WriteLink.h
 	DESTINATION "include/opencog/atoms/sensory"

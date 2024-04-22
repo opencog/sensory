@@ -32,44 +32,12 @@ namespace opencog
  *  @{
  */
 
-// Similar to a StorageNode, but a simpler API that can be
-// implemented in a more general setting.  API offers open, close
-// read, write, erase functions. Some are virtual.
+// At this time, just a holder of URL's and nothing more.
 class SensoryNode : public Node
 {
 public:
 	SensoryNode(Type, std::string);
 	virtual ~SensoryNode();
-
-	// ----------------------------------------------------------------
-
-#ifdef MAYBE_LATER
-// Stuff below is copied from StorageNode and is maybe a good
-// idea and maybe a bad idea. Scaffolding for now. Deal with this
-// later, as appropriate.
-	/**
-	 * Initialize storage at the remote end. There must already be
-	 * an open connection to the remote end; and the remote end must
-	 * be vacant or empty.  For example: for an SQL server, this can
-	 * be used to create the database, the tables in the database for
-	 * the first time.
-	 */
-	virtual void create(void);
-
-	/**
-	 * Destroy the storage at the remote end. Empties the remote end of
-	 * data, and then undoes whaterver `create()` did. Remote ends might
-	 * not honor this request, e.g. if other clients have open
-	 * connections.
-	 */
-	virtual void destroy(void);
-
-	/**
-	 * Erase the entire contents of the remote end. Performs a bulk
-	 * deletion of all data.
-	 */
-	virtual void erase(void);
-#endif
 
 	/**
 	 * Return debug diagnostics and/or performance monitoring stats.

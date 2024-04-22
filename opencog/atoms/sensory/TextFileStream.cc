@@ -48,6 +48,16 @@ TextFileStream::TextFileStream(const std::string& str)
 	init(str);
 }
 
+TextFileStream::TextFileStream(const Handle& senso)
+	: OutputStream(TEXT_FILE_STREAM)
+{
+	if (SENSORY_NODE != senso->get_type())
+		throw RuntimeException(TRACE_INFO,
+			"Expecting SensoryNode, got %s\n", senso->to_string().c_str());
+
+	init(senso->get_name());
+}
+
 TextFileStream::~TextFileStream()
 {
 	if (_fh)
@@ -244,3 +254,4 @@ bool TextFileStream::operator==(const Value& other) const
 
 // Adds factory when library is loaded.
 DEFINE_VALUE_FACTORY(TEXT_FILE_STREAM, createTextFileStream, std::string)
+DEFINE_VALUE_FACTORY(TEXT_FILE_STREAM, createTextFileStream, Handle)
