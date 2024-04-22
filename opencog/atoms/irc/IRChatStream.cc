@@ -129,23 +129,75 @@ int IRChatStream::end_of_motd(const char* params, irc_reply_data* ird)
 int IRChatStream::got_privmsg(const char* params, irc_reply_data* ird)
 {
 	fixup_reply(ird);
-	printf("chatbot priv params=%s\n", params);
-	printf("chatbot priv motd nick=%s ident=%s host=%s target=%s\n",
+	printf(">>> priv motd nick=%s ident=%s host=%s target=%s\n",
 		ird->nick, ird->ident, ird->host, ird->target);
+
+	const char * start = params;
+	bool priv = false;
+	if (0 == _nick.strcmp (ird->target))
+	{
+		start = params+1;
+		priv = true;
+	}
+
+	// Reply to request for chat client version.
+	// Needed under rare situations?
+	if ((0x1 == start[0]) && !strncmp (&start[1], "VERSION", 7))
+	{
+		const char* version =
+			"Atomese Sensory Stream (https://github.com/opencog/sensory)";
+
+		char * msg_target = ird->target;
+		if (priv) msg_target = ird->nick;
+
+		conn->privmsg (msg_target, version);
+		reutrn 0;
+	}
+
+	printf(">>> priv messag=%s\n", start);
 
 	return 0;
 }
 
 int IRChatStream::got_kick(const char* params, irc_reply_data* ird)
 {
+	fixup_reply(ird);
+	printf("got kicked -- input=%s\n", params);
+	printf("nick=%s ident=%s host=%s target=%s\n",
+	       ird->nick, ird->ident, ird->host, ird->target);
 	return 0;
 }
 
 // ==================================================================
+
+// Infinite loop.
+// XXX Needs majro redesign. Works for now.
 void IRChatStream::looper(void)
 {
-	printf("duuud enter looper\n");
-	_conn->message_loop();
+printf("duuud enter looper\n");
+	// Defaults
+	const char* nick = "sensor";
+	const char* user = "botski";
+	const char* name = "Atomese Sensory Stream";
+	const char* pass = "";
+
+	// Loop forever. When the IRC network burps and closes our
+	// connection, just log in again.
+	while (true)
+	{
+		printf("Joining network=%s port=%d nick=%s user=%s\n",
+			_host.c_str(), _port, nick, user);
+
+		int rc = _conn->start(_host.c_str(), _port, nick, user, name, pass);
+		if (rc)
+			throw RuntimeException(TRACE_INFO,
+				"Unable to connect (%d) to URL \"%s\"\n", rc, url.c_str());
+
+		_conn->message_loop();
+		fprintf(stderr, "Fatal Error: Remote side closed socket\n");
+		_conn->disconnect();
+		sleep(20);
+	}
 }
 
 /// IRC URL format is described here:
@@ -178,25 +230,16 @@ void IRChatStream::init(const std::string& url)
 		throw RuntimeException(TRACE_INFO,
 			"Invalid IRC URL \"%s\"\n", url.c_str());
 
-	std::string host;
-	int port = 6667;
+	_port = 6667;
 	if (std::string::npos == col or sls < col)
-	{
-		host = url.substr(base, sls-base);
-	}
+		_host = url.substr(base, sls-base);
 	else
 	{
 		// const char *ho = url.substr(base, col-base).c_str();
-		host = url.substr(base, col-base);
-		port = atoi(url.substr(col+1, sls-col-1).c_str());
+		_host = url.substr(base, col-base);
+		_port = atoi(url.substr(col+1, sls-col-1).c_str());
 	}
 	_channel = url.substr(sls+1);
-
-	// Defaults
-	const char* nick = "sensor";
-	const char* user = "botski";
-	const char* name = "Atomese Sensory Node";
-	const char* pass = "";
 
 	_conn = new IRC;
 	_conn->context = this;
@@ -204,11 +247,6 @@ void IRChatStream::init(const std::string& url)
 	_conn->hook_irc_command("376", &xend_of_motd);
 	_conn->hook_irc_command("PRIVMSG", &xgot_privmsg);
 	_conn->hook_irc_command("KICK", &xgot_kick);
-
-	int rc = _conn->start(host.c_str(), port, nick, user, name, pass);
-	if (rc)
-		throw RuntimeException(TRACE_INFO,
-			"Unable to connect (%d) to URL \"%s\"\n", rc, url.c_str());
 
 	// Run I/O loop in it's own thread.
 	_loop = new std::thread(&IRChatStream::looper, this);

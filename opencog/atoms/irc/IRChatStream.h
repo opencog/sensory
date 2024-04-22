@@ -62,7 +62,10 @@ protected:
 	virtual void update() const;
 
 	std::string _uri;
+	std::string _host;
+	int _port;
 	std::string _channel;
+	std::string _nick;
 	void prt_value(const ValuePtr&);
 
 public:
