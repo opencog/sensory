@@ -19,5 +19,16 @@
 ; the file.
 txt-stream
 
+; Write stuff too
+(cog-set-value!
+   (Anchor "IRC Bot") (Predicate "tester") txt-stream)
+
+; Create a WriteLink
+(define writer
+   (WriteLink
+      (ValueOf (Anchor "IRC Bot") (Predicate "tester"))
+      (Concept "I just said something on IRC")))
+
+
 ; --------------------------------------------------------
 ; The End! That's All, Folks!

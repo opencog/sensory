@@ -217,6 +217,9 @@ printf("duuud enter looper\n");
 /// ircs://<host>[:<port>]/[<channel>[?<channel_keyword>]]
 /// irc6://<host>[:<port>]/[<channel>[?<channel_keyword>]]
 ///
+/// What I need:
+/// irc://<host>[:<port>]/<channel>/<nick>
+///
 void IRChatStream::init(const std::string& url)
 {
 	_conn = nullptr;
@@ -287,21 +290,36 @@ void IRChatStream::update() const
 
 // ==============================================================
 // Write stuff to a file.
-void IRChatStream::prt_value(const ValuePtr& content)
+void IRChatStream::do_write(const std::string& str)
 {
 #if 0
+	bool priv = true;
+	char * msg_target;
+	if (priv)
+		msg_target = ird->nick;
+	else
+		msg_target = ird->target;
+#endif
+	// const char * msg_target = "linas";
+	const char * msg_target = "#opencog";
+
+	_conn->privmsg(msg_target, str.c_str());
+}
+
+// XXX Below is identical to TextStream
+void IRChatStream::prt_value(const ValuePtr& content)
+{
 	if (content->is_type(STRING_VALUE))
 	{
 		StringValuePtr svp(StringValueCast(content));
 		const std::vector<std::string>& strs = svp->value();
 		for (const std::string& str : strs)
-			fprintf(_fh, "%s", str.c_str());
+			do_write(str);
 		return;
 	}
 	if (content->is_type(NODE))
 	{
-		const std::string& name = HandleCast(content)->get_name();
-		fprintf(_fh, " %s", name.c_str());
+		do_write(HandleCast(content)->get_name());
 		return;
 	}
 	if (content->is_type(LINK_VALUE))
@@ -326,19 +344,18 @@ void IRChatStream::prt_value(const ValuePtr& content)
 
 	throw RuntimeException(TRACE_INFO,
 		"Expecting strings, got %s\n", content->to_string().c_str());
-#endif
 }
 
 // Write stuff to a file.
 ValuePtr IRChatStream::write_out(AtomSpace* as, bool silent,
                                    const Handle& cref)
 {
-	ValuePtr content = cref;
-#if 0
-	if (nullptr == _fh)
+	if (nullptr == _conn)
 		throw RuntimeException(TRACE_INFO,
-			"Text stream not open: URI \"%s\"\n", _uri.c_str());
+			"IRC stream not open: URI \"%s\"\n", _uri.c_str());
 
+// XXX FIXME code below is Identical to TextStream
+	ValuePtr content = cref;
 	if (cref->is_executable())
 	{
 		content = cref->execute(as, silent);
@@ -352,7 +369,6 @@ ValuePtr IRChatStream::write_out(AtomSpace* as, bool silent,
 	if (not content->is_type(LINK_STREAM_VALUE))
 	{
 		prt_value(content);
-		fflush(_fh);
 		return content;
 	}
 
@@ -377,10 +393,8 @@ ValuePtr IRChatStream::write_out(AtomSpace* as, bool silent,
 			prt_value(v);
 			nprinted ++;
 		}
-		fflush(_fh);
 		if (0 == nprinted) break;
 	}
-#endif
 	return content;
 }
 
