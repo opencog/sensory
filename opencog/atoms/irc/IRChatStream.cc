@@ -63,6 +63,7 @@ IRChatStream::IRChatStream(const Handle& senso)
 
 IRChatStream::~IRChatStream()
 {
+	// XXX TODO kill the looper thread, too
 	if (_conn)
 	{
 		_conn->disconnect();
@@ -134,7 +135,7 @@ int IRChatStream::got_privmsg(const char* params, irc_reply_data* ird)
 
 	const char * start = params;
 	bool priv = false;
-	if (0 == _nick.strcmp (ird->target))
+	if (0 == _nick.compare (ird->target))
 	{
 		start = params+1;
 		priv = true;
@@ -150,8 +151,8 @@ int IRChatStream::got_privmsg(const char* params, irc_reply_data* ird)
 		char * msg_target = ird->target;
 		if (priv) msg_target = ird->nick;
 
-		conn->privmsg (msg_target, version);
-		reutrn 0;
+		_conn->privmsg (msg_target, version);
+		return 0;
 	}
 
 	printf(">>> priv messag=%s\n", start);
@@ -171,7 +172,7 @@ int IRChatStream::got_kick(const char* params, irc_reply_data* ird)
 // ==================================================================
 
 // Infinite loop.
-// XXX Needs majro redesign. Works for now.
+// XXX Needs major redesign. Works for now.
 void IRChatStream::looper(void)
 {
 printf("duuud enter looper\n");
@@ -191,7 +192,7 @@ printf("duuud enter looper\n");
 		int rc = _conn->start(_host.c_str(), _port, nick, user, name, pass);
 		if (rc)
 			throw RuntimeException(TRACE_INFO,
-				"Unable to connect (%d) to URL \"%s\"\n", rc, url.c_str());
+				"Unable to connect (%d) to URL \"%s\"\n", rc, _uri.c_str());
 
 		_conn->message_loop();
 		fprintf(stderr, "Fatal Error: Remote side closed socket\n");
