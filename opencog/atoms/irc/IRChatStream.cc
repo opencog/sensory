@@ -71,11 +71,8 @@ IRChatStream::~IRChatStream()
 	_conn->quit("Adios");
 	_conn->disconnect();
 
-printf("duude join looper thread\n");
 	_loop->join();
-printf("duude done join looper thread\n");
 	delete _loop;
-
 }
 
 // ==================================================================
@@ -184,10 +181,12 @@ void IRChatStream::looper(void)
 			throw RuntimeException(TRACE_INFO,
 				"Unable to connect (%d) to URL \"%s\"\n", rc, _uri.c_str());
 
-		_conn->message_loop();
+		rc = _conn->message_loop();
 		if (_cancel) return;
 
-		fprintf(stderr, "IRChatStream Error: Remote side closed socket\n");
+		if (rc) perror("IRChatStream Error: Socket error");
+
+		// For now, assume we got kicked and want to spawn again.
 		_conn->disconnect();
 		sleep(20);
 	}

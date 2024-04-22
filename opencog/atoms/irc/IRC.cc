@@ -268,7 +268,9 @@ int IRC::message_loop()
 		ret_len=recv(irc_socket, buffer, 1023, 0);
 		if (ret_len==SOCKET_ERROR || !ret_len)
 		{
+			#ifdef __IRC_DEBUG__
 			perror("Exit main loop");
+			#endif
 			return 1;
 		}
 		buffer[ret_len]='\0';
