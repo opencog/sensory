@@ -20,20 +20,23 @@
 		(Open (Type 'IRChatStream)
 			(SensoryNode "irc://echobot@irc.libera.chat:6667"))))
 
-; The accessor for the above location
-(define echobot (ValueOf (Anchor "IRC Bot") (Predicate "echo")))
+; Read and Write accessor for the above location.
+; Using the StreamValueOf automatically dereferences the stream for us.
+; Using the naked ValueOf gives direct access.
+(define bot-read (StreamValueOf (Anchor "IRC Bot") (Predicate "echo")))
+(define bot-write (ValueOf (Anchor "IRC Bot") (Predicate "echo")))
 
 ; An alternate (better?) design would be to not run the execute!
 ; until later, when we actually need it. For now, we punt.
 
 ; Join a channel.  This is a hack, for demo/testing. A real
 ; agent would have freedeom to wander channel-space.
-(cog-execute! (Write echobot (List (Concept "JOIN #opencog"))))
+(cog-execute! (Write bot-write (List (Concept "JOIN #opencog"))))
 
 ; -------------------------------------------------------
 ; Set up stream reading
 ; The current message can be read (using guile) as
-;    (define msg (first (cog-value->list (cog-execute! echobot))))
+;    (define msg (first (cog-value->list (cog-execute! bot-read))))
 ; The above is kind of convoluted, and is worth explaining:
 ; * The cog-execute! attempts to read the stream. It hangs if
 ;   there's nothing there. That's OK.
@@ -44,6 +47,16 @@
 ;
 ; We want the Atomese equivalent for the above.
 ;
+(define ext
+	(Filter
+		(Rule
+			(VariableList
+				(Variable "$from") (Variable "$to") (Variable "$msg"))
+			(LinkSignature
+				(Type 'LinkValue)
+
+
+(cog-execute! ext)
 
 ; -------------------------------------------------------
 ; Set up stream writing.

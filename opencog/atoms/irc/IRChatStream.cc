@@ -24,6 +24,7 @@
 #include <opencog/util/exceptions.h>
 #include <opencog/util/oc_assert.h>
 #include <opencog/atoms/base/Node.h>
+#include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atoms/value/StringValue.h>
 #include <opencog/atoms/value/ValueFactory.h>
 
@@ -295,11 +296,11 @@ printf(">>> IRC msg from %s to %s =%s\n", ird->nick, ird->target, params);
 	// ird->target is who the message is to. It typically has one
 	// of two values: the channel name, and so a public message, or
 	// my nick, in which case its a private message to me.
-	std::vector<std::string> msg;
-	msg.push_back(ird->nick);
-	msg.push_back(ird->target);
-	msg.push_back(start);
-	ValuePtr svp(createStringValue(msg));
+	ValueSeq msg;
+	msg.push_back(createStringValue(ird->nick));
+	msg.push_back(createStringValue(ird->target));
+	msg.push_back(createStringValue(start));
+	ValuePtr svp(createLinkValue(msg));
 	push(svp); // concurrent_queue<ValutePtr>::push(svp);
 	return 0;
 }
