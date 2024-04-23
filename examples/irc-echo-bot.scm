@@ -48,17 +48,11 @@
 			(LinkSignature (Type 'LinkValue)
 				(Variable "$from") (Variable "$to") (Variable "$msg"))
 			(LinkSignature (Type 'LinkValue)
-				(StringValue "PRIVMSG")
+				(Item "PRIVMSG")
 				(Variable "$from")
-				(StringValue "you said: ")
+				(Item "you said: ")
 				(Variable "$msg")))
-		bot-read))
-
-(define ext
-	(Filter
-		(VariableList
-			(Variable "$from") (Variable "$to") (Variable "$msg"))
-		bot-read))
+		(LinkSignature (Type 'LinkValue) bot-read)))
 
 (cog-execute! ext)
 
@@ -70,11 +64,16 @@
 
 ; The writer, that will copy from the cmd-source to the bot,
 ; whenever it is executed.
-(define writer (Write echobot cmd-source))
+(define writer (Write bot-write cmd-source))
 
 ; Initial greeting
 (cog-set-value! (Anchor "IRC Bot") (Predicate "cmd")
 	(StringValue "PRIVMSG" "linas" "deadbeef"))
+
+(cog-set-value! (Anchor "IRC Bot") (Predicate "cmd")
+	(LinkValue
+		(Item "PRIVMSG") (StringValue "linas")
+			(StringValue "deadbeef text")))
 
 ; -------------------------------------------------------
 ; XXX Use SetValue instead...
