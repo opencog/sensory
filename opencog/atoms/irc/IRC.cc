@@ -347,24 +347,30 @@ void IRC::parse_irc_reply(char* data)
 		// Examples:
 		// :zinc.libera.chat NOTICE * :*** Checking Ident
 		// :zinc.libera.chat NOTICE * :*** No Ident response
+		// :tantalum.libera.chat 001 echobot :Welcome to the Libera.Chat
 		// :zinc.libera.chat 376 sensor :End of /MOTD command.
 		// :sensor!~botski@www.linas.org JOIN #opencog
 		// :zinc.libera.chat 353 sensor = #opencog :sensor linas aindilis
 		// :linas!~linas@www.linas.org PRIVMSG sensor :yo
+
+		// hostd is everything up to the first blank.
+		// cmd is the second token on the line.
 		hostd=&data[1];
 		cmd=strchr(hostd, ' ');
-		if (!cmd)
-			return;
+		if (!cmd) return;
 		*cmd='\0';
 		cmd++;
+
+		// params are the third and subsequent tokens on the line.
 		params=strchr(cmd, ' ');
 		if (params)
 		{
 			*params='\0';
 			params++;
 		}
+
+		// Decode the host string.
 		hostd_tmp.nick=hostd;
-		hostd_tmp.target=params;
 		hostd_tmp.ident=strchr(hostd, '!');
 		if (hostd_tmp.ident)
 		{
@@ -376,6 +382,23 @@ void IRC::parse_irc_reply(char* data)
 				*hostd_tmp.host='\0';
 				hostd_tmp.host++;
 			}
+		}
+
+		// In many interesting cases, the target is the first
+		// part of params. Deal with that now.
+		if (0 == strcmp(cmd, "PRIVMSG") ||
+		    0 == strcmp(cmd, "NOTICE") ||
+		    0 == strcmp(cmd, "001") ||
+		    0 == strcmp(cmd, "002")
+		   )
+		{
+			hostd_tmp.target=params;
+			params=strchr(hostd_tmp.target, ' ');
+			if (params) *params='\0';
+			params++;
+
+			call_hook(cmd, params, &hostd_tmp);
+			return;
 		}
 
 		if (!strcmp(cmd, "JOIN"))
@@ -718,28 +741,6 @@ void IRC::parse_irc_reply(char* data)
 					strcpy(cup->channel, chan_temp);
 				}
 			}
-		}
-		else if (!strcmp(cmd, "NOTICE"))
-		{
-			hostd_tmp.target=params;
-			params=strchr(hostd_tmp.target, ' ');
-			if (params)
-				*params='\0';
-			params++;
-			#ifdef __IRC_DEBUG__
-			printf("%s >-%s- %s\n", hostd_tmp.nick, hostd_tmp.target, &params[1]);
-			#endif
-		}
-		else if (!strcmp(cmd, "PRIVMSG"))
-		{
-			hostd_tmp.target=params;
-			params=strchr(hostd_tmp.target, ' ');
-			if (!params)
-				return;
-			*(params++)='\0';
-			#ifdef __IRC_DEBUG__
-			printf("%s: <%s> %s\n", hostd_tmp.target, hostd_tmp.nick, &params[1]);
-			#endif
 		}
 		else if (!strcmp(cmd, "NICK"))
 		{
