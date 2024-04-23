@@ -138,6 +138,11 @@ void IRChatStream::init(const std::string& url)
 	_conn->hook_irc_command("376", &xend_of_motd);
 	_conn->hook_irc_command("KICK", &xgot_kick);
 	_conn->hook_irc_command("403", &xgot_misc);
+	_conn->hook_irc_command("421", &xgot_misc);
+	_conn->hook_irc_command("NOTICE", &xgot_misc);
+	_conn->hook_irc_command("353", &xgot_misc);
+	_conn->hook_irc_command("705", &xgot_misc);
+	_conn->hook_irc_command("706", &xgot_misc);
 
 	// Other messages:
 	// NOTICE - server notices
@@ -148,7 +153,11 @@ void IRChatStream::init(const std::string& url)
 	// 353 - channel members
 	// 366 - end of list of channel members
 	// 328 - channel title?
+	// 353 - channel users
 	// 403 - channnel not found
+	// 421 - unknown command
+	// 705 - reply to HELP command
+	// 706 - end of reply to HELP command
 	// MODE - read-write modes
 
 	// Run I/O loop in it's own thread.
@@ -319,18 +328,22 @@ void IRChatStream::update() const
 }
 
 // ==============================================================
+
+#define CHKNARG(NUM,MSG) \
+	if (cmdstrs.size() < NUM) \
+		throw RuntimeException(TRACE_INFO, MSG);
+
 /// Deal with IRC commands
 /// Expecting structured values:
 /// command-name + arguments
 void IRChatStream::run_cmd(const std::vector<std::string>& cmdstrs)
 {
-	if (cmdstrs.size() < 2)
-		throw RuntimeException(TRACE_INFO,
-			"Expecting at least two args\n");
+	if (0 == cmdstrs.size()) return;
 
 	const std::string& cmd = cmdstrs[0];
 	if (0 == cmd.compare("PRIVMSG"))
 	{
+		CHKNARG(3, "Expecting at least three arugments");
 		const char* msg_target = cmdstrs[1].c_str();
 		for (size_t i=2; i< cmdstrs.size(); i++)
 			_conn->privmsg(msg_target, cmdstrs[i].c_str());
@@ -339,6 +352,7 @@ void IRChatStream::run_cmd(const std::vector<std::string>& cmdstrs)
 
 	if (0 == cmd.compare("JOIN"))
 	{
+		CHKNARG(2, "Expecting at least two arugments");
 		// Channels must always start with hash mark.
 		const char* channel = cmdstrs[1].c_str();
 		// if ('#' != _channel[0]) _channel = "#" + _channel;
@@ -346,8 +360,17 @@ void IRChatStream::run_cmd(const std::vector<std::string>& cmdstrs)
 		return;
 	}
 
-	throw RuntimeException(TRACE_INFO,
-		"Unsupported command %s\n", cmd.c_str());
+	if (0 == cmd.compare("PART"))
+	{
+		CHKNARG(2, "Expecting at least two arugments");
+		const char* channel = cmdstrs[1].c_str();
+		_conn->part(channel);
+		return;
+	}
+
+	// Anythig goes. Raw commands. Server will bitch if we do
+	// something wrong.
+	_conn->raw(cmd.c_str());
 }
 
 // ==============================================================
