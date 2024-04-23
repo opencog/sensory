@@ -1,6 +1,6 @@
 
 Internet Relay Chat
--------------------
+===================
 IRC chat API. Can connect to IRC, read, and write. Works but still
 a rough prototype.
 
@@ -57,18 +57,18 @@ equivalences, possibly commutative equivalences.) There are no a priori
 equivalences.
 
 * Continuous space: Movement in a space with arbitrarily small movement
-  increments. The shape of the space is contrained by equivalences (e.g.
+  increments. The shape of the space is constrained by equivalences (e.g.
   group presentation equivalences that convert a free group into Eucliden
   space). This includes holonomic constraints: the joint-angle space of
   a robot arm.
 
-There is no "continuos movement" in IRC. So punt on that.
+There is no "continuous movement" in IRC. So punt on that.
 
 ### Perception of possibilities
 The menu of actions needs to be perceived: one must explicitly "look at"
 the menu of possible actions that lead to possible future worlds. To
 have a consistent paradigm of what we've done so far, the answer seems to
-be: open the object (like a directory listing) and read whats there, and
+be: open the object (like a directory listing) and read what's there, and
 pick one.
 
 ### Designating actions
@@ -79,7 +79,7 @@ are designated with URL's. Three problems:
   first part of the URL is redundant.
 * On receipt of channel listing, how do we join a specific channel?
 * We want to avoid string string concatenation of building custom URL's
-  because nothing in Atomese so far does sting stuff. Its hypergraphs,
+  because nothing in Atomese so far does string stuff. Its hypergraphs,
   always. Don't want to invent a string-concatenator.
 
 The conventional object-oriented style is to "send a message". What are

@@ -115,8 +115,9 @@ See also:
 ### Design specifics
 Details of the design in this git repo are explored in several places:
 
-* [DesignNotes](DesignNotes.md) -- Design of WriteLink
+* [DesignNotes](DesignNotes.md) -- Design of `OpenLink` and `WriteLink`
 * [IRChatStream](opencog/atoms/irc/README.md) -- IRC chat design.
+* [TextFileStream](opencog/atoms/filedir/README.md) -- Directory navigation design.
 
 ### Building
 This git repo follows the same directory structure and coding

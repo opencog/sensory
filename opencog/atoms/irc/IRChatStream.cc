@@ -154,7 +154,7 @@ void IRChatStream::init(const std::string& url)
 	// 366 - end of list of channel members
 	// 328 - channel title?
 	// 353 - channel users
-	// 403 - channnel not found
+	// 403 - channel not found
 	// 421 - unknown command
 	// 705 - reply to HELP command
 	// 706 - end of reply to HELP command
@@ -252,7 +252,7 @@ static void fixup_reply(irc_reply_data* ird)
 }
 
 /// Do not attempt to join any channels, until MOTD has arrived.
-/// XXX Implement me as a sempahore or mutex or something.
+/// XXX Implement me as a semaphore or mutex or something.
 int IRChatStream::end_of_motd(const char* params, irc_reply_data* ird)
 {
 	return 0;
@@ -316,7 +316,7 @@ void IRChatStream::update() const
 	if (is_closed() and 0 == concurrent_queue<ValuePtr>::size()) return;
 
 	// Read one at a time. (???)
-	// This will hang, untill there's something to read.
+	// This will hang, until there's something to read.
 	try
 	{
 		ValuePtr val;
@@ -347,7 +347,7 @@ void IRChatStream::run_cmd(const std::vector<std::string>& cmdstrs)
 	const std::string& cmd = cmdstrs[0];
 	if (0 == cmd.compare("PRIVMSG"))
 	{
-		CHKNARG(3, "Expecting at least three arugments");
+		CHKNARG(3, "Expecting at least three arguments");
 		const char* msg_target = cmdstrs[1].c_str();
 		for (size_t i=2; i< cmdstrs.size(); i++)
 			_conn->privmsg(msg_target, cmdstrs[i].c_str());
@@ -356,7 +356,7 @@ void IRChatStream::run_cmd(const std::vector<std::string>& cmdstrs)
 
 	if (0 == cmd.compare("JOIN"))
 	{
-		CHKNARG(2, "Expecting at least two arugments");
+		CHKNARG(2, "Expecting at least two arguments");
 		// Channels must always start with hash mark.
 		const char* channel = cmdstrs[1].c_str();
 		// if ('#' != _channel[0]) _channel = "#" + _channel;
@@ -366,13 +366,13 @@ void IRChatStream::run_cmd(const std::vector<std::string>& cmdstrs)
 
 	if (0 == cmd.compare("PART"))
 	{
-		CHKNARG(2, "Expecting at least two arugments");
+		CHKNARG(2, "Expecting at least two arguments");
 		const char* channel = cmdstrs[1].c_str();
 		_conn->part(channel);
 		return;
 	}
 
-	// Anythig goes. Raw commands. Server will bitch if we do
+	// Anything goes. Raw commands. Server will bitch if we do
 	// something wrong.
 	_conn->raw(cmd.c_str());
 }

@@ -15,7 +15,7 @@ Super-experimental. Not sure how this will work out.
 
 Only the first is being implemented.  The second has some useful
 scaffolding code in the old opencog repo that needs to be copied here.
-The third is currrently a daydream. The fourth exists as a
+The third is currently a daydream. The fourth exists as a
 proof-of-concept, implementing a wrapper around OpenCV.
 
 General information about the `sensory_types.script` file can be found
