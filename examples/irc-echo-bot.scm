@@ -31,7 +31,22 @@
 (cog-execute! (Write echobot (List (Concept "JOIN #opencog"))))
 
 ; -------------------------------------------------------
-; Set up stream processing
+; Set up stream reading
+; The current message can be read (using guile) as
+;    (define msg (first (cog-value->list (cog-execute! echobot))))
+; The above is kind of convoluted, and is worth explaining:
+; * The cog-execute! attempts to read the stream. It hangs if
+;   there's nothing there. That's OK.
+; * The cog-value->list unwraps the IRChatStream returned by execute!
+;   We want this unwrapped, as otherwise each new reference to the
+;   stream hangs, waiting on more chat.
+; * The car just gets the first elt in the list; it's a StringValue.
+;
+; We want the Atomese equivalent for the above.
+;
+
+; -------------------------------------------------------
+; Set up stream writing.
 
 ; The place where commands will be streamed.
 (define cmd-source (ValueOf (Anchor "IRC Bot") (Predicate "cmd")))
@@ -44,12 +59,11 @@
 (cog-set-value! (Anchor "IRC Bot") (Predicate "cmd")
 	(StringValue "PRIVMSG" "linas" "deadbeef"))
 
+; -------------------------------------------------------
 ; XXX Use SetValue instead...
 (define (set-msg msg)
 	(cog-set-value! (Anchor "IRC Bot") (Predicate "cmd")
 		(StringValue "PRIVMSG" "linas" msg)))
-
-; -------------------------------------------------------
 
 ; Create an infinite loop. This will block if there is nothing to read.
 (define do-exit-loop #f)
