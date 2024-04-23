@@ -25,18 +25,18 @@ irc-stream
 ; pure-Atomese access to the stream, thus allowing it to be
 ; written to.
 (cog-set-value!
-   (Anchor "IRC Bot") (Predicate "tester") irc-stream)
+	(Anchor "IRC Bot") (Predicate "tester") irc-stream)
 
 ; Join an IRC channel
 (cog-execute!
-   (WriteLink
-      (ValueOf (Anchor "IRC Bot") (Predicate "tester"))
+	(WriteLink
+		(ValueOf (Anchor "IRC Bot") (Predicate "tester"))
 		(List (Concept "JOIN") (Concept "#opencog"))))
 
 ; Say something on that channel
 (cog-execute!
-   (WriteLink
-      (ValueOf (Anchor "IRC Bot") (Predicate "tester"))
+	(WriteLink
+		(ValueOf (Anchor "IRC Bot") (Predicate "tester"))
 		(List (Concept "PRIVMSG") (Concept "#opencog")
 			(Concept "Here's a bunch of words I want to say"))))
 
@@ -46,9 +46,9 @@ irc-stream
 ; For this purpose, create a WriteLink that, when executed, will
 ; copy from the input stream to the IRC stream.
 (define writer
-   (WriteLink
-      (ValueOf (Anchor "IRC Bot") (Predicate "tester"))
-      (ValueOf (Anchor "Stuff to say") (Predicate "say key"))))
+	(WriteLink
+		(ValueOf (Anchor "IRC Bot") (Predicate "tester"))
+		(ValueOf (Anchor "Stuff to say") (Predicate "say key"))))
 
 ; From this point on, commands are streamed by placing them
 ; onto the input key, and then executing the writer.
@@ -70,6 +70,15 @@ irc-stream
 
 ; Say something
 (cog-execute! writer)
+
+; ------------------------------------------------------------
+; Low-level access. Not recommended; provided for debugging.
+
+(define bot (ValueOf (Anchor "IRC Bot") (Predicate "tester")))
+(cog-execute!  (Write bot (List
+	(Concept "HELP"))))
+
+; HELP is one of the IRC server commands.
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!

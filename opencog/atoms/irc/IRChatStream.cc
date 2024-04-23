@@ -261,6 +261,10 @@ int IRChatStream::end_of_motd(const char* params, irc_reply_data* ird)
 int IRChatStream::got_misc(const char* params, irc_reply_data* ird)
 {
 	fixup_reply(ird);
+
+	// The printing here is screwed up. The IRC code seems to either
+	// parse this wrong or sometimes get the modality screwed up
+	// or something. Beats me. Its a bug. I'm ignoring it for now.
 	printf("Misc reply: nick=%s ident=%s host=%s target=%s\n",
 		ird->nick, ird->ident, ird->host, ird->target);
 	printf("Misc params=%s\n", params);
