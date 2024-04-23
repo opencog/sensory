@@ -66,12 +66,12 @@ protected:
 	virtual void update() const;
 
 	std::string _uri;
+	std::string _nick;
 	std::string _host;
 	int _port;
-	std::string _channel;
-	std::string _nick;
 
-	virtual void do_write(const std::string&);
+	virtual void prt_value(const ValuePtr&);
+	void run_cmd(const std::vector<std::string>&);
 
 public:
 	IRChatStream(const Handle&);

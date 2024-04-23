@@ -87,9 +87,6 @@ IRChatStream::~IRChatStream()
 /// IRC URL format is described here:
 /// https://datatracker.ietf.org/doc/html/draft-butcher-irc-url
 ///
-/// I'll use the below approximate simplified form:
-/// irc://nick[:pass]@host[:port]/#chan
-///
 /// See also: https://ircv3.net/irc/index.html
 ///
 void IRChatStream::init(const std::string& url)
@@ -101,7 +98,7 @@ void IRChatStream::init(const std::string& url)
 		throw RuntimeException(TRACE_INFO,
 			"Unsupported URL \"%s\"\n", url.c_str());
 
-	// Make a copy, for debuggingg purposes.
+	// Make a copy, for debugging purposes.
 	_uri = url;
 
 	// Ignore the first 6 chars "irc://"
@@ -110,31 +107,28 @@ void IRChatStream::init(const std::string& url)
 
 	if (std::string::npos == nck)
 		throw RuntimeException(TRACE_INFO,
-			"Invalid IRC URL \"%s\" expecting irc://nick@host[:port]/#channel\n",
+			"Invalid IRC URL \"%s\" expecting irc://nick@host[:port]\n",
 			url.c_str());
 	_nick = url.substr(base, nck-base);
 
 	// There may or may not be a port number.
 	size_t sls = url.find('/', nck);
 	size_t col = url.find(':', nck);
-	if (std::string::npos == sls)
-		throw RuntimeException(TRACE_INFO,
-			"Invalid IRC URL \"%s\" expecting irc://nick@host[:port]/#channel\n",
-			url.c_str());
 
 	_port = 6667;
 	nck ++;
-	if (std::string::npos == col or sls < col)
-		_host = url.substr(nck, sls-nck);
+	if (std::string::npos == col)
+	{
+		if (std::string::npos == sls)
+			_host = url.substr(nck);
+		else
+			_host = url.substr(nck, sls-nck);
+	}
 	else
 	{
 		_host = url.substr(nck, col-nck);
 		_port = atoi(url.substr(col+1, sls-col-1).c_str());
 	}
-
-	// Channels must always start with hash mark.
-	_channel = url.substr(sls+1);
-	if ('#' != _channel[0]) _channel = "#" + _channel;
 
 	_conn = new IRC;
 	_conn->context = this;
@@ -240,20 +234,18 @@ static void fixup_reply(irc_reply_data* ird)
 	ird->ident = (NULL == ird->ident) ? (char *) "" : ird->ident;
 	ird->host = (NULL == ird->host) ? (char *) "" : ird->host;
 	ird->target = (NULL == ird->target) ? (char *) "" : ird->target;
+
+#if DEBUG
+	printf(">>> IRC nick=%s ident=%s host=%s target=%s\n",
+		ird->nick, ird->ident, ird->host, ird->target);
+	printf(">>> IRC reply params=%s\n", params);
+#endif
 }
 
-// Do not attempt to join any channels, until MOTD has arrived.
+/// Do not attempt to join any channels, until MOTD has arrived.
+/// XXX Implement me as a sempahore or mutex or something.
 int IRChatStream::end_of_motd(const char* params, irc_reply_data* ird)
 {
-#if DEBUG
-	fixup_reply(ird);
-	printf("chatbot got params=%s\n", params);
-	printf("chatbot got motd nick=%s ident=%s host=%s target=%s\n",
-		ird->nick, ird->ident, ird->host, ird->target);
-#endif
-
-	_conn->join(_channel.c_str());
-	_conn->join("#boguschan");
 	return 0;
 }
 
@@ -327,18 +319,69 @@ void IRChatStream::update() const
 }
 
 // ==============================================================
-// Write stuff to a file.
-void IRChatStream::do_write(const std::string& str)
+/// Deal with IRC commands
+/// Expecting structured values:
+/// command-name + arguments
+void IRChatStream::run_cmd(const std::vector<std::string>& cmdstrs)
 {
-	const char * msg_target = "linas";
-	// const char * msg_target = "#opencog";
+	if (cmdstrs.size() < 2)
+		throw RuntimeException(TRACE_INFO,
+			"Expecting at least two args\n");
 
-	_conn->privmsg(msg_target, str.c_str());
+	const std::string& cmd = cmdstrs[0];
+	if (0 == cmd.compare("PRIVMSG"))
+	{
+		const char* msg_target = cmdstrs[1].c_str();
+		for (size_t i=2; i< cmdstrs.size(); i++)
+			_conn->privmsg(msg_target, cmdstrs[i].c_str());
+		return;
+	}
+
+	if (0 == cmd.compare("JOIN"))
+	{
+		// Channels must always start with hash mark.
+		const char* channel = cmdstrs[1].c_str();
+		// if ('#' != _channel[0]) _channel = "#" + _channel;
+		_conn->join(channel);
+		return;
+	}
+
+	throw RuntimeException(TRACE_INFO,
+		"Unsupported command %s\n", cmd.c_str());
+}
+
+// ==============================================================
+/// Deal with different kinds of stream formats.
+void IRChatStream::prt_value(const ValuePtr& command_data)
+{
+	if (command_data->is_type(STRING_VALUE))
+	{
+		StringValuePtr svp(StringValueCast(command_data));
+		run_cmd(svp->value());
+		return;
+	}
+
+	if (LIST_LINK == command_data->get_type())
+	{
+		std::vector<std::string> cmd;
+		for (const Handle& ho : HandleCast(command_data)->getOutgoingSet())
+		{
+			if (not ho->is_node())
+				throw RuntimeException(TRACE_INFO,
+					"Expecting node; got %s\n", ho->to_string().c_str());
+			cmd.push_back(ho->get_name());
+		}
+		run_cmd(cmd);
+		return;
+	}
+
+	throw RuntimeException(TRACE_INFO,
+		"Unsupported data %s\n", command_data->to_string().c_str());
 }
 
 // Write stuff to a file.
 ValuePtr IRChatStream::write_out(AtomSpace* as, bool silent,
-                                   const Handle& cref)
+                                 const Handle& cref)
 {
 	if (nullptr == _conn)
 		throw RuntimeException(TRACE_INFO,
