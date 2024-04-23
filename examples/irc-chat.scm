@@ -1,7 +1,8 @@
 ;
 ; irc-chat.scm -- IRC chat demo
 ;
-; Demo opening channel to IRC and exchanging messages on it.
+; Demo of the basic IRC interface. This offers a simple way to
+; connect to IRC and exchange messages.
 ;
 (use-modules (opencog) (opencog exec) (opencog sensory))
 
@@ -20,18 +21,39 @@
 ; the file.
 irc-stream
 
-; Place the stream at a "well-known location", so that it can be written
-to.
+; Place the stream at a "well-known location". This will allow
+; pure-Atomese access to the stream, thus allowing it to be
+; written to.
 (cog-set-value!
    (Anchor "IRC Bot") (Predicate "tester") irc-stream)
 
+; Join an IRC channel
+(cog-execute!
+   (WriteLink
+      (ValueOf (Anchor "IRC Bot") (Predicate "tester"))
+		(List (Concept "JOIN") (Concept "#opencog"))))
 
+; Say something on that channel
+(cog-execute!
+   (WriteLink
+      (ValueOf (Anchor "IRC Bot") (Predicate "tester"))
+		(List (Concept "PRIVMSG") (Concept "#opencog")
+			(Concept "Here's a bunch of words I want to say"))))
 
-; Create a WriteLink
+; ------------------------------------------------------------
+; The above explicitly provides IRC commands and text as Atoms.
+; For agents, it is more convenient to flow these as a stream.
+; For this purpose, create a WriteLink that, when executed, will
+; copy from the input stream to the IRC stream.
 (define writer
    (WriteLink
       (ValueOf (Anchor "IRC Bot") (Predicate "tester"))
       (ValueOf (Anchor "Stuff to say") (Predicate "say key"))))
+
+; From this point on, commands are streamed by placing them
+; onto the input key, and then executing the writer.
+; This time, the stream is a StringValue vector, instead of the
+; ConceptNodes above.
 
 ; Specify a channel to join
 (cog-set-value!
