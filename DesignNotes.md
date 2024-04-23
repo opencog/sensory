@@ -77,6 +77,7 @@ TODO List
   to have an easier time of it.
 * The concurrent queue should be changed to finite-size buffer and
   discard old data.
+* The NICK command gets a badly-parsed response if the nick is in use.
 
 
 Early draft notes

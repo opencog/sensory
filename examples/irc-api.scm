@@ -83,7 +83,6 @@ irc-stream
 ; Low-level command: change a nick.
 (cog-execute!  (Write bot (List (Concept "NICK dorkbot"))))
 
-
 (cog-execute!  (Write bot (List (Concept "HELP"))))
 
 ; HELP is one of the IRC server commands.
