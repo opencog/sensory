@@ -12,19 +12,19 @@
 (use-modules (srfi srfi-1))
 (use-modules (opencog) (opencog exec) (opencog sensory))
 
-; Open connection to an IRC server.
-(define irc-stream
-   (cog-execute!
-      (Open
-         (Type 'IRChatStream)
-         (SensoryNode "irc://echobot@irc.libera.chat:6667"))))
+; Open connection to an IRC server, and place the resulting stream
+; where we can find it again.
+(cog-execute!
+	(SetValue
+		(Anchor "IRC Bot") (Predicate "echo")
+		(Open (Type 'IRChatStream)
+			(SensoryNode "irc://echobot@irc.libera.chat:6667"))))
 
-; Place the stream at a "well-known location".
-(cog-set-value! (Anchor "IRC Bot") (Predicate "echo") irc-stream)
+; The accessor for the above location
 (define echobot (ValueOf (Anchor "IRC Bot") (Predicate "echo")))
 
-; A better design for above would be a declarative (Open...)
-; followed by an execute much later.  For now, we punt.
+; An alternate (better?) design would be to not run the execute!
+; until later, when we actually need it. For now, we punt.
 
 ; Join a channel.  This is a hack, for demo/testing. A real
 ; agent would have freedeom to wander channel-space.
