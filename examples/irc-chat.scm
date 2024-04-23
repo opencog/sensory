@@ -10,7 +10,7 @@
 ; is given by a URL of the form
 ; irc://nick[:pass]@host[:port]/#channel
 ;
-(define txt-stream
+(define irc-stream
 	(cog-execute!
 		(Open
 			(Type 'IRChatStream)
@@ -18,17 +18,21 @@
 
 ; Repeated references to the stream will return single lines from
 ; the file.
-txt-stream
+irc-stream
 
 ; Write stuff too
 (cog-set-value!
-   (Anchor "IRC Bot") (Predicate "tester") txt-stream)
+   (Anchor "IRC Bot") (Predicate "tester") irc-stream)
 
 ; Create a WriteLink
 (define writer
    (WriteLink
       (ValueOf (Anchor "IRC Bot") (Predicate "tester"))
-      (Concept "I just said something on IRC")))
+      (ValueOf (Anchor "Stuff to say") (Predicate "say key"))))
+
+(cog-set-value!
+	(Anchor "Stuff to say") (Predicate "say key")
+	(StringValue "PRIVMSG" "#opencog" "I have something to say"))
 
 ; Write to the chat channel.
 (cog-execute! writer)

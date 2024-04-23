@@ -71,7 +71,7 @@ protected:
 	std::string _channel;
 	std::string _nick;
 
-	virtual void do_write(const std::string&);
+	virtual void prt_value(const ValuePtr&);
 
 public:
 	IRChatStream(const Handle&);
