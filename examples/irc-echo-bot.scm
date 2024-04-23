@@ -40,7 +40,7 @@
 ;
 ; We want the Atomese equivalent for the above.
 ;
-(define ext
+(define make-ping-msg
 	(Filter
 		(Rule
 			(VariableList
@@ -54,7 +54,12 @@
 				(Variable "$msg")))
 		(LinkSignature (Type 'LinkValue) bot-read)))
 
-(cog-execute! ext)
+(define suck (cog-execute! make-ping-msg))
+
+(cog-set-value! (Anchor "IRC Bot") (Predicate "cmd") suck)
+(cog-execute!
+	(SetValue (Anchor "IRC Bot") (Predicate "cmd") make-ping-msg))
+
 
 ; -------------------------------------------------------
 ; Set up stream writing.
@@ -66,10 +71,7 @@
 ; whenever it is executed.
 (define writer (Write bot-write cmd-source))
 
-; Initial greeting
-(cog-set-value! (Anchor "IRC Bot") (Predicate "cmd")
-	(StringValue "PRIVMSG" "linas" "deadbeef"))
-
+; Initial default greeting. Should never actually appear.
 (cog-set-value! (Anchor "IRC Bot") (Predicate "cmd")
 	(LinkValue
 		(Item "PRIVMSG") (StringValue "linas")

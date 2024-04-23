@@ -359,8 +359,18 @@ void IRChatStream::run_cmd(const std::vector<std::string>& cmdstrs)
 	{
 		CHKNARG(3, "Expecting at least three arguments");
 		const char* msg_target = cmdstrs[1].c_str();
+
+		if (cmdstrs.size() == 3)
+		{
+			_conn->privmsg(msg_target, cmdstrs[2].c_str());
+			return;
+		}
+
+		// Concatenate the rest into a single line.
+		std::string msg;
 		for (size_t i=2; i< cmdstrs.size(); i++)
-			_conn->privmsg(msg_target, cmdstrs[i].c_str());
+			msg += cmdstrs[i];
+		_conn->privmsg(msg_target, msg.c_str());
 		return;
 	}
 
@@ -400,17 +410,17 @@ void IRChatStream::prt_value(const ValuePtr& command_data)
 
 	if (command_data->is_type(LINK_VALUE))
 	{
-		const LinkValuePtr& lvp(LinkValueCast(command_data));
+		// Syntactic sugar: unwrap a doubly-wrapped LinkValue
+		// These arise "naturally" as a result of filtering,
+		// and are a pain in the next to deal with. So we'll
+		// just do it "for free" here.
+		LinkValuePtr lvp(LinkValueCast(command_data));
+		if (lvp->size() == 1 and lvp->value()[0]->is_type(LINK_VALUE))
+			lvp = LinkValueCast(lvp->value()[0]);
+
 		std::vector<std::string> cmd;
 		for (const ValuePtr& vp : lvp->value())
 		{
-			// Note that the PRIVMSG command handler sends each
-			// additional string beyond the core command-target as
-			// a distinct message to the target. So if we end up with
-			// five strings in the string-vector, three messages will
-			// be sent. Just FYI. We could also attempt to concatenate
-			// the strings here. This is .. API design randomness.
-			// FIXME as needed or not.
 			if (vp->is_type(STRING_VALUE))
 			{
 				const StringValuePtr& svp(StringValueCast(vp));
