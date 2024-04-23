@@ -31,13 +31,37 @@
 (cog-execute! (Write echobot (List (Concept "JOIN #opencog"))))
 
 ; -------------------------------------------------------
+; Set up stream processing
+
+; The place where commands will be streamed.
+(define cmd-source (ValueOf (Anchor "IRC Bot") (Predicate "cmd")))
+
+; The writer, that will copy from the cmd-source to the bot,
+; whenever it is executed.
+(define writer (Write echobot cmd-source))
+
+; Initial greeting
+(cog-set-value! (Anchor "IRC Bot") (Predicate "cmd")
+	(StringValue "PRIVMSG" "linas" "deadbeef"))
+
+; XXX Use SetValue instead...
+(define (set-msg msg)
+	(cog-set-value! (Anchor "IRC Bot") (Predicate "cmd")
+		(StringValue "PRIVMSG" "linas" msg)))
+
+; -------------------------------------------------------
 
 ; Create an infinite loop. This will block if there is nothing to read.
 (define do-exit-loop #f)
-(define msg #f)
 (define (inf-loop)
-	(set! msg (car (cog-value->list (cog-execute! echobot))))
+	; Messy gunk to deref the value instead of letting
+	; guile hang us.
+	(define msg (car (cog-value->list (cog-execute! echobot))))
 	(format #t "overheard ~A\n" msg)
+
+	(define txt (cog-value-ref msg 2))
+	(set-msg (string-append "you said " txt))
+	(cog-execute! writer)
 	(if (not do-exit-loop) (inf-loop)))
 
 (define thread-id (call-with-new-thread inf-loop))
@@ -51,3 +75,5 @@
 ; thread declaration. We should do this in Atomese, instead,
 
 
+; The End. That's all, folks!
+; -------------------------------------------------------
