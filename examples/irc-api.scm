@@ -1,7 +1,7 @@
 ;
-; irc-chat.scm -- IRC chat demo
+; irc-api.scm -- IRC API demo
 ;
-; Demo of the basic IRC interface. This offers a simple way to
+; Demo of the basic IRC interface. The API offers a simple way to
 ; connect to IRC and exchange messages.
 ;
 (use-modules (opencog) (opencog exec) (opencog sensory))
