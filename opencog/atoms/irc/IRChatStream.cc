@@ -398,6 +398,36 @@ void IRChatStream::prt_value(const ValuePtr& command_data)
 		return;
 	}
 
+	if (command_data->is_type(LINK_VALUE))
+	{
+		const LinkValuePtr& lvp(LinkValueCast(command_data));
+		std::vector<std::string> cmd;
+		for (const ValuePtr& vp : lvp->value())
+		{
+			// Note that the PRIVMSG command handler sends each
+			// additional string beyond the core command-target as
+			// a distinct message to the target. So if we end up with
+			// five strings in the string-vector, three messages will
+			// be sent. Just FYI. We could also attempt to concatenate
+			// the strings here. This is .. API design randomness.
+			// FIXME as needed or not.
+			if (vp->is_type(STRING_VALUE))
+			{
+				const StringValuePtr& svp(StringValueCast(vp));
+				for (const std::string& str : svp->value())
+					cmd.push_back(str);
+			}
+			else
+			if (vp->is_node())
+				cmd.push_back(HandleCast(vp)->get_name());
+			else
+				throw RuntimeException(TRACE_INFO,
+					"Expecting node or string; got %s\n", vp->to_string().c_str());
+		}
+		run_cmd(cmd);
+		return;
+	}
+
 	if (LIST_LINK == command_data->get_type())
 	{
 		std::vector<std::string> cmd;

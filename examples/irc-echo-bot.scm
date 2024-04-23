@@ -73,7 +73,7 @@
 (cog-set-value! (Anchor "IRC Bot") (Predicate "cmd")
 	(LinkValue
 		(Item "PRIVMSG") (StringValue "linas")
-			(StringValue "deadbeef text")))
+			(StringValue "deadbeef" "text" "vector")))
 
 ; -------------------------------------------------------
 ; XXX Use SetValue instead...
