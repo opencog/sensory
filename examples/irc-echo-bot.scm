@@ -36,14 +36,7 @@
 ; -------------------------------------------------------
 ; Set up stream reading
 ; The current message can be read (using guile) as
-;    (define msg (first (cog-value->list (cog-execute! bot-read))))
-; The above is kind of convoluted, and is worth explaining:
-; * The cog-execute! attempts to read the stream. It hangs if
-;   there's nothing there. That's OK.
-; * The cog-value->list unwraps the IRChatStream returned by execute!
-;   We want this unwrapped, as otherwise each new reference to the
-;   stream hangs, waiting on more chat.
-; * The car just gets the first elt in the list; it's a StringValue.
+;    (define msg (cog-value-ref (cog-execute! bot-read) 2)))
 ;
 ; We want the Atomese equivalent for the above.
 ;
@@ -52,9 +45,20 @@
 		(Rule
 			(VariableList
 				(Variable "$from") (Variable "$to") (Variable "$msg"))
-			(LinkSignature
-				(Type 'LinkValue)
+			(LinkSignature (Type 'LinkValue)
+				(Variable "$from") (Variable "$to") (Variable "$msg"))
+			(LinkSignature (Type 'LinkValue)
+				(StringValue "PRIVMSG")
+				(Variable "$from")
+				(StringValue "you said: ")
+				(Variable "$msg")))
+		bot-read))
 
+(define ext
+	(Filter
+		(VariableList
+			(Variable "$from") (Variable "$to") (Variable "$msg"))
+		bot-read))
 
 (cog-execute! ext)
 
