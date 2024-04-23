@@ -135,6 +135,10 @@ void IRChatStream::init(const std::string& url)
 
 	// Hooks run in order. Privmsg will be most common.
 	_conn->hook_irc_command("PRIVMSG", &xgot_privmsg);
+
+	// 001 and 002 are server greetings.
+	_conn->hook_irc_command("001", &xgot_privmsg);
+	_conn->hook_irc_command("002", &xgot_privmsg);
 	_conn->hook_irc_command("433", &xgot_privmsg);
 	_conn->hook_irc_command("403", &xgot_privmsg);
 
@@ -284,7 +288,8 @@ int IRChatStream::got_privmsg(const char* params, irc_reply_data* ird)
 printf(">>> IRC msg from %s to %s =%s\n", ird->nick, ird->target, params);
 
 	// Skip over leading colon.
-	const char * start = params + 1;
+	const char * start = params;
+	if (':' == *start) start++;
 
 	// ird->nick is who the message is from.
 	// ird->target is who the message is to. It typically has one
