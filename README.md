@@ -76,8 +76,8 @@ engineer, one could map chat I/O to a filesystem-style interface.)
 Trying to support both keeps us honest.
 
 ### Status
-Version 0.2.1 -- Experimental. Starting to gel. There might be more
-design changes ahead.
+Version 0.2.2 -- Experimental. Basic demos actually work. Overall
+architecture is ok-ish. The grand questions above remain mysterious.
 
 Provides:
 * Basic File I/O stream.
