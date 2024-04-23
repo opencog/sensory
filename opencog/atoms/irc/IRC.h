@@ -100,4 +100,5 @@ private:
 	FILE* datain;
 	channel_user* chan_users;
 	irc_command_hook* hooks;
+	FILE* logfile;
 };

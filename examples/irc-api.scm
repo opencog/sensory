@@ -73,10 +73,18 @@ irc-stream
 
 ; ------------------------------------------------------------
 ; Low-level access. Not recommended; provided for debugging.
+; Debug log is being written to /tmp/irc-dbg.log
 
 (define bot (ValueOf (Anchor "IRC Bot") (Predicate "tester")))
-(cog-execute!  (Write bot (List
-	(Concept "HELP"))))
+
+; low-leve command: join a channel
+(cog-execute!  (Write bot (List (Concept "JOIN #opencog"))))
+
+; Low-level command: change a nick.
+(cog-execute!  (Write bot (List (Concept "NICK dorkbot"))))
+
+
+(cog-execute!  (Write bot (List (Concept "HELP"))))
 
 ; HELP is one of the IRC server commands.
 

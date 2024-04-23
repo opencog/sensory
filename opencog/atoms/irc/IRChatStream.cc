@@ -135,9 +135,12 @@ void IRChatStream::init(const std::string& url)
 
 	// Hooks run in order. Privmsg will be most common.
 	_conn->hook_irc_command("PRIVMSG", &xgot_privmsg);
+	_conn->hook_irc_command("433", &xgot_privmsg);
+	_conn->hook_irc_command("403", &xgot_privmsg);
+
+	// Bypass the message I/O for some of this stuff.
 	_conn->hook_irc_command("376", &xend_of_motd);
 	_conn->hook_irc_command("KICK", &xgot_kick);
-	_conn->hook_irc_command("403", &xgot_misc);
 	_conn->hook_irc_command("421", &xgot_misc);
 	_conn->hook_irc_command("NOTICE", &xgot_misc);
 	_conn->hook_irc_command("353", &xgot_misc);
@@ -156,6 +159,7 @@ void IRChatStream::init(const std::string& url)
 	// 353 - channel users
 	// 403 - channel not found
 	// 421 - unknown command
+	// 433 - :Nickname is already in use.
 	// 705 - reply to HELP command
 	// 706 - end of reply to HELP command
 	// MODE - read-write modes
