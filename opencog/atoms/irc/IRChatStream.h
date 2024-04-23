@@ -71,6 +71,7 @@ protected:
 	int _port;
 
 	virtual void prt_value(const ValuePtr&);
+	void run_cmd(const std::vector<std::string>&);
 
 public:
 	IRChatStream(const Handle&);

@@ -322,36 +322,43 @@ void IRChatStream::update() const
 /// Deal with IRC commands
 /// Expecting structured values:
 /// command-name + arguments
+void IRChatStream::run_cmd(const std::vector<std::string>& cmdstrs)
+{
+	if (cmdstrs.size() < 2)
+		throw RuntimeException(TRACE_INFO,
+			"Expecting at least two args\n");
+
+	const std::string& cmd = cmdstrs[0];
+	if (0 == cmd.compare("PRIVMSG"))
+	{
+		const char* msg_target = cmdstrs[1].c_str();
+		for (size_t i=2; i< cmdstrs.size(); i++)
+			_conn->privmsg(msg_target, cmdstrs[i].c_str());
+		return;
+	}
+
+	if (0 == cmd.compare("JOIN"))
+	{
+		// Channels must always start with hash mark.
+		const char* channel = cmdstrs[1].c_str();
+		// if ('#' != _channel[0]) _channel = "#" + _channel;
+		_conn->join(channel);
+		return;
+	}
+
+	throw RuntimeException(TRACE_INFO,
+		"Unsupported command %s\n", cmd.c_str());
+}
+
+// ==============================================================
+/// Deal with different kinds of stream formats.
 void IRChatStream::prt_value(const ValuePtr& command_data)
 {
 	if (command_data->is_type(STRING_VALUE))
 	{
 		StringValuePtr svp(StringValueCast(command_data));
-		const std::vector<std::string>& cmdstrs = svp->value();
-		if (cmdstrs.size() < 2)
-			throw RuntimeException(TRACE_INFO,
-				"Bad command %s\n", svp->to_string().c_str());
-
-		const std::string& cmd = cmdstrs[0];
-		if (0 == cmd.compare("PRIVMSG"))
-		{
-			const char* msg_target = cmdstrs[1].c_str();
-			for (size_t i=2; i< cmdstrs.size(); i++)
-				_conn->privmsg(msg_target, cmdstrs[i].c_str());
-			return;
-		}
-
-		if (0 == cmd.compare("JOIN"))
-		{
-			// Channels must always start with hash mark.
-			const char* channel = cmdstrs[1].c_str();
-			// if ('#' != _channel[0]) _channel = "#" + _channel;
-			_conn->join(channel);
-			return;
-		}
-
-		throw RuntimeException(TRACE_INFO,
-			"Unsupported command %s\n", cmd.c_str());
+		run_cmd(svp->value());
+		return;
 	}
 
 	throw RuntimeException(TRACE_INFO,
