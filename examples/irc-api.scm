@@ -78,12 +78,15 @@ irc-stream
 (define bot (ValueOf (Anchor "IRC Bot") (Predicate "tester")))
 
 ; low-leve command: join a channel
-(cog-execute!  (Write bot (List (Concept "JOIN #opencog"))))
+(cog-execute! (Write bot (List (Concept "JOIN #opencog"))))
 
 ; Low-level command: change a nick.
-(cog-execute!  (Write bot (List (Concept "NICK dorkbot"))))
+(cog-execute! (Write bot (List (Concept "NICK dorkbot"))))
 
-(cog-execute!  (Write bot (List (Concept "HELP"))))
+; Low-level command: set channel topic.
+(cog-execute! (Write bot (List (Concept "TOPIC #opencog Who's an operator now"))))
+
+(cog-execute! (Write bot (List (Concept "HELP"))))
 
 ; HELP is one of the IRC server commands.
 
