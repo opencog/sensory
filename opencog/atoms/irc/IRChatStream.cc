@@ -361,13 +361,27 @@ void IRChatStream::prt_value(const ValuePtr& command_data)
 		return;
 	}
 
+	if (LIST_LINK == command_data->get_type())
+	{
+		std::vector<std::string> cmd;
+		for (const Handle& ho : HandleCast(command_data)->getOutgoingSet())
+		{
+			if (not ho->is_node())
+				throw RuntimeException(TRACE_INFO,
+					"Expecting node; got %s\n", ho->to_string().c_str());
+			cmd.push_back(ho->get_name());
+		}
+		run_cmd(cmd);
+		return;
+	}
+
 	throw RuntimeException(TRACE_INFO,
 		"Unsupported data %s\n", command_data->to_string().c_str());
 }
 
 // Write stuff to a file.
 ValuePtr IRChatStream::write_out(AtomSpace* as, bool silent,
-                                   const Handle& cref)
+                                 const Handle& cref)
 {
 	if (nullptr == _conn)
 		throw RuntimeException(TRACE_INFO,

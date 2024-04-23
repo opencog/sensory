@@ -20,9 +20,12 @@
 ; the file.
 irc-stream
 
-; Write stuff too
+; Place the stream at a "well-known location", so that it can be written
+to.
 (cog-set-value!
    (Anchor "IRC Bot") (Predicate "tester") irc-stream)
+
+
 
 ; Create a WriteLink
 (define writer
