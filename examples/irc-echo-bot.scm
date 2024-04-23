@@ -24,22 +24,44 @@
 ; Using the StreamValueOf automatically dereferences the stream for us.
 ; Using the naked ValueOf gives direct access.
 (define bot-read (StreamValueOf (Anchor "IRC Bot") (Predicate "echo")))
-(define bot-write (ValueOf (Anchor "IRC Bot") (Predicate "echo")))
+(define bot-raw (ValueOf (Anchor "IRC Bot") (Predicate "echo")))
 
 ; An alternate (better?) design would be to not run the execute!
 ; until later, when we actually need it. For now, we punt.
 
+; Individual messages can be read like so:
+(cog-execute! bot-read)
+
 ; Join a channel.  This is a hack, for demo/testing. A real
 ; agent would have freedeom to wander channel-space.
-(cog-execute! (Write bot-write (List (Concept "JOIN #opencog"))))
+(cog-execute! (Write bot-raw (List (Concept "JOIN #opencog"))))
+
+; Leave, like so:
+; (cog-execute! (Write bot-raw (List (Concept "PART #opencog"))))
 
 ; -------------------------------------------------------
-; Set up stream reading
-; The current message can be read (using guile) as
-;    (define msg (cog-value-ref (cog-execute! bot-read) 2)))
-;
-; We want the Atomese equivalent for the above.
-;
+; Set up stream writing.
+
+; The place where outgoing IRC commands will be streamed.
+(define cmd-source (ValueOf (Anchor "IRC Bot") (Predicate "cmd")))
+
+; The writer will copy from the cmd-source to the bot,
+; whenever it is executed.
+(define writer (Write bot-raw cmd-source))
+
+; Initial default greeting. Should never actually appear.
+; (unless, that is, you say `(cog-execute! writer)` now.
+(cog-set-value! (Anchor "IRC Bot") (Predicate "cmd")
+	(LinkValue
+		(Item "PRIVMSG") (StringValue "linas")
+			(StringValue "deadbeef " "text " "vector")))
+
+; -------------------------------------------------------
+; Set up the basic ping filter.
+; A single message can be read by saying (cog-execute! bot-read)
+; The filter below, when executed, will pull in a single message,
+; pattern match it, and write a reply.
+
 (define make-ping-msg
 	(Filter
 		(Rule
@@ -52,36 +74,12 @@
 				(Variable "$from")
 				(Item "you said: ")
 				(Variable "$msg")))
-		(LinkSignature (Type 'LinkValue) bot-read)))
+		bot-raw))
 
-(define suck (cog-execute! make-ping-msg))
-
-(cog-set-value! (Anchor "IRC Bot") (Predicate "cmd") suck)
 (cog-execute!
 	(SetValue (Anchor "IRC Bot") (Predicate "cmd") make-ping-msg))
 
-
 ; -------------------------------------------------------
-; Set up stream writing.
-
-; The place where commands will be streamed.
-(define cmd-source (ValueOf (Anchor "IRC Bot") (Predicate "cmd")))
-
-; The writer, that will copy from the cmd-source to the bot,
-; whenever it is executed.
-(define writer (Write bot-write cmd-source))
-
-; Initial default greeting. Should never actually appear.
-(cog-set-value! (Anchor "IRC Bot") (Predicate "cmd")
-	(LinkValue
-		(Item "PRIVMSG") (StringValue "linas")
-			(StringValue "deadbeef" "text" "vector")))
-
-; -------------------------------------------------------
-; XXX Use SetValue instead...
-(define (set-msg msg)
-	(cog-set-value! (Anchor "IRC Bot") (Predicate "cmd")
-		(StringValue "PRIVMSG" "linas" msg)))
 
 ; Create an infinite loop. This will block if there is nothing to read.
 (define do-exit-loop #f)
