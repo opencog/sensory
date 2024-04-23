@@ -338,6 +338,7 @@ void IRC::parse_irc_reply(char* data)
 	char* p;
 	char* chan_temp;
 
+	hostd_tmp.host=0;
 	hostd_tmp.target=0;
 
 	#ifdef __IRC_DEBUG__
@@ -346,6 +347,13 @@ void IRC::parse_irc_reply(char* data)
 
 	if (data[0]==':')
 	{
+		// Examples:
+		// :zinc.libera.chat NOTICE * :*** Checking Ident
+		// :zinc.libera.chat NOTICE * :*** No Ident response
+		// :zinc.libera.chat 376 sensor :End of /MOTD command.
+		// :sensor!~botski@www.linas.org JOIN #opencog
+		// :zinc.libera.chat 353 sensor = #opencog :sensor linas aindilis
+		// :linas!~linas@www.linas.org PRIVMSG sensor :yo
 		hostd=&data[1];
 		cmd=strchr(hostd, ' ');
 		if (!cmd)
@@ -359,6 +367,7 @@ void IRC::parse_irc_reply(char* data)
 			params++;
 		}
 		hostd_tmp.nick=hostd;
+		hostd_tmp.target=params;
 		hostd_tmp.ident=strchr(hostd, '!');
 		if (hostd_tmp.ident)
 		{
