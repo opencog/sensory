@@ -8,13 +8,13 @@
 ; --------------------------------------------------------
 ; Basic demo: Open a connection to an IRC node. The connection
 ; is given by a URL of the form
-; irc://nick[:pass]@host[:port]/#channel
+; irc://nick[:pass]@host[:port]
 ;
 (define irc-stream
 	(cog-execute!
 		(Open
 			(Type 'IRChatStream)
-			(SensoryNode "irc://botty@irc.libera.chat:6667/#opencog"))))
+			(SensoryNode "irc://botty@irc.libera.chat:6667"))))
 
 ; Repeated references to the stream will return single lines from
 ; the file.
@@ -30,11 +30,20 @@ irc-stream
       (ValueOf (Anchor "IRC Bot") (Predicate "tester"))
       (ValueOf (Anchor "Stuff to say") (Predicate "say key"))))
 
+; Specify a channel to join
+(cog-set-value!
+	(Anchor "Stuff to say") (Predicate "say key")
+	(StringValue "JOIN" "#opencog"))
+
+; Join that channel
+(cog-execute! writer)
+
+; Specify something to say.
 (cog-set-value!
 	(Anchor "Stuff to say") (Predicate "say key")
 	(StringValue "PRIVMSG" "#opencog" "I have something to say"))
 
-; Write to the chat channel.
+; Say something
 (cog-execute! writer)
 
 ; --------------------------------------------------------
