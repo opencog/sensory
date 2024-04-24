@@ -12,37 +12,30 @@
 (use-modules (srfi srfi-1))
 (use-modules (opencog) (opencog exec) (opencog sensory))
 
-; Open connection to an IRC server, and place the resulting stream
-; where we can find it again.
+; Open connection to an IRC server, and attach the stream to an Atom.
+; This allows it to be located, when needed. If the Atom is "well
+; known", then everyone can find it.
 (cog-execute!
 	(SetValue
 		(Anchor "IRC Bot") (Predicate "echo")
 		(Open (Type 'IRChatStream)
 			(SensoryNode "irc://echobot@irc.libera.chat:6667"))))
 
-; Read and Write accessor for the above location.
+; Build a pair of read and Write accessors for the above location.
 ; Using the StreamValueOf automatically dereferences the stream for us.
-; Using the naked ValueOf gives direct access.
+; Using the naked ValueOf gives direct (read and write) access.
 (define bot-read (StreamValueOf (Anchor "IRC Bot") (Predicate "echo")))
 (define bot-raw (ValueOf (Anchor "IRC Bot") (Predicate "echo")))
-
-; An alternate (better?) design would be to not run the execute!
-; until later, when we actually need it. For now, we punt.
 
 ; Individual messages can be read like so:
 (cog-execute! bot-read)
 
-; Join a channel.  This is a hack, for demo/testing. A real
-; agent would have freedom to wander channel-space.
-(cog-execute! (Write bot-raw (List (Concept "JOIN #opencog"))))
-
-; Leave, like so:
-; (cog-execute! (Write bot-raw (List (Concept "PART #opencog"))))
+; An alternate design would be to finish setting everything up, before
+; opening a connection. But we want to demo it's operation as we go
+; along. Having a live connection is harmless.
 
 ; -------------------------------------------------------
-; Set up the basic ping filter.
-;
-; A single message can be read by saying (cog-execute! bot-read)
+; Set up the basic echo filter.
 ;
 ; Messages come in two types: private messages, and channel messages.
 ; Private messages have the form:
@@ -62,7 +55,8 @@
 ; The filter below, when executed, will pull in a single message,
 ; pattern match it, and write a private reply to the sender.
 ; More correctly, executing `make-private-reply` will get one message,
-; and rewrite it. Executing the private-echo will read-modify-write.
+; and rewrite it; but that's it it doesn't send. The private-echo
+; below will read-modify-write.
 
 (define make-private-reply
 	(Filter
@@ -82,6 +76,30 @@
 
 ; Try it, once
 (cog-execute! private-echo)
+
+; The above works, but is "dangerous": if the bot is placed on a public
+; channel, it will echo every post on that channel, back to the user who
+; sent it. This will get annoying, fast, and get the bot kicked. Some
+; sort of more restrained ehavior is needed.
+;
+; In a pure agential design, the bot might perceive the kick, and
+; perhaps might percieve a kick as painful, and use that as a
+; hint to modify it's behavior. However, using evolutionary pressure,
+; where users kick annoying bots, is perhaps not a very good way of
+; running agents.
+;
+; This "agential issue" is not solvable in the present context. The rest
+; of this demo continues to focus on pipeline processing.
+
+; -------------------------------------------------------
+; How about a reply on a public channel?
+
+; Join a channel.  This is a hack, for demo/testing. A real
+; agent would have freedom to wander channel-space.
+(cog-execute! (Write bot-raw (List (Concept "JOIN #opencog"))))
+
+; Leave, like so:
+; (cog-execute! (Write bot-raw (List (Concept "PART #opencog"))))
 
 ; -------------------------------------------------------
 
