@@ -99,6 +99,30 @@
 ; will get it kicked. So we want a message processing pipeline that is
 ; aware of being on a public channel, and replies only when spoken to.
 
+; To accomplish this, we first need a tutorial on Atomese pipelines.
+; So here's a sequence of tricks.
+; -----------------
+; Trick: calling scheme code (this works for python, too)
+
+(use-modules (opencog) (opencog exec) (opencog sensory))
+(define exo
+	(ExecutionOutput
+		(GroundedSchema "scm: foo")  ; the function
+		(List (Concept "bar"))))     ; the arguments
+
+; A scheme function that will be called. In general, these should
+; return some Atom or Value.
+(define (foo x)
+	(format #t "I got ~A\n" x)
+	(Concept "foo reply"))   ; Must return an Atom, else an error will
+
+; Run it and see.
+(cog-execute! exo)
+
+; -----------------
+; Trick:
+
+
 (define foobar-echo
 	(WriteLink bot-raw
 		(Filter
