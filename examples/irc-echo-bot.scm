@@ -99,6 +99,21 @@
 ; will get it kicked. So we want a message processing pipeline that is
 ; aware of being on a public channel, and replies only when spoken to.
 
+(define foobar-echo
+	(WriteLink bot-raw
+		(Filter
+			(Rule
+				(VariableList
+					(Variable "$from") (Variable "$to") (Variable "$msg"))
+				(LinkSignature (Type 'LinkValue)
+					(Variable "$from") (Variable "$to") (Variable "$msg"))
+				(LinkSignature (Type 'LinkValue)
+					(Item "PRIVMSG")
+					(Variable "$from")
+					(Item "Du, you said: ")
+					(Variable "$msg")))
+			bot-raw)))
+
 
 
 ; Join a channel.
@@ -131,7 +146,7 @@
 
 ; Start an inf loop with the private-echo handler.
 (define thread-id (call-with-new-thread
-	(lambda () (inf-loop private-echo)))
+	(lambda () (inf-loop private-echo))))
 
 ; (exit-loop)
 
