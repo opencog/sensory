@@ -104,24 +104,35 @@
 ; -----------------
 ; Trick: calling scheme code (this works for python, too)
 
-(use-modules (opencog) (opencog exec) (opencog sensory))
 (define exo
 	(ExecutionOutput
-		(GroundedSchema "scm: foo")  ; the function
-		(List (Concept "bar"))))     ; the arguments
+		(GroundedSchema "scm: foo")                ; the function
+		(List (Concept "bar") (Concept "baz"))))   ; the arguments
 
-; A scheme function that will be called. In general, these should
-; return some Atom or Value.
-(define (foo x)
-	(format #t "I got ~A\n" x)
-	(Concept "foo reply"))   ; Must return an Atom, else an error will
+(define (foo x y)
+	(format #t "I got ~A and ~A\n" x y)
+	(Concept "foo reply"))
 
 ; Run it and see.
 (cog-execute! exo)
 
 ; -----------------
-; Trick:
+; Just like above, but use the function to read the stream
 
+(define (process-stream stm)
+	(format #t "Stream is ~A\n" stm)
+	(define retv (cog-execute! stm))
+	(format #t "Stream read gave ~A\n" retv)
+	retv)
+
+(define read-stream
+	(ExecutionOutput
+		(GroundedSchema "scm: process-stream")
+		bot-raw))
+
+(cog-execute! read-stream)
+
+; -----------------
 
 (define foobar-echo
 	(WriteLink bot-raw
