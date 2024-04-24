@@ -138,7 +138,7 @@
 (define exocet
 	(ExecutionOutput
 		(Lambda (VariableList
-			; Expect three arguements
+			; Expect three arguments
 			(Variable "$from") (Variable "$to") (Variable "$msg"))
 			; Body that arguments will be beta-reduced into.
 			(List (Item "foobar") (Variable "$to")))
@@ -150,8 +150,19 @@
 (cog-execute! exocet)
 
 ; -----------------
-;As above
+; As above
 
+; This doen't work because the
+(define exorcist
+	(ExecutionOutput
+		(Lambda (Variable "$foo")
+			; Body that arguments will be beta-reduced into.
+			(List (Item "foobar") (Variable "$foo")))
+		 bot-read))
+
+(cog-execute! exorcist)
+
+; -----------------
 (define foobar-echo
 	(WriteLink bot-raw
 		(Filter
