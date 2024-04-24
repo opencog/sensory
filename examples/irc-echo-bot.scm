@@ -128,11 +128,29 @@
 (define read-stream
 	(ExecutionOutput
 		(GroundedSchema "scm: process-stream")
-		bot-raw))
+		bot-read))
 
 (cog-execute! read-stream)
 
 ; -----------------
+; Same as above, but this time in pure Atomese
+
+(define exocet
+	(ExecutionOutput
+		(Lambda (VariableList
+			; Expect three arguements
+			(Variable "$from") (Variable "$to") (Variable "$msg"))
+			; Body that arguments will be beta-reduced into.
+			(List (Item "foobar") (Variable "$to")))
+
+		; Arguments that the lambda will be applied to.
+		(List
+			(Concept "first") (Concept "second") (Concept "third"))))
+
+(cog-execute! exocet)
+
+; -----------------
+;As above
 
 (define foobar-echo
 	(WriteLink bot-raw
