@@ -103,18 +103,31 @@
 
 ; -------------------------------------------------------
 
-; Create an infinite loop. This will block if there is nothing to read.
-(define do-exit-loop #f)
-(define (inf-loop)
-	(cog-execute! private-echo)
-	(if (not do-exit-loop) (inf-loop)))
+; Create an infinite loop. The AGENT must be an ececutable Atom;
+; presumably, it is some Atom that interacts with IRC in some way.
+; As long as AGENT exits every now and then, the loop can be
+; interruped, as shown below.
+;
+; XXX Tail-recursive loops can also be done in Atomese, and perhaps
+; the below should be replaced by a pure-Atomese version. XXX FIXME.
 
-(define thread-id (call-with-new-thread inf-loop))
+(define do-exit-loop #f)
+(define (inf-loop AGENT)
+	(cog-execute! AGENT)
+	(if (not do-exit-loop) (inf-loop AGENT)))
+
+(define thread-id #f)
 (define (exit-loop)
 	(set! do-exit-loop #t)
 	(join-thread thread-id)
 	(format #t "Exited main loop\n")
 	(set! do-exit-loop #f))
+
+; Start an inf loop with the private-echo handler.
+(define thread-id (call-with-new-thread
+	(lambda () (inf-loop private-echo)))
+
+; (exit-loop)
 
 ; The End. That's all, folks!
 ; -------------------------------------------------------
