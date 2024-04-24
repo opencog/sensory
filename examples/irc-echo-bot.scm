@@ -93,9 +93,15 @@
 
 ; -------------------------------------------------------
 ; How about a reply on a public channel?
+;
+; As noted above, DO NOT join a public channel while the private-echo
+; agent is running (in the inf-loop, at bottom). It's incessant replies
+; will get it kicked. So we want a message processing pipeline that is
+; aware of being on a public channel, and replies only when spoken to.
 
-; Join a channel.  This is a hack, for demo/testing. A real
-; agent would have freedom to wander channel-space.
+
+
+; Join a channel.
 (cog-execute! (Write bot-raw (List (Concept "JOIN #opencog"))))
 
 ; Leave, like so:
