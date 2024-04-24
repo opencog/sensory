@@ -100,7 +100,7 @@ txt-stream
 		txt-stream-gen))
 
 ; The previous demo ran the input file to end-of-file; we need to
-; restart at the begining.
+; restart at the beginning.
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
 		(Open (Type 'TextFileStream)
@@ -123,7 +123,7 @@ txt-stream
 
 (use-modules (opencog nlp) (opencog nlp lg-parse))
 
-; As above: rewind the stream to the begining:
+; As above: rewind the stream to the beginning:
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
 		(Open (Type 'TextFileStream)

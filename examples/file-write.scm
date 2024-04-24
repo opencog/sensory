@@ -19,7 +19,7 @@
 
 ; A WriteLink consists of two parts: where to write, and what
 ; to write. Since the write cursor is a Value, not an Atom, we
-; cannot specifiy it directly. Thus, we place it at an anchor
+; cannot specify it directly. Thus, we place it at an anchor
 ; point. (Neither the name "file anchor", nor the key "output place"
 ; matter. They can be anything, and any atom can be used in their
 ; place, including Links.)

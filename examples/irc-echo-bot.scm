@@ -6,7 +6,7 @@
 ; The goal is not to create "yet another bot", but to understand how an
 ; actual autonomous agent might interact in a simple world.
 ;
-; See `irc-api.scm` for a totorial on the interfaces used here.
+; See `irc-api.scm` for a tutorial on the interfaces used here.
 ;
 (use-modules (ice-9 threads))
 (use-modules (srfi srfi-1))
@@ -33,36 +33,38 @@
 (cog-execute! bot-read)
 
 ; Join a channel.  This is a hack, for demo/testing. A real
-; agent would have freedeom to wander channel-space.
+; agent would have freedom to wander channel-space.
 (cog-execute! (Write bot-raw (List (Concept "JOIN #opencog"))))
 
 ; Leave, like so:
 ; (cog-execute! (Write bot-raw (List (Concept "PART #opencog"))))
 
 ; -------------------------------------------------------
-; Set up stream writing.
-
-; The place where outgoing IRC commands will be streamed.
-(define cmd-source (ValueOf (Anchor "IRC Bot") (Predicate "cmd")))
-
-; The writer will copy from the cmd-source to the bot,
-; whenever it is executed.
-(define writer (Write bot-raw cmd-source))
-
-; Initial default greeting. Should never actually appear.
-; (unless, that is, you say `(cog-execute! writer)` now.
-(cog-set-value! (Anchor "IRC Bot") (Predicate "cmd")
-	(LinkValue
-		(Item "PRIVMSG") (StringValue "linas")
-			(StringValue "deadbeef " "text " "vector")))
-
-; -------------------------------------------------------
 ; Set up the basic ping filter.
+;
 ; A single message can be read by saying (cog-execute! bot-read)
+;
+; Messages come in two types: private messages, and channel messages.
+; Private messages have the form:
+;    (LinkValue
+;       (StringValue "linas")
+;       (StringValue "echobot")
+;       (StringValue "bunch o text")))
+;
+; Public messages have the form:
+;    (LinkValue
+;       (StringValue "linas")
+;       (StringValue "#opencog")
+;       (StringValue "bunch o text")))
+;
+; The difference between the two is the target, in the second location.
+;
 ; The filter below, when executed, will pull in a single message,
-; pattern match it, and write a reply.
+; pattern match it, and write a private reply to the sender.
+; More correctly, executing `make-private-reply` will get one message,
+; and rewrite it. Executing the private-echo will read-modify-write.
 
-(define make-ping-msg
+(define make-private-reply
 	(Filter
 		(Rule
 			(VariableList
@@ -76,22 +78,17 @@
 				(Variable "$msg")))
 		bot-raw))
 
-(cog-execute!
-	(SetValue (Anchor "IRC Bot") (Predicate "cmd") make-ping-msg))
+(define private-echo (Write bot-raw make-private-reply))
+
+; Try it, once
+(cog-execute! private-echo)
 
 ; -------------------------------------------------------
 
 ; Create an infinite loop. This will block if there is nothing to read.
 (define do-exit-loop #f)
 (define (inf-loop)
-	; Messy gunk to deref the value instead of letting
-	; guile hang us.
-	(define msg (car (cog-value->list (cog-execute! echobot))))
-	(format #t "overheard ~A\n" msg)
-
-	(define txt (cog-value-ref msg 2))
-	(set-msg (string-append "you said " txt))
-	(cog-execute! writer)
+	(cog-execute! private-echo)
 	(if (not do-exit-loop) (inf-loop)))
 
 (define thread-id (call-with-new-thread inf-loop))
@@ -100,10 +97,6 @@
 	(join-thread thread-id)
 	(format #t "Exited main loop\n")
 	(set! do-exit-loop #f))
-
-; The above uses a lot of scheme to get things done, including the
-; thread declaration. We should do this in Atomese, instead,
-
 
 ; The End. That's all, folks!
 ; -------------------------------------------------------
