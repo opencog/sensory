@@ -196,19 +196,26 @@
 (define show (list (Variable "$from") (Variable "$to") (Variable "$msg")))
 (cog-execute! (make-applier show))
 
+; For the below to work, need to know our own name.
+(cog-set-value! (Anchor "IRC Bot")
+	(Predicate "bot-name") (StringValue "echobot"))
+
 ; Is it a public or private message?
+; It is private if (Variable "$to") is the name of the bot.
 (define is-pub?
 	(Cond
-		(Equal (Variable "$to") (Item "echobot"))
+		(Equal (Variable "$to")
+			(ValueOf (Anchor "IRC Bot") (Predicate "bot-name")))
 		(Item "private message")
 		(Item "public message")))
 (cog-execute! (make-applier is-pub?))
 
+; Create a private reply to the sender, printing mssage diagnostics.
 (define id-reply
 	(list (Item "PRIVMSG") (Variable "$from")
 	(Item "Message to ")
 	(Variable "$to")
-	(Item " is ")
+	(Item " is a ")
 	is-pub?
 	(Item " from ")
 	(Variable "$from")
@@ -216,13 +223,11 @@
 	(Variable "$msg")))
 (cog-execute! (make-echoer id-reply))
 
-
-
 ; Join a channel.
 (cog-execute! (Write bot-raw (List (Concept "JOIN #opencog"))))
 
 ; Leave, like so:
-; (cog-execute! (Write bot-raw (List (Concept "PART #opencog"))))
+(cog-execute! (Write bot-raw (List (Concept "PART #opencog"))))
 
 ; -------------------------------------------------------
 
