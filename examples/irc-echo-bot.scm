@@ -158,25 +158,63 @@
 		(Lambda (Variable "$foo")
 			; Body that arguments will be beta-reduced into.
 			(List (Item "foobar") (Variable "$foo")))
-		 bot-read))
+		 (LinkSignature (Type 'LinkValue) bot-raw)))
 
 (cog-execute! exorcist)
 
 ; -----------------
-(define foobar-echo
-	(WriteLink bot-raw
-		(Filter
-			(Rule
-				(VariableList
-					(Variable "$from") (Variable "$to") (Variable "$msg"))
-				(LinkSignature (Type 'LinkValue)
-					(Variable "$from") (Variable "$to") (Variable "$msg"))
-				(LinkSignature (Type 'LinkValue)
-					(Item "PRIVMSG")
-					(Variable "$from")
-					(Item "Du, you said: ")
-					(Variable "$msg")))
-			bot-raw)))
+; Experiments
+
+; Create a message-processiong rule. Accepts any input consisting
+; of a LinkValue holding an IRC message, extracts the three parts,
+; and then inserts the list of actoms in CONCLUSION. This is just
+; sugar to avoid lots of cut-n-paste.
+(define (make-msg-rule CONCLUSION)
+	(Rule
+		(VariableList
+			(Variable "$from") (Variable "$to") (Variable "$msg"))
+		(LinkSignature (Type 'LinkValue)
+			(Variable "$from") (Variable "$to") (Variable "$msg"))
+		(LinkSignature (Type 'LinkValue)
+			CONCLUSION)))
+
+; Convenience wrapper
+(define (make-applier CONCLUSION)
+	(Filter
+		(make-msg-rule CONCLUSION)
+		bot-raw))
+
+; Convenience wrapper. Reads from IRC, extracts message, rewrites
+; it into CONCLUSION, writes out to IRC.
+(define (make-echoer CONCLUSION)
+	(WriteLink bot-raw (make-applier CONCLUSION)))
+
+; --------
+; Examples
+
+; Show message
+(define show (list (Variable "$from") (Variable "$to") (Variable "$msg")))
+(cog-execute! (make-applier show))
+
+; Is it a public or private message?
+(define is-pub?
+	(Cond
+		(Equal (Variable "$to") (Item "echobot"))
+		(Item "private message")
+		(Item "public message")))
+(cog-execute! (make-applier is-pub?))
+
+(define id-reply
+	(list (Item "PRIVMSG") (Variable "$from")
+	(Item "Message to ")
+	(Variable "$to")
+	(Item " is ")
+	is-pub?
+	(Item " from ")
+	(Variable "$from")
+	(Item ": ")
+	(Variable "$msg")))
+(cog-execute! (make-echoer id-reply))
 
 
 
