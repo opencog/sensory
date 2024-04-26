@@ -146,9 +146,12 @@ void IRChatStream::init(const std::string& url)
 	// Bypass the message I/O for some of this stuff.
 	_conn->hook_irc_command("376", &xend_of_motd);
 	_conn->hook_irc_command("KICK", &xgot_kick);
+
+	// Misc debug printers
+	_conn->hook_irc_command("322", &xgot_misc);
+	_conn->hook_irc_command("353", &xgot_misc);
 	_conn->hook_irc_command("421", &xgot_misc);
 	_conn->hook_irc_command("NOTICE", &xgot_misc);
-	_conn->hook_irc_command("353", &xgot_misc);
 	_conn->hook_irc_command("705", &xgot_misc);
 	_conn->hook_irc_command("706", &xgot_misc);
 
@@ -156,12 +159,16 @@ void IRChatStream::init(const std::string& url)
 	// NOTICE - server notices
 	// 001-005 - server info
 	// 250-265 - channel info
+	// 321 - start of channel listing
+	// 322 - channel name and info
+	// 323 - end of channel list
+	// 328 - channel title?
+	// 353 - channel : list of nicks in channel
+	// 366 - end of /NAMES list.
 	// 375 - start of motd
 	// 372 - motd
 	// 353 - channel members
 	// 366 - end of list of channel members
-	// 328 - channel title?
-	// 353 - channel users
 	// 403 - channel not found
 	// 421 - unknown command
 	// 433 - :Nickname is already in use.

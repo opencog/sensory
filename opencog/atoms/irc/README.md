@@ -181,5 +181,31 @@ Concentional functions in computing have zero or one output connectors,
 and zero or more input connectors. The inputs and outputs are typed.
 Polymorphic types can be indicated with ChoiceLink, and so on.
 
+How can this be used to list environmental situations? Goal is to
+represent: "here's what yo can do: you can list all members of the chat
+channel, and you can open a private chat to one of them, and you can
+maybe kick or ban or give voice to one of them, but only if you are
+channel op."
+
+So, given a location in an environment, one has available:
+```
+	(ChoiceLink
+		(Section ...) ; possible action one
+		(Section ...) ; possible action two
+   ...)
+```
+
+Then, "list users" would be
+```
+	(Section
+		(Item "Informal name of this command is list users")
+		(ConnectorSeq
+			(Connector
+				(Sex "output")
+				uuhhh
+```
+
+What about different data streams? Users joining and leaving?
+
 
 ---------------------

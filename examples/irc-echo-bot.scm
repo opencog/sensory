@@ -269,6 +269,12 @@
 
 (cog-execute! (make-echoer reply-to-callout))
 
+; --------
+; Example: listen to everything, and write it to a file. This requires
+; opening a log-file.
+
+; XXX unfinished...
+
 ; -------------------------------------------------------
 
 ; Create an infinite loop. The AGENT must be an ececutable Atom;

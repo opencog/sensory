@@ -77,11 +77,23 @@ irc-stream
 
 (define bot (ValueOf (Anchor "IRC Bot") (Predicate "tester")))
 
-; low-leve command: join a channel
+; Low-level command: join a channel
 (cog-execute! (Write bot (List (Concept "JOIN #opencog"))))
 
 ; Low-level command: change a nick.
 (cog-execute! (Write bot (List (Concept "NICK dorkbot"))))
+
+; Low-level command: list all channels w/ channel info
+(cog-execute! (Write bot (List (Concept "LIST"))))
+
+; Low-level command: list details about one channel
+(cog-execute! (Write bot (List (Concept "LIST #opencog"))))
+
+; Low-level command: all channels w/nicks in the channel
+(cog-execute! (Write bot (List (Concept "NAMES"))))
+
+; Low-level command: nicks of users in a channel
+(cog-execute! (Write bot (List (Concept "NAMES #opencog"))))
 
 ; Low-level command: set channel topic.
 (cog-execute! (Write bot (List (Concept "TOPIC #opencog Who's an operator now"))))
