@@ -153,4 +153,33 @@ Some IRC commands are triplets:
 
 For now, hand-code these by force.
 
+Disjuncts (Sheaf sections)
+==========================
+Sheaf sections (aka disjuncts) are a way of indicating partial graphical
+networks, having both "closed" portions (edges between vertexes) and
+"open" portions (unconnected jigsaw connectors). The unconnected
+connectors are offers of future possibilities: hypothetical possible
+worlds. The prototype section of computing is the lambda of lambda
+calculus: the variables bound by the lambda are the connectors, and
+beta reduction is the act of connecting the connectors.
+
+Perhaps disjuncts are the correct way to indicate possible actions.
+How might this work? Lets try it.
+```
+	(Section
+		(Item "Name of this disjunct")
+		(ConnectorSeq    ; Could also be ConnectorSet
+			(Connector
+				(Sex "name of first mating rule")
+				(Item "type of first connector"))
+			(Connector
+				(Sex "name of second mating rule")
+				(Item "type of second connector"))
+```
+Conventional sex mating rules for computing are "input" and "output".
+Concentional functions in computing have zero or one output connectors,
+and zero or more input connectors. The inputs and outputs are typed.
+Polymorphic types can be indicated with ChoiceLink, and so on.
+
+
 ---------------------
