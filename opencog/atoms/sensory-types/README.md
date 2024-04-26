@@ -1,24 +1,22 @@
 
 Sensory Atom Types
 ------------------
-This defines some atom types, currently, just nodes, that indicate
-how to connect to the external-world. Some of the current and
-envisioned types include:
+This defines several stream types, and the OpenLink and WriteLink for
+constructing instances of these streams, and writing content to them.
+Some of the current and envisioned data stream types include:
 
-* `FileReadNode` -- read and write files and directories.
-* `IRChatNode` -- IRC chatbot connection
-* `TwitterNode` -- Twitterbot Node
+* `TextFileStream` -- read and write files and directories.
+* `IRChatStream` -- IRC chatbot connection
+* `TwitterStream` -- Twitterbot Node
 * Vision & sound: see the [opencog/vision](https://github.com/opencog/vision)
   git repo.
 
-Super-experimental. Not sure how this will work out.
+Experimental. Not sure how this will work out.
 
-Only the first is being implemented.  The second has some useful
-scaffolding code in the old opencog repo that needs to be copied here.
-The third is currently a daydream. The fourth exists as a
-proof-of-concept, implementing a wrapper around OpenCV.
+The TwitterStream is currently a daydream. The vision stream exists as
+a proof-of-concept, implementing a wrapper around OpenCV.
 
-General information about the `sensory_types.script` file can be found
-in the 
+General information about how Atom types are specified, and the format
+of the `sensory_types.script` file, can be found in the
 [AtomSpace atom_types](https://github.com/opencog/atomspace/tree/master/opencog/atoms/atom_types)
 directory.
