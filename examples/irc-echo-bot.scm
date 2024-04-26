@@ -269,7 +269,8 @@
 ; --------
 ; Example: Reply to all messages on a private channel, and only
 ; those messages on a public channel that call out the bot.
-(define reply-tos-callout?
+
+(define private-reply-reply-tos-callout
 	(Cond
 		(Or
 			; Is this a private message?
@@ -280,14 +281,16 @@
 			(Equal
 				(ElementOf (Number 0) (Variable "$msg"))
 				(ValueOf (Anchor "IRC Bot") (Predicate "bot-name"))))
-		(List
-	(Item "PRIVMSG") (Variable "$from")
-	(Item "yosz to ")
-	(Variable "$to")
-	(Item " is a "))
-	(List)))
 
-(cog-execute! (make-echoer reply-tos-callout?))
+		; Always reply privately.
+		(LinkSignature
+			(Type 'LinkValue)
+				(Item "PRIVMSG") (Variable "$from")
+				(Item "It seems that you said: ")
+				(Variable "$msg"))
+		(LinkSignature (Type 'LinkValue))))
+
+(cog-execute! (make-echoer private-reply-reply-tos-callout))
 
 
 ; -------------------------------------------------------
@@ -313,8 +316,12 @@
 	(set! do-exit-loop #f))
 
 ; Start an inf loop with the private-echo handler.
+;(define thread-id (call-with-new-thread
+;	(lambda () (inf-loop private-echo))))
+
+; Start an inf loop with the freindly echo handler
 (define thread-id (call-with-new-thread
-	(lambda () (inf-loop private-echo))))
+	(lambda () (inf-loop (make-echoer private-reply-reply-tos-callout)))))
 
 ; (exit-loop)
 

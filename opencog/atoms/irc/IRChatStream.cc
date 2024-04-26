@@ -426,6 +426,10 @@ void IRChatStream::prt_value(const ValuePtr& command_data)
 		if (lvp->size() == 1 and lvp->value()[0]->is_type(LINK_VALUE))
 			lvp = LinkValueCast(lvp->value()[0]);
 
+		// Do it again. Sometimes get double-wrapped! Ugh! WTF.
+		if (lvp->size() == 1 and lvp->value()[0]->is_type(LINK_VALUE))
+			lvp = LinkValueCast(lvp->value()[0]);
+
 		std::vector<std::string> cmd;
 		for (const ValuePtr& vp : lvp->value())
 		{
