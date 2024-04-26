@@ -190,11 +190,22 @@
 	(WriteLink bot-raw (make-applier CONCLUSION)))
 
 ; --------
-; Examples
+; Below are a collection of examples. Some of these need the bot
+; to sit on some public channel, in order to work.
 
-; Show message
+; Join a channel.
+(cog-execute! (Write bot-raw (List (Concept "JOIN #opencog"))))
+
+; Leave a channel.
+(cog-execute! (Write bot-raw (List (Concept "PART #opencog"))))
+
+; --------
+; Example: Show message
 (define show (list (Variable "$from") (Variable "$to") (Variable "$msg")))
 (cog-execute! (make-applier show))
+
+; --------
+; Example: Break down message into parts.
 
 ; For the below to work, need to know our own name.
 (cog-set-value! (Anchor "IRC Bot")
@@ -223,11 +234,32 @@
 	(Variable "$msg")))
 (cog-execute! (make-echoer id-reply))
 
-; Join a channel.
-(cog-execute! (Write bot-raw (List (Concept "JOIN #opencog"))))
+; --------
+; Example: Is the bot being called out on a public channel?
+; A "callout" is a string that starts with the botname, followed
+; by a colon. This is an IRC convention, and nothi9ng more.
 
-; Leave, like so:
-(cog-execute! (Write bot-raw (List (Concept "PART #opencog"))))
+(define is-callout?
+	(Cond
+		(Equal
+			(ElementOf (Number 0) (Variable "$msg"))
+			(ValueOf (Anchor "IRC Bot") (Predicate "bot-name")))
+		(Item "calls out the bot")
+		(Item "is just a message")))
+
+(define callout-reply
+	(list (Item "PRIVMSG") (Variable "$from")
+	(Item "Message to ")
+	(Variable "$to")
+	(Item " is a ")
+	is-pub?
+	(Item " from ")
+	(Variable "$from")
+	(Item "that ")
+	is-callout?
+	(Item ": ")
+	(Variable "$msg")))
+(cog-execute! (make-echoer callout-reply))
 
 ; -------------------------------------------------------
 
