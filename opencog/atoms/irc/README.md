@@ -211,6 +211,26 @@ data that the agent must send (using `(cog-execute! (WriteLink ...))`)
 What about the contents of a data stream? Say, users joining and
 leaving? How do we describe what the sensory stream might deliver?
 At open time? Inline with the stream?
+
+If you connect to data stream XYZ, here is the format of the messages
+data stream XYZ -- we can steal some of the old (ancein) web 3.0
+ideas... e.g web DTD definitions DTD == Data Type Definition.
+It defines what flows on the data stream.
+
+However, we want to do this only for sensory I/O. For transformations
+of streams, done with RuleLinks, the xform can be gotten by examining
+the RuleLink & FilterLink directly.
+
+For a chain of steps, we want an inference engine that says: "after
+perceiving sensory info of type DTD and applying a sequence of
+transforms given by RuleLinks, we can infer that the output type is a
+DTD of type foo. And motor action controller will accept DTD's of
+exactly type foo, and so it is possible to hook up this entire
+processing chain. i.e. it is 'parsable'".
+
+So we want to describe inputs and outputs as disjuncts and allow LG
+style parsing to determine what the syntactically valid hookups are.
+
 ```
 	(Section
 		(Item "This is what channel JOIN messages are like")
