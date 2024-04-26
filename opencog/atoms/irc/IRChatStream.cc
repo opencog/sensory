@@ -442,6 +442,11 @@ void IRChatStream::prt_value(const ValuePtr& command_data)
 			else
 			if (vp->is_node())
 				cmd.push_back(HandleCast(vp)->get_name());
+
+			// FalseLink is the result of a no-op. So do nothing.
+			else if (FALSE_LINK == vp->get_type())
+				return;
+
 			else
 				throw RuntimeException(TRACE_INFO,
 					"Expecting node or string; got %s\n", vp->to_string().c_str());

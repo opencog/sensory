@@ -258,13 +258,14 @@
 		(LinkSignature
 			(Type 'LinkValue)
 				(Item "PRIVMSG") (Variable "$to")
-				(Item "Did someone say ")
+				(Item "Did ")
+				(Variable "$from")
+				(Item " say ")
 				(Variable "$msg")
 				(Item "?"))
 
 		; Ignore
-		; (VoidValue)
-		(LinkSignature (Type 'LinkValue))
+		(VoidValue)
 		))
 
 (cog-execute! (make-echoer reply-to-callout))
