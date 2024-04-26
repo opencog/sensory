@@ -189,6 +189,10 @@
 (define (make-echoer CONCLUSION)
 	(WriteLink bot-raw (make-applier CONCLUSION)))
 
+; Most of the demos below need the bot to know it's own name.
+(cog-set-value! (Anchor "IRC Bot")
+	(Predicate "bot-name") (StringValue "echobot"))
+
 ; --------
 ; Below are a collection of examples. Some of these need the bot
 ; to sit on some public channel, in order to work.
@@ -205,11 +209,12 @@
 (cog-execute! (make-applier show))
 
 ; --------
-; Example: Break down message into parts.
+; Example: No-op. Do nothing.
+(define null-reply (list))
+(cog-execute! (make-applier null-reply))
 
-; For the below to work, need to know our own name.
-(cog-set-value! (Anchor "IRC Bot")
-	(Predicate "bot-name") (StringValue "echobot"))
+; --------
+; Example: Break down message into parts.
 
 ; Is it a public or private message?
 ; It is private if (Variable "$to") is the name of the bot.
@@ -235,9 +240,9 @@
 (cog-execute! (make-echoer id-reply))
 
 ; --------
-; Example: Is the bot being called out on a public channel?
+; Example: Is the bot being called out?
 ; A "callout" is a string that starts with the botname, followed
-; by a colon. This is an IRC convention, and nothi9ng more.
+; by a colon. This is an IRC convention, and nothing more.
 
 (define is-callout?
 	(Cond
@@ -260,6 +265,30 @@
 	(Item ": ")
 	(Variable "$msg")))
 (cog-execute! (make-echoer callout-reply))
+
+; --------
+; Example: Reply to all messages on a private channel, and only
+; those messages on a public channel that call out the bot.
+(define reply-tos-callout?
+	(Cond
+		(Or
+			; Is this a private message?
+			(Equal
+				(Variable "$to")
+				(ValueOf (Anchor "IRC Bot") (Predicate "bot-name")))
+			; Is this a public callout?
+			(Equal
+				(ElementOf (Number 0) (Variable "$msg"))
+				(ValueOf (Anchor "IRC Bot") (Predicate "bot-name"))))
+		(List
+	(Item "PRIVMSG") (Variable "$from")
+	(Item "yosz to ")
+	(Variable "$to")
+	(Item " is a "))
+	(List)))
+
+(cog-execute! (make-echoer reply-tos-callout?))
+
 
 ; -------------------------------------------------------
 
