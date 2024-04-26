@@ -299,7 +299,15 @@ printf(">>> IRC msg from %s to %s =%s\n", ird->nick, ird->target, params);
 	ValueSeq msg;
 	msg.push_back(createStringValue(ird->nick));
 	msg.push_back(createStringValue(ird->target));
-	msg.push_back(createStringValue(start));
+
+	// Does the message start with the _nick? If so, special case it.
+	// This is special handling to make message processing easier.
+	if (0 == _nick.compare(0, _nick.size(), start, _nick.size()))
+		msg.push_back(createStringValue(
+			std::vector<std::string>({_nick, start + _nick.size()})));
+	else
+		msg.push_back(createStringValue(start));
+
 	ValuePtr svp(createLinkValue(msg));
 	push(svp); // concurrent_queue<ValutePtr>::push(svp);
 	return 0;
