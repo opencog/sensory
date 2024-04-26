@@ -12,3 +12,6 @@ Agent demos:
 The goal of the IRC bot is to implement IRCbot type function
 in an Atomese. The bot is meant to be taken as a crude agent
 prototype.
+
+Collection of coding hints:
+* `hints.scm` -- Using ExecutionOutputLink and GroundedSchema

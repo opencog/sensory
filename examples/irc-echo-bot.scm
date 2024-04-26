@@ -99,71 +99,10 @@
 ; will get it kicked. So we want a message processing pipeline that is
 ; aware of being on a public channel, and replies only when spoken to.
 
-; To accomplish this, we first need a tutorial on Atomese pipelines.
-; So here's a sequence of tricks.
+; To accomplish this, a sequence of increasingly complex pipelines
+; are developed below.
 ; -----------------
-; Trick: calling scheme code (this works for python, too)
-
-(define exo
-	(ExecutionOutput
-		(GroundedSchema "scm: foo")                ; the function
-		(List (Concept "bar") (Concept "baz"))))   ; the arguments
-
-(define (foo x y)
-	(format #t "I got ~A and ~A\n" x y)
-	(Concept "foo reply"))
-
-; Run it and see.
-(cog-execute! exo)
-
-; -----------------
-; Just like above, but use the function to read the stream
-
-(define (process-stream stm)
-	(format #t "Stream is ~A\n" stm)
-	(define retv (cog-execute! stm))
-	(format #t "Stream read gave ~A\n" retv)
-	retv)
-
-(define read-stream
-	(ExecutionOutput
-		(GroundedSchema "scm: process-stream")
-		bot-read))
-
-(cog-execute! read-stream)
-
-; -----------------
-; Same as above, but this time in pure Atomese
-
-(define exocet
-	(ExecutionOutput
-		(Lambda (VariableList
-			; Expect three arguments
-			(Variable "$from") (Variable "$to") (Variable "$msg"))
-			; Body that arguments will be beta-reduced into.
-			(List (Item "foobar") (Variable "$to")))
-
-		; Arguments that the lambda will be applied to.
-		(List
-			(Concept "first") (Concept "second") (Concept "third"))))
-
-(cog-execute! exocet)
-
-; -----------------
-; As above
-
-; This doen't work because the
-(define exorcist
-	(ExecutionOutput
-		(Lambda (Variable "$foo")
-			; Body that arguments will be beta-reduced into.
-			(List (Item "foobar") (Variable "$foo")))
-		 (LinkSignature (Type 'LinkValue) bot-raw)))
-
-(cog-execute! exorcist)
-
-; -----------------
-; Experiments
+; Part one: Some generic boilerplate that all pipelines will use.
 
 ; Create a message-processiong rule. Accepts any input consisting
 ; of a LinkValue holding an IRC message, extracts the three parts,
@@ -329,7 +268,6 @@
 		))
 
 (cog-execute! (make-echoer reply-to-callout))
-
 
 ; -------------------------------------------------------
 
