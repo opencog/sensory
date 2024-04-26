@@ -204,8 +204,23 @@ Then, "list users" would be
 				(Sex "output")
 				uuhhh
 ```
+The output conector needs to describe the format of the command that
+this particular sensory stream can actually understand. That is, the
+data that the agent must send (using `(cog-execute! (WriteLink ...))`)
 
-What about different data streams? Users joining and leaving?
+What about the contents of a data stream? Say, users joining and
+leaving? How do we describe what the sensory stream might deliver?
+At open time? Inline with the stream?
+```
+	(Section
+		(Item "This is what channel JOIN messages are like")
+		(ConnectorSeq
+			(Connector
+				(Sex "msg format")
+				(LinkSignature
+					(Type 'LinkValue)
+					(Item "nick")))))
+```
 
 
 ---------------------

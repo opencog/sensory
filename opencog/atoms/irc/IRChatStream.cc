@@ -148,14 +148,16 @@ void IRChatStream::init(const std::string& url)
 	_conn->hook_irc_command("KICK", &xgot_kick);
 
 	// Misc debug printers
+	_conn->hook_irc_command("JOIN", &xgot_misc);
+	_conn->hook_irc_command("NOTICE", &xgot_misc);
 	_conn->hook_irc_command("322", &xgot_misc);
 	_conn->hook_irc_command("353", &xgot_misc);
 	_conn->hook_irc_command("421", &xgot_misc);
-	_conn->hook_irc_command("NOTICE", &xgot_misc);
 	_conn->hook_irc_command("705", &xgot_misc);
 	_conn->hook_irc_command("706", &xgot_misc);
 
 	// Other messages:
+	// JOIN - channel join messages
 	// NOTICE - server notices
 	// 001-005 - server info
 	// 250-265 - channel info
