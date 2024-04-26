@@ -4,7 +4,8 @@ Internet Relay Chat
 IRC chat API. Can connect to IRC, read, and write. Works but still
 a rough prototype.
 
-See the [irc-chat.scm](../../../examples/irc-chat.scm) demo.
+See the [irc-api.scm](../../../examples/irc-api.scm) and
+[irc-echo-bot.scm](../../../examples/irc-echo-bot.scm) demos.
 
 Perception and Action
 ---------------------
@@ -78,7 +79,7 @@ are designated with URL's. Three problems:
   "irc://server/do-channel-list"? Since we're already connected the
   first part of the URL is redundant.
 * On receipt of channel listing, how do we join a specific channel?
-* We want to avoid string string concatenation of building custom URL's
+* We want to avoid string-string concatenation for building custom URL's
   because nothing in Atomese so far does string stuff. Its hypergraphs,
   always. Don't want to invent a string-concatenator.
 

@@ -265,8 +265,7 @@
 				(Item "\"?"))
 
 		; Ignore
-		(VoidValue)
-		))
+		(VoidValue)))
 
 (cog-execute! (make-echoer reply-to-callout))
 
@@ -300,7 +299,7 @@
 (define thread-id (call-with-new-thread
 	(lambda () (inf-loop (make-echoer reply-to-callout)))))
 
-; (exit-loop)
+(exit-loop)
 
 ; The End. That's all, folks!
 ; -------------------------------------------------------

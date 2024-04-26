@@ -76,8 +76,11 @@ TODO List
   of returning empty content. This would allow intermediate processors
   to have an easier time of it.
 * The concurrent queue should be changed to finite-size buffer and
-  discard old data.
+  discard old data. Goal is to avoid unbounded-size chat buffers.
 * The NICK command gets a badly-parsed response if the nick is in use.
+* Need some kind of modal-open, so that the IRC nick is not hard-coded
+  into the URL, but is rather specified during the open. So, open
+  parameters.
 
 
 Early draft notes
