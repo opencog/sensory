@@ -83,7 +83,7 @@
 ; sort of more restrained ehavior is needed.
 ;
 ; In a pure agential design, the bot might perceive the kick, and
-; perhaps might percieve a kick as painful, and use that as a
+; perhaps might perceive a kick as painful, and use that as a
 ; hint to modify it's behavior. However, using evolutionary pressure,
 ; where users kick annoying bots, is perhaps not a very good way of
 ; running agents.
@@ -260,9 +260,9 @@
 				(Item "PRIVMSG") (Variable "$to")
 				(Item "Did ")
 				(Variable "$from")
-				(Item " say ")
+				(Item " say \"")
 				(Variable "$msg")
-				(Item "?"))
+				(Item "\"?"))
 
 		; Ignore
 		(VoidValue)
@@ -275,7 +275,7 @@
 ; Create an infinite loop. The AGENT must be an ececutable Atom;
 ; presumably, it is some Atom that interacts with IRC in some way.
 ; As long as AGENT exits every now and then, the loop can be
-; interruped, as shown below.
+; interrupted, as shown below.
 ;
 ; XXX Tail-recursive loops can also be done in Atomese, and perhaps
 ; the below should be replaced by a pure-Atomese version. XXX FIXME.
@@ -296,7 +296,7 @@
 ;(define thread-id (call-with-new-thread
 ;	(lambda () (inf-loop private-echo))))
 
-; Start an inf loop with the freindly echo handler
+; Start an inf loop with the friendly echo handler
 (define thread-id (call-with-new-thread
 	(lambda () (inf-loop (make-echoer reply-to-callout)))))
 

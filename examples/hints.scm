@@ -1,7 +1,7 @@
 ;
-; hints.scm -- Coding hints and recipies.
+; hints.scm -- Coding hints and recipes.
 ;
-; A collection of minor examples showing various maybe-useful recipies.
+; A collection of minor examples showing various maybe-useful recipes.
 ;
 (use-modules (srfi srfi-1))
 (use-modules (opencog) (opencog exec) (opencog sensory))
@@ -60,7 +60,7 @@
 ; -----------------
 ; As above
 
-; This doen't work because the
+; This doesn't work because the
 (define exorcist
 	(ExecutionOutput
 		(Lambda (Variable "$foo")

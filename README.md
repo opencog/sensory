@@ -22,10 +22,10 @@ some action (control a robot, say some words). The hard part is to
 the external world (with Atoms and Values), and how it should go about
 doing things. The agent needs to perceive the environment in some way
 that results in an AtomSpace representation that is easy for agent
-subsystems to work with. This perception must include the agents
+subsystems to work with. This perception must include the agent's
 awareness of the different kinds of actions it might be able to perform
 upon interacting with the external world.  That is, before one can
-attempt to model the external world, one must be able to model ones own
+attempt to model the external world, one must be able to model one's own
 ability to perform action. This is where the boundary between the agent
 and the external world lies: the boundary of the controllable.
 
@@ -71,12 +71,12 @@ interface, and an IRC chat interface. Hopefully, this is broad enough to
 expose some of the design issues. Basically, chat is not like a
 filesystem: there are public channels, there are private conversations.
 The kind of sensory information coming from chat is just different than
-the sensory information comeing from files (even though, as a software
+the sensory information coming from files (even though, as a software
 engineer, one could map chat I/O to a filesystem-style interface.)
 Trying to support both keeps us honest.
 
 ### Status
-Version 0.2.4 -- Experimental. Basic demos actually work. Overall
+Version 0.2.5 -- Experimental. Basic demos actually work. Overall
 architecture is ok-ish. The grand questions above remain mysterious.
 
 Provides:
@@ -134,4 +134,5 @@ sudo make install
 ```
 
 ### Examples
-See the [examples](examples) directory.
+See the [examples](examples) directory. Examples include file read &
+write, and a basic IRC echobot.
