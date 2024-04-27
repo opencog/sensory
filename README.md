@@ -3,8 +3,10 @@ Sensory Atomese
 This repo explores how perception and action with an external world
 might work with the [AtomSpace](https://github.com/opencog/atomspace).
 
-TL;DR: Implementation for low-level AtomSpace sensory I/O Atoms.
-Provides a basic file I/O stream, and an IRC chat stream.
+TL;DR: Explores philosophical approaches to perception & action via
+low-level AtomSpace sensory I/O Atoms. Experimental lab for this is
+"perceiving" filesystem files, "moving" through directories, and
+likewise for IRC chat streams.
 
 Philosophical Overview
 ----------------------
@@ -66,14 +68,17 @@ These are the questions that seem to matter, for agent design. The code
 in this git repo is some extremely low-level, crude Atomese interfaces
 that try to expose these issues up into the AtomSpace.
 
-Currently, two interfaces are bing explored: a unix filesystem
+Currently, two interfaces are being explored: a unix filesystem
 interface, and an IRC chat interface. Hopefully, this is broad enough to
 expose some of the design issues. Basically, chat is not like a
-filesystem: there are public channels, there are private conversations.
+filesystem: there is a large variety of IRC commands, there are public
+channels, there are private conversations. They are bi-directional.
 The kind of sensory information coming from chat is just different than
-the sensory information coming from files (even though, as a software
-engineer, one could map chat I/O to a filesystem-style interface.)
-Trying to support both keeps us honest.
+the sensory information coming from files (even though, as a clever
+software engineer, one could map chat I/O to a filesystem-style
+interface.) The point here is not to be "clever", but to design
+action-perception corectly.  Trying to support very different kinds
+of sensorimotor systems keeps us honest.
 
 ### Status
 Version 0.2.5 -- Experimental. Basic demos actually work. Overall
