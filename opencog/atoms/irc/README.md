@@ -156,7 +156,7 @@ For now, hand-code these by force.
 Disjuncts (Sheaf sections)
 ==========================
 Sheaf sections (aka disjuncts) are a way of indicating partial graphical
-networks, having both "closed" portions (edges between vertexes) and
+networks, having both "closed" portions (edges between vertices) and
 "open" portions (unconnected jigsaw connectors). The unconnected
 connectors are offers of future possibilities: hypothetical possible
 worlds. The prototype section of computing is the lambda of lambda
@@ -204,7 +204,7 @@ Then, "list users" would be
 				(Sex "output")
 				uuhhh
 ```
-The output conector needs to describe the format of the command that
+The output connector needs to describe the format of the command that
 this particular sensory stream can actually understand. That is, the
 data that the agent must send (using `(cog-execute! (WriteLink ...))`)
 
@@ -224,7 +224,7 @@ The oversimplified example DTD for HTML is:
 We need a DTD-like description of the data flowing on the data stream.
 
 ### Syntactical parsing for sensory-motor action chains
-Now comes the interesting part. We have a DTD-like data desciptor
+Now comes the interesting part. We have a DTD-like data descriptor
 of what is being sent out on a sensory stream. What happens after
 that data has been transformed a few times, e.g. by FilterLinks
 with RuleLinks?
@@ -241,7 +241,7 @@ type foo, and so it is possible to hook up this entire processing
 chain. i.e. it is 'parsable'".
 
 Parsable, in the sense that connectors provided by the sensory stream
-can be attached to connectors infered from FilterLinks & RuleLinks,
+can be attached to connectors inferred from FilterLinks & RuleLinks,
 and that those connectors are, in turn, joinable to the output device.
 
 So we want to describe inputs and outputs as disjuncts and allow LG
@@ -288,7 +288,7 @@ result is that we want to do this:
       (SensoryNode "irc://botty@irc.libera.chat:6667"))))
 ```
 Not yet clear how the Section that described the ability to open a
-conection actually causes the `OpenLink` to be executed... Hmm
+connection actually causes the `OpenLink` to be executed... Hmm
 
 Anyway, performing the `Open` action results in a new menu of disjuncts
 being provided:
