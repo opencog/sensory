@@ -354,5 +354,36 @@ This glosses over several things. These are:
   not find out what the possible actions are, until we arrive at that
   "location". i.e. we don't know, until we perform that action, and
   then get the menu of places we can go to, from there.
+* The Write command is not usable until after the stream has been
+  opened. Where is this encoded?
+
+There's confusion about the what flows where on the IRC stream.
+Before the channel join, we can only issue IRC commands. After
+the channel join, we will get text chat messages on that channel.
+Yet, we are using the same stream for these kinds of mixed messages.
+Is this good? bad? Do we want distinct streams running in parallel,
+or a big serialized blob of everything on one stream? If its a big
+serialized mixture, then what does this do to the idea of using
+connectors to form edges? Hmmm.
+
+### Agents gone wild
+What is the point of having this kind of description of the sensory API
+and of the processing chain? Surely, we don't want the bot to randomly
+surf the menu list of command choicess, joining random channels and
+chatting nonsense with random strangers.
+
+This kind of description is useful, if there's already an intelligent
+agent who wants to "do something specific" and needs to "read the fine
+manual" about how to do it. Since our agents are dumb, this is currently
+pointless (mostly!?)
+
+Its a perception-action description framework, but it interfaces into
+a world occupied by humans. If instead this was some game world where
+the agent won't run into humans, and could bump around randomly learning
+things, then random action-selection would be a reasonable thing to do.
+We need a playpen, in other words. IRC is not an appropriate playpen.
+
+Perhaps walking the file system (appropriately gaoled) is a suitable
+playpen, and gets us back into the language-learning effort.
 
 ---------------------
