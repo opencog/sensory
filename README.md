@@ -81,7 +81,7 @@ action-perception corectly.  Trying to support very different kinds
 of sensorimotor systems keeps us honest.
 
 ### Status
-Version 0.2.5 -- Experimental. Basic demos actually work. Overall
+***Version 0.2.5*** -- Experimental. Basic demos actually work. Overall
 architecture is ok-ish. The grand questions above remain mysterious.
 
 Provides:
@@ -89,6 +89,15 @@ Provides:
 * Prototype IRC chatbot stream.
 
 See the [examples](examples) directory.
+
+The [AtomSpace Bridge](https://github.com/opencog/atomspace-bridge)
+provides an API between the AtomSpace and SQL. It almost conforms to
+the system design here, but not quite. It should be ported over to
+the interfaces here.
+
+The [Vision subsystem](https://github.com/opencog/vision) provides
+an Atomese API for OpenCV. It is a proof-of-concept. It should be
+ported over to the interfaces here.
 
 ### Design Overview
 The Atomese agent framework needs to have some way of interacting
