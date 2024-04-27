@@ -214,9 +214,9 @@ At open time? Inline with the stream?
 
 If you connect to data stream XYZ, what is the format of the messages
 arriving on data stream XYZ?  We can steal some of the old (ancient)
-Web 3.0 ideas... e.g DTD definitions, where DTD == Data Type Definition.
-https://en.wikipedia.org/wiki/Document_type_definition
-(Oversimplified) example DTD for HTML:
+Web 3.0 ideas... e.g DTD definitions, where DTD == [Data Type
+Definition](https://en.wikipedia.org/wiki/Document_type_definition).
+The oversimplified example DTD for HTML is:
 ```
 <!ELEMENT html (head, body)>
 <!ELEMENT p (#PCDATA | p | ul | dl | table | h1|h2|h3)*>
@@ -294,23 +294,65 @@ Anyway, performing the `Open` action results in a new menu of disjuncts
 being provided:
 ```
 	(ChoiceLink
-		(Section ...) ; Description of an IRC command
-		(Section ...) ; Description of another IRC command
+		(Section (Item "Join") ...) ; Description of the JOIN IRC command
+		(Section (Item "List") ...) ; Description of the LIST IRC command
    ...)
-
+```
+This is provided as the return value from the execute. What does the
+Join command description look like?
 ```
 	(Section
 		(Item "This is what channel JOIN messages are like")
 		(ConnectorSeq
 			(Connector
 				(Sex "command")      ; This connector is sent-to IRC
-				(Item "JOIN")        ; String to be sent
-            (Type 'StringValue)) ; Channel name (mandatory)
+				(Type 'WriteLink))   ; Use a WriteLink to send.
 			(Connector
-				(Sex "reply")        ; If above is sent, this will be returned
-				(LinkSignature
-					(Type 'LinkValue)
-					(Item "nick")))))
+				(Sex "command")      ; This connector is sent-to IRC
+				(Item "JOIN"))       ; String to be sent
+			(Connector
+				(Sex "command")      ; This connector is sent-to IRC
+            (Type 'StringValue)) ; Channel name must be provided.
+			(Connector
+				(Sex "reply")        ; Stream of returned values
+				(LinkSignature       ; Return will be ...
+					(Type 'LinkValue) ; ... a list of Values ...
+					(Type 'StringValue))) ; ... that are nicknames (strings)
+		))
 ```
+The above is loosely typed, so that the nicknames are returned as
+strings. Could be strongly typed, to indicate nicknames are being
+returned, and elsewhere we know nicknames are actually strings.
+
+Say we wanted to write the nicknames to a file. We would do this
+in a fashion similar to the above:
+```
+   (cog-execute! (Lookup (Type 'FileStream)))
+```
+which returns
+```
+	(ChoiceLink
+		(Section (Item "Open") ...)  ; Description of stream open
+		(Section (Item "Write") ...) ; Description of stream write
+   ...)
+```
+The file-open command looks just like the IRC open command, except
+that we need to give a `file://` URL instead. The write command
+describes write in such a way that we know that we can write strings.
+But since the channel join command output was a list of nicknames
+which happen to be strings, we know that we can write strings to
+the file.
+
+This glosses over several things. These are:
+* The File API needs to be more complicated, because we need to be able
+  to walk up and down directory trees.
+* We seem to be confusing bare connectors with descriptions of the
+  data that will flow through that connector, once the link is joined
+  (and the stream is flowing).
+* We haven't explained how to actually join stream outputs to inputs.
+* Unlike Link Grammar, where all words are known a priori, here, we do
+  not find out what the possible actions are, until we arrive at that
+  "location". i.e. we don't know, until we perform that action, and
+  then get the menu of places we can go to, from there.
 
 ---------------------
