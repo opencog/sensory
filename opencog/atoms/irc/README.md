@@ -170,11 +170,11 @@ How might this work? Lets try it.
 		(Item "Name of this disjunct")
 		(ConnectorSeq    ; Could also be ConnectorSet
 			(Connector
-				(Sex "name of first mating rule")
-				(Item "type of first connector"))
+				(Item "type of first connector")
+				(Sex "name of first mating rule"))
 			(Connector
-				(Sex "name of second mating rule")
-				(Item "type of second connector"))
+				(Item "type of second connector")
+				(Sex "name of second mating rule"))
 ```
 Conventional sex mating rules for computing are "input" and "output".
 Concentional functions in computing have zero or one output connectors,
@@ -212,35 +212,105 @@ What about the contents of a data stream? Say, users joining and
 leaving? How do we describe what the sensory stream might deliver?
 At open time? Inline with the stream?
 
-If you connect to data stream XYZ, here is the format of the messages
-data stream XYZ -- we can steal some of the old (ancein) web 3.0
-ideas... e.g web DTD definitions DTD == Data Type Definition.
-It defines what flows on the data stream.
+If you connect to data stream XYZ, what is the format of the messages
+arriving on data stream XYZ?  We can steal some of the old (ancient)
+Web 3.0 ideas... e.g DTD definitions, where DTD == Data Type Definition.
+https://en.wikipedia.org/wiki/Document_type_definition
+(Oversimplified) example DTD for HTML:
+```
+<!ELEMENT html (head, body)>
+<!ELEMENT p (#PCDATA | p | ul | dl | table | h1|h2|h3)*>
+```
+We need a DTD-like description of the data flowing on the data stream.
 
-However, we want to do this only for sensory I/O. For transformations
-of streams, done with RuleLinks, the xform can be gotten by examining
-the RuleLink & FilterLink directly.
+### Syntactical parsing for sensory-motor action chains
+Now comes the interesting part. We have a DTD-like data desciptor
+of what is being sent out on a sensory stream. What happens after
+that data has been transformed a few times, e.g. by FilterLinks
+with RuleLinks?
+
+In principle, we can look at the RuleLink and infer what has happened
+to the data. This is coneventiona proof-theory of chaining together
+inference steps.
 
 For a chain of steps, we want an inference engine that says: "after
 perceiving sensory info of type DTD and applying a sequence of
 transforms given by RuleLinks, we can infer that the output type is a
 DTD of type foo. And motor action controller will accept DTD's of
-exactly type foo, and so it is possible to hook up this entire
-processing chain. i.e. it is 'parsable'".
+type foo, and so it is possible to hook up this entire processing
+chain. i.e. it is 'parsable'".
+
+Parsable, in the sense that connectors provided by the sensory stream
+can be attached to connectors infered from FilterLinks & RuleLinks,
+and that those connectors are, in turn, joinable to the output device.
 
 So we want to describe inputs and outputs as disjuncts and allow LG
 style parsing to determine what the syntactically valid hookups are.
+
+### Linkage examples
+So lets try to work through an example. We do this:
+```
+   (cog-execute! (Lookup (Type 'IRChatStream)))
+```
+The above is an "action". It returns a "perception", which is a menu
+choice of actions that can be taken. So this is like the first-ever
+computer game "Adventure": "you are standing in front of..."
+```
+	(ChoiceLink
+		(Section (Item "Open") ...)  ; Description of stream open
+		(Section (Item "Write") ...) ; Description of stream write
+   ...)
+```
+This is analogous to a LinkGrammar dictionary lookup, where the "word"
+is `(Type 'IRChatStream)` and the set of disjunts on the "word"
+are Sections.  Note that the available sections will be independent
+of which URL is being opened.
+
+What does the first Section look like, in detail?
+```
+(Section
+	(Item "this is our Open command")
+	(ConnectorSeq
+		(Connector
+			(Sex "command")        ; Command means it is sent.
+			(Type 'OpenLink))      ; What to send (must be OpenLink)
+		(Connector
+			(Sex "command")        ; Send
+			(Type 'SensoryNode)))) ; What to send, i.e. the URL to open
+```
+The above is supposed to describe the ability to open an `IRChatStream`
+and specifically, the required arguments for the `Open`.  The net
+result is that we want to do this:
+```
+(cog-execute!
+   (Open
+      (Type 'IRChatStream)
+      (SensoryNode "irc://botty@irc.libera.chat:6667"))))
+```
+Not yet clear how the Section that described the ability to open a
+conection actually causes the `OpenLink` to be executed... Hmm
+
+Anyway, performing the `Open` action results in a new menu of disjuncts
+being provided:
+```
+	(ChoiceLink
+		(Section ...) ; Description of an IRC command
+		(Section ...) ; Description of another IRC command
+   ...)
 
 ```
 	(Section
 		(Item "This is what channel JOIN messages are like")
 		(ConnectorSeq
 			(Connector
-				(Sex "msg format")
+				(Sex "command")      ; This connector is sent-to IRC
+				(Item "JOIN")        ; String to be sent
+            (Type 'StringValue)) ; Channel name (mandatory)
+			(Connector
+				(Sex "reply")        ; If above is sent, this will be returned
 				(LinkSignature
 					(Type 'LinkValue)
 					(Item "nick")))))
 ```
-
 
 ---------------------
