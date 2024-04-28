@@ -64,7 +64,7 @@ TextFileStream::~TextFileStream()
 		fclose (_fh);
 }
 
-/// Attempt to open the URL for reading.
+/// Attempt to open the URL for reading and writing.
 /// The URL format is described in
 /// https://en.wikipedia.org/wiki/File_URI_scheme
 /// and we adhere to that.
@@ -109,7 +109,6 @@ void TextFileStream::init(const std::string& url)
 }
 
 // ==============================================================
-
 
 ValuePtr TextFileStream::describe(AtomSpace* as, bool silent)
 {
