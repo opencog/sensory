@@ -158,7 +158,7 @@ void FileSysStream::do_describe(void)
 
 	Handle cd_cmd =
 		createLink(SECTION,
-			createNode(ITEM_NODE, "the cd command"));
+			createNode(ITEM_NODE, "the cd command"),
 			createLink(CONNECTOR_SEQ,
 				createLink(CONNECTOR,
 					createNode(SEX_NODE, "command"),
