@@ -57,8 +57,6 @@ FileSysStream::FileSysStream(void)
 
 FileSysStream::~FileSysStream()
 {
-	if (_fh)
-		fclose (_fh);
 }
 
 /// Attempt to open the URL for reading and writing.
@@ -78,7 +76,6 @@ FileSysStream::~FileSysStream()
 
 void FileSysStream::init(const std::string& url)
 {
-	_fh = nullptr;
 	if (0 != url.compare(0, 8, "file:///"))
 		throw RuntimeException(TRACE_INFO,
 			"Unsupported URL \"%s\"\n", url.c_str());
@@ -109,6 +106,7 @@ void FileSysStream::init(const std::string& url)
 // ==============================================================
 
 // This is totally bogus because it is unused.
+// This should be class static member
 ValuePtr FileSysStream::describe(AtomSpace* as, bool silent)
 {
 	if (_description) return as->add_atom(_description);
@@ -169,7 +167,7 @@ ValuePtr FileSysStream::describe(AtomSpace* as, bool silent)
 // So, a line-oriented, buffered interface. For now.
 void FileSysStream::update() const
 {
-	if (nullptr == _fh) { _value.clear(); return; }
+	// if (nullptr == _fh) { _value.clear(); return; }
 }
 
 // ==============================================================

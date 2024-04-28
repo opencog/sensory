@@ -46,7 +46,6 @@ protected:
 
 	Handle _description;
 	mutable std::string _uri;
-	mutable FILE* _fh;
 
 public:
 	FileSysStream(void);

@@ -70,7 +70,8 @@ ValuePtr LookupLink::execute(AtomSpace* as, bool silent)
 	if (nullptr == ost)
 		throw RuntimeException(TRACE_INFO,
 			"No support for %s", _outgoing[0]->to_string().c_str());
-	return ost;
+
+	return ost->describe(as, silent);
 }
 
 DEFINE_LINK_FACTORY(LookupLink, LOOKUP_LINK)
