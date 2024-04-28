@@ -46,12 +46,12 @@ protected:
 
 	std::string _uri;
 	mutable FILE* _fh;
-	virtual void do_write(const std::string&);
 
 public:
 	FileSysStream(const Handle&);
 	virtual ~FileSysStream();
 
+	virtual ValuePtr describe(AtomSpace*, bool);
 	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&);
 };
 

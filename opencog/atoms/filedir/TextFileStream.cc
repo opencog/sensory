@@ -110,6 +110,15 @@ void TextFileStream::init(const std::string& url)
 
 // ==============================================================
 
+
+ValuePtr TextFileStream::describe(AtomSpace* as, bool silent)
+{
+	throw RuntimeException(TRACE_INFO, "Not implemeneted");
+	return Handle::UNDEFINED;
+}
+
+// ==============================================================
+
 // This will read one line from the file stream, and return that line.
 // So, a line-oriented, buffered interface. For now.
 void TextFileStream::update() const

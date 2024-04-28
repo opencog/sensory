@@ -55,6 +55,12 @@ void FileSysStream::init(const std::string& url)
 	_fh = nullptr;
 }
 
+ValuePtr FileSysStream::describe(AtomSpace* as, bool silent)
+{
+	throw RuntimeException(TRACE_INFO, "Not implemeneted");
+	return Handle::UNDEFINED;
+}
+
 // ==============================================================
 
 // This will read one line from the file stream, and return that line.

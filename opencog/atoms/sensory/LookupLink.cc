@@ -66,10 +66,11 @@ ValuePtr LookupLink::execute(AtomSpace* as, bool silent)
 {
 	ValuePtr svp = valueserver().create(_kind);
 
-	if (nullptr == svp)
+	OutputStreamPtr ost(OutputStreamCast(svp));
+	if (nullptr == ost)
 		throw RuntimeException(TRACE_INFO,
-			"No lookup support for %s", _outgoing[0]->to_string().c_str());
-	return svp;
+			"No support for %s", _outgoing[0]->to_string().c_str());
+	return ost;
 }
 
 DEFINE_LINK_FACTORY(LookupLink, LOOKUP_LINK)

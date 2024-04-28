@@ -78,6 +78,7 @@ public:
 	IRChatStream(const std::string&);
 	virtual ~IRChatStream();
 
+	virtual ValuePtr describe(AtomSpace*, bool);
 	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&);
 };
 

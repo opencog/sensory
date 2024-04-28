@@ -55,6 +55,7 @@ public:
 	TextFileStream(const std::string&);
 	virtual ~TextFileStream();
 
+	virtual ValuePtr describe(AtomSpace*, bool);
 	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&);
 };
 

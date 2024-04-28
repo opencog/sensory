@@ -184,6 +184,14 @@ void IRChatStream::init(const std::string& url)
 
 // ==================================================================
 
+ValuePtr IRChatStream::describe(AtomSpace* as, bool silent)
+{
+	throw RuntimeException(TRACE_INFO, "Not implemeneted");
+	return Handle::UNDEFINED;
+}
+
+// ==================================================================
+
 // Infinite loop.
 // XXX Needs major redesign. Works for now.
 void IRChatStream::looper(void)
