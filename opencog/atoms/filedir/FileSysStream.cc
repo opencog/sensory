@@ -40,6 +40,10 @@
 
 using namespace opencog;
 
+/// Under construction.
+/// The implementation here is attempting to follow the ideas sketched
+/// in opencog/atoms/irc/README.md
+
 FileSysStream::FileSysStream(const Handle& senso)
 	: OutputStream(FILE_SYS_STREAM)
 {

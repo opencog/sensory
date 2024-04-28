@@ -3,6 +3,9 @@
 ;
 ; Demo agent commands for navigating a filesystem.
 ;
+; Under construction. Uses ideas sketched in the README in
+; opencog/atoms/irc/README.md
+;
 (use-modules (opencog) (opencog exec) (opencog sensory))
 
 ; Get the stream description
