@@ -17,7 +17,7 @@
 ; it is. The description of the sensory environment uses Sections with
 ; a bunch of Connectors on them, describing the actions and perceptions
 ; that are possible in this environment. The demo below attempts to
-; manualy parse (by hand!) all of these connectors, and hook things up
+; manually parse (by hand!) all of these connectors, and hook things up
 ; to them. Ouch! Parsing is the job of Link Grammar. What we really want
 ; to do here is to have Link Grammar to take a look at the sensory
 ; environment, say "a hah, this is really easy: I see one 'word' with
@@ -147,7 +147,7 @@ some-cmd
 					(Variable "$cmd"))   ; Get the actual command
 				(Connector
 					(Sex "command")
-					(Variable "$arg"))   ; Get the argument to the commmand
+					(Variable "$arg"))   ; Get the argument to the command
 				(Glob "$rest")))        ; Get the rest.
 
 		; The unwrappped ChoiceLink, from above.
