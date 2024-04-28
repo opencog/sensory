@@ -109,22 +109,37 @@ some-cmd
 ; This builds a crude stimulous-reponse pipeline.
 ; Under construction, broken.
 
-(define fsys-descr
-	(cog-execute! (Lookup (Type 'FileSysStream))))
+; Lets take a look at the landscape, again
+(cog-execute! (Lookup (Type 'FileSysStream)))
 
-; Example: unwrap the ChoiceLink
+; The landscape arrives as a ChoiceLink, of possible things to do.
+; This makes it awkward for later processing stages, so unwrap the
+; ChoiceLink and discard it.
 (cog-execute!
 	(Filter
 		(LinkSignature (Type 'Choice) (Glob "$x"))
-		fsys-descr))
+		(Lookup (Type 'FileSysStream))))
 
+; Extract the command, and it's argument, and then the rest.
+; The result is a simplified form of the description. We need
+; the simplified form to built the processing pipe.
 (cog-execute!
 	(Filter
 		(Section
-			(Type 'Item)
+			(Type 'Item)  ; Ignore whatever text is here.
 			(ConnectorSeq
-				(Glob "$y")))
-		(Filter (LinkSignature (Type 'Choice) (Glob "$x")) fsys-descr)))
+				(Connector
+					(Sex "command")
+					(Variable "$cmd"))   ; Get the actual command
+				(Connector
+					(Sex "command")
+					(Variable "$arg"))   ; Get the argument to the commmand
+				(Glob "$rest")))        ; Get the rest.
+
+		; The unwrappped ChoiceLink, from above.
+		(Filter
+			(LinkSignature (Type 'Choice) (Glob "$x"))
+			(Lookup (Type 'FileSysStream)))))
 
 (cog-execute!
 	(Filter
@@ -133,9 +148,16 @@ some-cmd
 			(ConnectorSeq
 				(Connector
 					(Sex "command")
-					(Type 'Type))
-				(Glob "$y")))
-		(Filter (LinkSignature (Type 'Choice) (Glob "$x")) fsys-descr)))
+					(Variable "$cmd"))
+				(Connector
+					(Sex "command")
+					(Variable "$arg"))
+				(Connector
+					(Sex "reply")
+					(Variable "$foo"))))
+		(Filter
+			(LinkSignature (Type 'Choice) (Glob "$x"))
+			(Lookup (Type 'FileSysStream)))))
 
 ; --------------------------------------------------------
 
