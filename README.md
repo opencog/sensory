@@ -121,7 +121,7 @@ I can receive text data".
 
 So far, so good. This is just plain-old ordinary computer science, so
 far. The twist is that these data descriptors are being written as Link
-Grammar connector types. Link Grammar is a language parser: given a
+Grammar (LG) connector types. Link Grammar is a language parser: given a
 collection of "words", to which a collection of connectors are attached,
 the parser can connect up the connectors to create "links". The linkages
 are such that the endpoints always agree as to the type of the
@@ -151,13 +151,100 @@ are "affordances" to the external world: they describe how an agent can
 work with the sensori-motor interface to "do things" in the external
 world.
 
+Autonomous Agents
+-----------------
+The sensori-motor system is just an interface. In between must lie a
+bunch of data-processing nodes that take "inputs" and convert them to
+"outputs". There are several ways to do this. One is to hand-code,
+hard-code these connections, to create a "stimulous-response" (SRAI)
+type system. For each input (stimulous) some processing happens,
+and then some output is generated (response). A second way is to create
+a dictionary of processing elements, each of which can take assorted
+inputs or outputs, defined by connector types. Link Grammar can then be
+used to obtain valid linkages between them. This approach resembles
+electronics design automation (EDA): there is a dictionary of parts
+(resistors, capacitors, coils, transistors ... op amps, filters, ...)
+each able to take different kinds of connections. With guidance from the
+(human) user, the EDA tool selects parts from the dictionary, and hooks
+them up in valid circuits. Here, Link Grammar takes the role of the EDA
+tool, generating only valid linkages. The (human) user still had to
+select the "LG words" or "EDA parts", but LG/EDA does the rest,
+generating a "netlist" (in the case of EDA) or a "linkage" (in the case
+of LG).
+
+What if there is no human to guide parts selection and circuit design?
+You can't just give an EDA tool a BOM (Bill of Materials) and say
+"design some random circuit out of these parts". Well, actually, you
+can, if you use some sort of evolutionary programming system. Such
+systems (e.g. [as-moses](https://github.com/opencog/as-moses)) are able
+to generate random trees, and then select the best/fittest ones for some
+given purpose. A collection of such trees is called a "random forest" or
+"decision tree forest", and, until a few years ago, random forests were
+competitive in the machine-learning industry, equaling the performance
+seen in deep-learning neural nets (DLNN).
+
+Deep learning now outperforms random forests. Can we (how can we) attach
+a DLNN system to the sensori-motor system being described here? Should
+we, or is this a bad idea? Lets review the situation.
+
+* Yes, maybe hooking up DLNN to the sensory system here is a stupid
+  idea. Maybe its just technically ill-founded, and there are easier
+  ways of doing this. But I don't know; that's why I'm doing these
+  experiments.
+
+* Has anyone ever built a DLNN for electronic circuit design? That is,
+  taken a training corpus of a million different circuit designs
+  (netlists), and created a new system that will generate new
+  electronic circuits for you? I dunno. Maybe.
+
+* Has anyone done this for software? Yes, GPT-4 (and I guess Microsoft
+  CodePilot) is capable of writing short sequences of valid software to
+  accomplish various tasks.
+
+* How should one think about "training"? I like to think of LLM's as
+  high-resolution photo-realistic snapshots of human language. What you
+  "see" when you interact with GPT-2 are very detailed models of things
+  that humans have written, things in the training set. What you see
+  in GPT-4 are not just the surface text-strings, but a layer or two
+  deeper into the structure, resembling human reasoning. That is, GPT-2
+  captures base natural language syntax (as a start), plus entities and
+  entity relationships and entity attributes (one layer down, past
+  surface syntax.) GPT-4 does down one more layer, adequate capturing
+  some types of human reasoning (e.g. analogical reasoning about
+  entities). No doubt, GPT-5 will do an even better job of emulating
+  the kinds of human reasoning seen in the training corpus.  Is it
+  "just emulating" or is it "actually doing"? This is where the
+  industry experts debate, and I will ignore this debate.
+
+* DLNN training is a force-feeding of the training corpus down the
+  gullet of the network. Given some wiring diagram for the DLNN,
+  carefully crafted by human beings to have some specific number of
+  attention heads of a certain width, located at some certain depth,
+  maybe in several places, the training corpus is forced through the
+  circuit, arriving at a weight matrix via gradient descent. Just like a
+  human engineer designs an electronic circuit, so a human engineer
+  designs the network to be trained (using TensorFlow, or whatever).
+
+The proposal here is to "learn by walking aboud". A decade ago, the MIT
+Robotics Lab (and others) demoed randomly-constructed virtual robots
+that, starting from nothing, learned how to walk, run, climb, jump,
+navigate obstacles.
 
 
+a The proposal here is to do "the same thing", but
+instead of doing it in some 3D landscape (Gazebo, Stage/Player,
+Minecraft...) to instead do it in a generic sensori-motor landscape.
 
+Thus, the question becomes: "What is a generic sensori-motor landscape?"
+and "how does a learning system intoerface to such a thing?" This git
+repo is my best attempt to try to understand these two questions, and to
+find answers to them. Apolgies if the current state is underwhelming.
+
+Ther
 
 ### Status
 ***Version 0.2.7*** -- Experimental. Basic demos actually work. Overall
-architecture is ok-ish. The grand questions above remain mysterious.
+architecture seems ok-ish. The grand questions above remain mysterious.
 
 Provides:
 * Basic File I/O stream.
