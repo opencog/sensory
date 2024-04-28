@@ -48,29 +48,33 @@
 
 ; --------------------------------------------------------
 ; Now lets look at how the API for the above is represented.
+; This builds a crude stimulous-reponse pipeline in scheme.
+; Ultimately, we want such pipes to be in Atomese, not scheme,
+; but it is easier to poke at bit bits and pieces with scheme.
 
 ; Get the description of what this sensory device provides.
 (define fsys-descr
 	(cog-execute! (Lookup (Type 'FileSysStream))))
 
-; Print it. It should be a ChoiceLink of a bucn of sections
+; Print it. It should be a ChoiceLink of a bunch of sections.
 fsys-descr
 
-; Brute-force just get the first choice. It's a Section with
+; Brute-force; just get the first choice. It's a Section with
 ; a ConnectorSeq on it.
 (define some-cmd-descr (cog-value-ref fsys-descr 0))
 
-; Take a look
+; Take a look at what it is.
 some-cmd-descr
 
-; Get the connector sequence
+; Pull the connector sequence out of it.
 (define conn-seq (cog-value-ref some-cmd-descr 1))
 
-; Convert it to a scheme list
+; Convert the connector sequence to a scheme list.
 (define conn-list (cog-value->list conn-seq))
 
-; Brute-force walk over the connectors, and extract the command
-; components.
+; Brute-force walk over the connectors, and extract the ones
+; that encode a command. These are the ones having (Sex "command").
+; The sensory data have (Sex "reply") and we ignore this, here.
 (define cmd-seq
 	(filter-map
 		(lambda (cnctr)
@@ -79,7 +83,13 @@ some-cmd-descr
 				#f))
 		conn-list))
 
-; Assemble the command
+; Now that we have all of the pieces, assemble a runnable command.
+; This should have the form of (Write (ValueOf ...) (Item "ls"))
+; because the Section for "ls" just happens to be the first Section
+; returned in the ChoiceLink, and that Section also stated that
+; a WriteLink should be used to perform that action. The location
+; of the sensory stream, that we have to insert ourselves, as the
+; first argument to Write.
 (define some-cmd
 	(cog-execute!
 		(LinkSignature
@@ -87,27 +97,45 @@ some-cmd-descr
 			(DontExec (ValueOf (Anchor "xplor") (Predicate "fsys")))
 			(cdr cmd-seq))))
 
-; Take a look at what we got
+; Take a look at what we got. Make sure it is in the expected form.
 some-cmd
 
-; Run it. This assume the Open was done earlier.
+; Run it. This assumes the sensory stream was opened, earlier, with
+; the OpenLink (near top of this file).
 (cog-execute! some-cmd)
 
 ; --------------------------------------------------------
+; Repeat the above, but this time in Atomese.
+; This builds a crude stimulous-reponse pipeline.
+; Under construction, broken.
 
+(define fsys-descr
+	(cog-execute! (Lookup (Type 'FileSysStream))))
+
+; Example: unwrap the ChoiceLink
 (cog-execute!
 	(Filter
-		(Rule
-			(Choice (Variable "$x"))
-			(List (Variable "$x")))
+		(LinkSignature (Type 'Choice) (Glob "$x"))
 		fsys-descr))
 
 (cog-execute!
 	(Filter
 		(Section
 			(Type 'Item)
-			(Type 'ConnectorSeq))
-		fsys-descr))
+			(ConnectorSeq
+				(Glob "$y")))
+		(Filter (LinkSignature (Type 'Choice) (Glob "$x")) fsys-descr)))
+
+(cog-execute!
+	(Filter
+		(Section
+			(Type 'Item)
+			(ConnectorSeq
+				(Connector
+					(Sex "command")
+					(Type 'Type))
+				(Glob "$y")))
+		(Filter (LinkSignature (Type 'Choice) (Glob "$x")) fsys-descr)))
 
 ; --------------------------------------------------------
 
