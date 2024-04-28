@@ -24,7 +24,8 @@ fsys-descr
 ; Demo the basic commands as a "human" would use them.
 ; These are, of course, hopelessly verbose for a human, but that
 ; is beside the point; the goal is to have a self-describing
-; interface.
+; interface. In some programming languages, this is called
+; "introspection" or "reflection".
 (cog-execute! (Write (ValueOf (Anchor "xplor") (Predicate "fsys"))
 	(Item "pwd")))
 

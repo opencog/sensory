@@ -87,8 +87,9 @@ void FileSysStream::init(const std::string& url)
 		throw RuntimeException(TRACE_INFO,
 			"Unsupported URL \"%s\"\n", url.c_str());
 
-	// Make a copy, for debuggingg purposes.
-	_uri = url;
+	_cwd = url;
+
+	do_describe();
 
 #if LATER
 	// Ignore the first 7 chars "file://"
@@ -112,11 +113,12 @@ void FileSysStream::init(const std::string& url)
 
 // ==============================================================
 
-// This is totally bogus because it is unused.
-// This should be class static member
-ValuePtr FileSysStream::describe(AtomSpace* as, bool silent)
+Handle _global_desc = Handle::UNDEFINED;
+
+void FileSysStream::do_describe(void)
 {
-	if (_description) return as->add_atom(_description);
+	if (_global_desc) return;
+
 	HandleSeq cmds;
 
 	// List files
@@ -164,8 +166,16 @@ ValuePtr FileSysStream::describe(AtomSpace* as, bool silent)
 			createNode(ITEM_NODE, "the mkdir command"));
 	cmds.emplace_back(mkdir_cmd);
 
-	_description = createLink(cmds, CHOICE_LINK);
-	return as->add_atom(_description);
+	_global_desc = createLink(cmds, CHOICE_LINK);
+}
+
+// This is totally bogus because it is unused.
+// This should be class static member
+ValuePtr FileSysStream::describe(AtomSpace* as, bool silent)
+{
+	if (_description) return as->add_atom(_description);
+	_description = as->add_atom(_description);
+	return _description;
 }
 
 // ==============================================================
@@ -198,14 +208,14 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 	const std::string& cmd = cref->get_name();
 	if (0 == cmd.compare("ls"))
 	{
-		const std::string& path = _uri.substr(_pfxlen);
+		const std::string& path = _cwd.substr(_pfxlen);
 		DIR* dir = opendir(path.c_str());
 
 		ValueSeq vents;
 		struct dirent* dent = readdir(dir);
 		while (dent)
 		{
-			vents.emplace_back(createStringValue(_uri + "/" + + dent->d_name));
+			vents.emplace_back(createStringValue(_cwd + "/" + + dent->d_name));
 			dent = readdir(dir);
 		}
 		closedir(dir);
@@ -214,7 +224,7 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 
 	if (0 == cmd.compare("pwd"))
 	{
-		return createStringValue(_uri);
+		return createStringValue(_cwd);
 	}
 
 	// Commands taking arguments
@@ -235,8 +245,8 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 			throw RuntimeException(TRACE_INFO,
 				"Expecting filepath: %s", arg1->to_string().c_str());
 
-		_uri = fpath;
-		return createStringValue(_uri);
+		_cwd = fpath;
+		return createStringValue(_cwd);
 	}
 
 	throw RuntimeException(TRACE_INFO,

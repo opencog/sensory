@@ -40,12 +40,15 @@ namespace opencog
 class FileSysStream
 	: public OutputStream
 {
+private:
+	void do_describe(void);
+
 protected:
 	void init(const std::string&);
 	virtual void update() const;
 
 	Handle _description;
-	mutable std::string _uri;
+	mutable std::string _cwd;
 
 public:
 	FileSysStream(void);
