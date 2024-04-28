@@ -20,14 +20,18 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <dirent.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <string.h> // for strerror()
+#include <sys/types.h>
 
 #include <opencog/util/exceptions.h>
 #include <opencog/util/oc_assert.h>
 #include <opencog/atomspace/AtomSpace.h>
 #include <opencog/atoms/base/Link.h>
 #include <opencog/atoms/base/Node.h>
+#include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atoms/value/StringValue.h>
 #include <opencog/atoms/value/ValueFactory.h>
 
@@ -123,6 +127,23 @@ ValuePtr FileSysStream::describe(AtomSpace* as, bool silent)
 						createNode(TYPE_NODE, "StringValue"))));
 	cmds.emplace_back(ls_cmd);
 
+	Handle pwd_cmd =
+		createLink(SECTION,
+			createNode(ITEM_NODE, "the pwd command"),
+			createLink(CONNECTOR_SEQ,
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "command"),
+					createNode(TYPE_NODE, "WriteLink")),
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "command"),
+					createNode(ITEM_NODE, "pwd")),
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "reply"),
+					createLink(LINK_SIGNATURE_LINK,
+						createNode(TYPE_NODE, "LinkValue")),
+						createNode(TYPE_NODE, "StringValue"))));
+	cmds.emplace_back(pwd_cmd);
+
 	Handle cd_cmd =
 		createLink(SECTION,
 			createNode(ITEM_NODE, "the cd command"));
@@ -156,7 +177,19 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 	if (0 == cmd.compare("ls"))
 	{
 printf("duude got ls command\n");
+		DIR* dir = opendir("/tmp");
+
+		struct dirent* dent = readdir(dir);
+printf("duuude got %s\n", dent->d_name);
+
+		closedir(dir);
 		return createLinkValue();
+	}
+
+	if (0 == cmd.compare("pwd"))
+	{
+printf("duude got pwd command\n");
+		return createStringValue(_uri);
 	}
 
 	throw RuntimeException(TRACE_INFO,
