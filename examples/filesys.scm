@@ -95,6 +95,22 @@ some-cmd
 
 ; --------------------------------------------------------
 
+(cog-execute!
+	(Filter
+		(Rule
+			(Choice (Variable "$x"))
+			(List (Variable "$x")))
+		fsys-descr))
+
+(cog-execute!
+	(Filter
+		(Section
+			(Type 'Item)
+			(Type 'ConnectorSeq))
+		fsys-descr))
+
+; --------------------------------------------------------
+
 ; Throws because wrong number of args. XXX FIXME
 (cog-execute! (Lookup (Type 'TextFileStream)))
 
