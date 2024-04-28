@@ -159,12 +159,29 @@ void FileSysStream::do_describe(void)
 	Handle cd_cmd =
 		createLink(SECTION,
 			createNode(ITEM_NODE, "the cd command"));
+			createLink(CONNECTOR_SEQ,
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "command"),
+					createNode(TYPE_NODE, "WriteLink")),
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "command"),
+					createNode(ITEM_NODE, "cd")),
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "command"),
+					createNode(TYPE_NODE, "SensoryNode")), // XXX maybe??
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "reply"),
+					createLink(LINK_SIGNATURE_LINK,
+						createNode(TYPE_NODE, "LinkValue")),
+						createNode(TYPE_NODE, "StringValue"))));
 	cmds.emplace_back(cd_cmd);
 
+#ifdef LATER
 	Handle mkdir_cmd =
 		createLink(SECTION,
 			createNode(ITEM_NODE, "the mkdir command"));
 	cmds.emplace_back(mkdir_cmd);
+#endif
 
 	_global_desc = createLink(cmds, CHOICE_LINK);
 }

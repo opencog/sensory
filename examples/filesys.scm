@@ -14,6 +14,7 @@
 ; opencog/atoms/irc/README.md
 ;
 (use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (srfi srfi-1))
 
 ; -----------------------------------------------------------
 ; Preliminary setup.
@@ -48,11 +49,49 @@
 ; --------------------------------------------------------
 ; Now lets look at how the API for the above is represented.
 
-; Get the stream description
+; Get the description of what this sensory device provides.
 (define fsys-descr
 	(cog-execute! (Lookup (Type 'FileSysStream))))
 
+; Print it. It should be a ChoiceLink of a bucn of sections
 fsys-descr
+
+; Brute-force just get the first choice. It's a Section with
+; a ConnectorSeq on it.
+(define some-cmd-descr (cog-value-ref fsys-descr 0))
+
+; Take a look
+some-cmd-descr
+
+; Get the connector sequence
+(define conn-seq (cog-value-ref some-cmd-descr 1))
+
+; Convert it to a scheme list
+(define conn-list (cog-value->list conn-seq))
+
+; Brute-force walk over the connectors, and extract the command
+; components.
+(define cmd-seq
+	(filter-map
+		(lambda (cnctr)
+			(if (equal? (gar cnctr) (Sex "command"))
+				(gdr cnctr)
+				#f))
+		conn-list))
+
+; Assemble the command
+(define some-cmd
+	(cog-execute!
+		(LinkSignature
+			(car cmd-seq)
+			(ValueOf (Anchor "xplor") (Predicate "fsys"))
+			(cdr cmd-seq))))
+
+; Take a look at what we got
+some-cmd
+
+; Run it
+(cog-execute! some-cmd)
 
 ; --------------------------------------------------------
 
