@@ -181,11 +181,17 @@ Concentional functions in computing have zero or one output connectors,
 and zero or more input connectors. The inputs and outputs are typed.
 Polymorphic types can be indicated with ChoiceLink, and so on.
 
-How can this be used to list environmental situations? Goal is to
-represent: "here's what yo can do: you can list all members of the chat
-channel, and you can open a private chat to one of them, and you can
-maybe kick or ban or give voice to one of them, but only if you are
-channel op."
+### Object reflection
+In the java programming world, and some (many?) other languages, there
+is a concept of "reflection" or "introspection", where an object can be
+asked to describe itself, what it contains. The below is an attempt to
+define what reflection or introspection might look like, for Atomese.
+
+The goal is to describe conditions in the external environment, in the
+"sensory world". To represent: "Here's what you can do: you can list
+all members of the chat channel, and you can open a private chat to
+one of them, and you can maybe kick or ban or give voice to one of them,
+but only if you are channel op."
 
 So, given a location in an environment, one has available:
 ```

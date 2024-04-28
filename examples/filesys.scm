@@ -14,16 +14,25 @@
 
 fsys-descr
 
-; Open
-(define fsys-stream
-	(cog-execute! (Open (Type 'FileSysStream) (Sensory "file:///tmp"))))
+; Open filesystem node, and anchor it.
+(cog-execute!
+	(SetValue
+		(Anchor "xplor") (Predicate "fsys")
+		(Open (Type 'FileSysStream) (Sensory "file:///tmp"))))
 
-; Anchor
-(cog-set-value! (Anchor "xplor") (Predicate "fsys") fsys-stream)
-
-; Write
+-----------------------------------------------------------
+; Demo the basic commands as a "human" would use them.
+; These are, of course, hopelessly verbose for a human, but that
+; is beside the point; the goal is to have a self-describing
+; interface.
 (cog-execute! (Write (ValueOf (Anchor "xplor") (Predicate "fsys"))
 	(Item "pwd")))
+
+(cog-execute! (Write (ValueOf (Anchor "xplor") (Predicate "fsys"))
+	(Item "ls")))
+
+(cog-execute! (Write (ValueOf (Anchor "xplor") (Predicate "fsys"))
+	(List (Item "cd") (Item "file:///home"))))
 
 (cog-execute! (Write (ValueOf (Anchor "xplor") (Predicate "fsys"))
 	(Item "ls")))
