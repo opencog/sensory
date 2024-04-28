@@ -181,8 +181,20 @@ void FileSysStream::update() const
 
 // Process a command.
 ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
-                                  const Handle& cref)
+                                  const Handle& cmdref)
 {
+	Handle cref = cmdref;
+	if (cref->is_link())
+	{
+		if (0 == cref->size())
+			throw RuntimeException(TRACE_INFO,
+				"Expecting a non-empty list: %s", cref->to_string().c_str());
+		cref = cref->getOutgoingAtom(0);
+	}
+	if (not cref->is_node())
+		throw RuntimeException(TRACE_INFO,
+			"Expecting a Node: %s", cref->to_string().c_str());
+
 	const std::string& cmd = cref->get_name();
 	if (0 == cmd.compare("ls"))
 	{
@@ -202,7 +214,28 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 
 	if (0 == cmd.compare("pwd"))
 	{
-printf("duude got pwd command\n");
+		return createStringValue(_uri);
+	}
+
+	// Commands taking arguments
+	cref = cmdref;
+	if (not cref->is_link() or cref->size() < 2)
+		throw RuntimeException(TRACE_INFO,
+			"Expecting arguments: %s", cref->to_string().c_str());
+	const Handle& arg1 = cref->getOutgoingAtom(1);
+
+	if (0 == cmd.compare("cd"))
+	{
+		if (not arg1->is_node())
+			throw RuntimeException(TRACE_INFO,
+				"Expecting filepath: %s", arg1->to_string().c_str());
+
+		const std::string& fpath = arg1->get_name();
+		if (fpath.compare(0, _pfxlen, _prefix))
+			throw RuntimeException(TRACE_INFO,
+				"Expecting filepath: %s", arg1->to_string().c_str());
+
+		_uri = fpath;
 		return createStringValue(_uri);
 	}
 
