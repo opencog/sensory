@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/OpenLink.h
+ * opencog/atoms/sensory/LookupLink.h
  *
  * Copyright (C) 2018 Linas Vepstas
  * All Rights Reserved
@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_OPEN_LINK_H
-#define _OPENCOG_OPEN_LINK_H
+#ifndef _LOOKUPCOG_LOOKUP_LINK_H
+#define _LOOKUPCOG_LOOKUP_LINK_H
 
 #include <opencog/atoms/base/Link.h>
 #include <opencog/atoms/sensory-types/sensory_types.h>
@@ -32,20 +32,20 @@ namespace opencog
  *  @{
  */
 
-/// The OpenLink creates a new stream iterator or cursor.
+/// The LookupLink provides a description of a stream type.
 ///
-class OpenLink : public Link
+class LookupLink : public Link
 {
 private:
 	Type _kind;
 	void init(void);
 
 public:
-	OpenLink(const HandleSeq&&, Type = OPEN_LINK);
-	OpenLink(const Handle&);
+	LookupLink(const HandleSeq&&, Type = LOOKUP_LINK);
+	LookupLink(const Handle&);
 
-	OpenLink(const OpenLink&) = delete;
-	OpenLink& operator=(const OpenLink&) = delete;
+	LookupLink(const LookupLink&) = delete;
+	LookupLink& operator=(const LookupLink&) = delete;
 
 	Type get_kind(void) { return _kind; }
 
@@ -56,10 +56,10 @@ public:
 	static Handle factory(const Handle&);
 };
 
-LINK_PTR_DECL(OpenLink)
-#define createOpenLink CREATE_DECL(OpenLink)
+LINK_PTR_DECL(LookupLink)
+#define createLookupLink CREATE_DECL(LookupLink)
 
 /** @}*/
 }
 
-#endif // _OPENCOG_OPEN_LINK_H
+#endif // _LOOKUPCOG_LOOKUP_LINK_H
