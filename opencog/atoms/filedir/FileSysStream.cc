@@ -108,7 +108,19 @@ ValuePtr FileSysStream::describe(AtomSpace* as, bool silent)
 	// List files
 	Handle ls_cmd =
 		createLink(SECTION,
-			createNode(ITEM_NODE, "the ls command"));
+			createNode(ITEM_NODE, "the ls command"),
+			createLink(CONNECTOR_SEQ,
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "command"),
+					createNode(TYPE_NODE, "WriteLink")),
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "command"),
+					createNode(ITEM_NODE, "ls")),
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "reply"),
+					createLink(LINK_SIGNATURE_LINK,
+						createNode(TYPE_NODE, "LinkValue")),
+						createNode(TYPE_NODE, "StringValue"))));
 	cmds.emplace_back(ls_cmd);
 
 	Handle cd_cmd =
@@ -135,17 +147,20 @@ void FileSysStream::update() const
 }
 
 // ==============================================================
-// Write stuff to a file.
 
-// Write stuff to a file.
+// Process a command.
 ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
                                   const Handle& cref)
 {
-	if (nullptr == _fh)
-		throw RuntimeException(TRACE_INFO,
-			"Text stream not open: URI \"%s\"\n", _uri.c_str());
+	const std::string& cmd = cref->get_name();
+	if (0 == cmd.compare("ls"))
+	{
+printf("duude got ls command\n");
+		return createLinkValue();
+	}
 
-	return createLinkValue();
+	throw RuntimeException(TRACE_INFO,
+		"Unknown command \"%s\"\n", cmd.c_str());
 }
 
 // ==============================================================
