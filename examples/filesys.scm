@@ -13,6 +13,20 @@
 ; Under construction. Uses ideas sketched in the README in
 ; opencog/atoms/irc/README.md
 ;
+; As you go through this demo, you will notice how horribly complicated
+; it is. The description of the sensory environment uses Sections with
+; a bunch of Connectors on them, describing the actions and perceptions
+; that are possible in this environment. The demo below attempts to
+; manualy parse (by hand!) all of these connectors, and hook things up
+; to them. Ouch! Parsing is the job of Link Grammar. What we really want
+; to do here is to have Link Grammar to take a look at the sensory
+; environment, say "a hah, this is really easy: I see one 'word' with
+; four disjuncts on it, let me hook some stuff up to those connectors"
+; where the stuff being hooked up will be various sensory-processing
+; 'words' or various action-taking 'words'.
+;
+; Anyway, that's the general plan. The details remain obscure.
+;
 (use-modules (opencog) (opencog exec) (opencog sensory))
 (use-modules (srfi srfi-1))
 
@@ -141,6 +155,7 @@ some-cmd
 			(LinkSignature (Type 'Choice) (Glob "$x"))
 			(Lookup (Type 'FileSysStream)))))
 
+; Look for commands that do not require any additional arguments.
 (cog-execute!
 	(Filter
 		(Section
@@ -154,10 +169,17 @@ some-cmd
 					(Variable "$arg"))
 				(Connector
 					(Sex "reply")
-					(Variable "$foo"))))
+					(TypeCoInh 'Atom))))  ; also (Variable "$foo")
 		(Filter
 			(LinkSignature (Type 'Choice) (Glob "$x"))
 			(Lookup (Type 'FileSysStream)))))
+
+; XXX Notice how painfully complicated all of the above is. Ugh!
+; What we *really* want to do is the use Link Grammar to perform
+; all of the connector matching for us, automatically. All that
+; the above demos are doing is reinventing Link Grammar, but in
+; Atomese. Yikes!
+
 
 ; --------------------------------------------------------
 
