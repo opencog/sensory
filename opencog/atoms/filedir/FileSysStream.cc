@@ -78,6 +78,9 @@ FileSysStream::~FileSysStream()
 /// file:mode//...
 /// where mode is one of the modes described in `man 3 fopen`
 
+static const std::string _prefix("file://");
+static const size_t _pfxlen = _prefix.size();
+
 void FileSysStream::init(const std::string& url)
 {
 	if (0 != url.compare(0, 8, "file:///"))
@@ -183,14 +186,18 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 	const std::string& cmd = cref->get_name();
 	if (0 == cmd.compare("ls"))
 	{
-printf("duude got ls command\n");
-		DIR* dir = opendir("/tmp");
+		const std::string& path = _uri.substr(_pfxlen);
+		DIR* dir = opendir(path.c_str());
 
+		ValueSeq vents;
 		struct dirent* dent = readdir(dir);
-printf("duuude got %s\n", dent->d_name);
-
+		while (dent)
+		{
+			vents.emplace_back(createStringValue(_uri + "/" + + dent->d_name));
+			dent = readdir(dir);
+		}
 		closedir(dir);
-		return createLinkValue();
+		return createLinkValue(vents);
 	}
 
 	if (0 == cmd.compare("pwd"))

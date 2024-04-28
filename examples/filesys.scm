@@ -16,7 +16,7 @@ fsys-descr
 
 ; Open
 (define fsys-stream
-	(cog-execute! (Open (Type 'FileSysStream) (Sensory "file:///"))))
+	(cog-execute! (Open (Type 'FileSysStream) (Sensory "file:///tmp"))))
 
 ; Anchor
 (cog-set-value! (Anchor "xplor") (Predicate "fsys") fsys-stream)
