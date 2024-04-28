@@ -81,7 +81,7 @@ action-perception corectly.  Trying to support very different kinds
 of sensorimotor systems keeps us honest.
 
 ### Status
-***Version 0.2.5*** -- Experimental. Basic demos actually work. Overall
+***Version 0.2.6*** -- Experimental. Basic demos actually work. Overall
 architecture is ok-ish. The grand questions above remain mysterious.
 
 Provides:
