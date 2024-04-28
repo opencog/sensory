@@ -228,19 +228,21 @@ we, or is this a bad idea? Lets review the situation.
 The proposal here is to "learn by walking aboud". A decade ago, the MIT
 Robotics Lab (and others) demoed randomly-constructed virtual robots
 that, starting from nothing, learned how to walk, run, climb, jump,
-navigate obstacles.
+navigate obstacles. The training here is "learning by doing", rather
+than "here's a training corpus of digitized humans/animals walking,
+running, climbing, jumping". There's no corpus of moves to emulate;
+there's no single-shot learning of dance-steps from youtube videos.
+The robots stumble around in an environment, until they figure out
+how things work, how to get stuff done.
 
-
-a The proposal here is to do "the same thing", but
-instead of doing it in some 3D landscape (Gazebo, Stage/Player,
-Minecraft...) to instead do it in a generic sensori-motor landscape.
+The proposal here is to do "the same thing", but instead of doing it
+in some 3D landscape (Gazebo, Stage/Player, Minecraft...) to instead
+do it in a generic sensori-motor landscape.
 
 Thus, the question becomes: "What is a generic sensori-motor landscape?"
 and "how does a learning system intoerface to such a thing?" This git
 repo is my best attempt to try to understand these two questions, and to
-find answers to them. Apolgies if the current state is underwhelming.
-
-Ther
+find answers to them. Apologies if the current state is underwhelming.
 
 ### Status
 ***Version 0.2.7*** -- Experimental. Basic demos actually work. Overall
