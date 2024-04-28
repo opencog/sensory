@@ -84,13 +84,13 @@ some-cmd-descr
 	(cog-execute!
 		(LinkSignature
 			(car cmd-seq)
-			(ValueOf (Anchor "xplor") (Predicate "fsys"))
+			(DontExec (ValueOf (Anchor "xplor") (Predicate "fsys")))
 			(cdr cmd-seq))))
 
 ; Take a look at what we got
 some-cmd
 
-; Run it
+; Run it. This assume the Open was done earlier.
 (cog-execute! some-cmd)
 
 ; --------------------------------------------------------

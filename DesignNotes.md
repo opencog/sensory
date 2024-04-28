@@ -81,6 +81,8 @@ TODO List
 * Need some kind of modal-open, so that the IRC nick is not hard-coded
   into the URL, but is rather specified during the open. So, open
   parameters.
+* Implement DontExecLink so when executed, it unwraps itself.
+  Right now, this is hacked around in LinkSignatureLink
 
 
 Early draft notes
