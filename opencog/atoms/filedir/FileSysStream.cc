@@ -50,6 +50,11 @@ FileSysStream::FileSysStream(const Handle& senso)
 	init(senso->get_name());
 }
 
+FileSysStream::FileSysStream(void)
+	: OutputStream(FILE_SYS_STREAM)
+{
+}
+
 FileSysStream::~FileSysStream()
 {
 	if (_fh)
@@ -199,4 +204,5 @@ printf("duude got pwd command\n");
 // ==============================================================
 
 // Adds factory when library is loaded.
+DEFINE_VALUE_FACTORY(FILE_SYS_STREAM, createFileSysStream)
 DEFINE_VALUE_FACTORY(FILE_SYS_STREAM, createFileSysStream, Handle)

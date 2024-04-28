@@ -49,6 +49,7 @@ protected:
 	mutable FILE* _fh;
 
 public:
+	FileSysStream(void);
 	FileSysStream(const Handle&);
 	virtual ~FileSysStream();
 
