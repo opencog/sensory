@@ -83,7 +83,7 @@ of sensorimotor systems keeps us honest.
 Typed Pipes and Data Processing Networks
 ----------------------------------------
 In unix, there is the conception of a "pipe", having two endpoints. A
-pair of unix processes can communicate "data" across a pipe, mearly by
+pair of unix processes can communicate "data" across a pipe, merely by
 opening each endpoint, and reading/writing data to it. Internet sockets
 are a special case of pipes, where the connected processes are running
 on different computers somewhere on the internet.
@@ -103,13 +103,13 @@ Other examples include the X.500 and LDAP schemas, as well as SNMP.
 However, there is no generic way of asking a pipe "hey mister pipe, what
 are you? What kind of data passes over you?" or "how do I communicate
 with whatever is at the other end of this pipe?" Usually, these
-questions are resolved by some sort of hand-shaking and negotitation
+questions are resolved by some sort of hand-shaking and negotiation
 when two parties connect.
 
 The experiment being done here, in this git repo, in this code-base, is
 to assign a type to a pipe. This replaces the earliest stages of
-protocol negotiation: if a system wishes only connnect to pipes of type
-`FOO`, then it can know what is availble a priori, by examining the
+protocol negotiation: if a system wishes only connect to pipes of type
+`FOO`, then it can know what is available a priori, by examining the
 connection types attached to that pipe. If they are
 `BAR+ or FOO+ or BLITZ+`, then we're good: the `or` is a disjunctive-or,
 a menu choice of what is being served on that pipe. Upon opening that
@@ -126,6 +126,30 @@ collection of "words", to which a collection of connectors are attached,
 the parser can connect up the connectors to create "links". The linkages
 are such that the endpoints always agree as to the type of the
 connector.
+
+The twist of using Link Grammar to create linkages changes the focus
+from pair-wise, peer-to-peer connections, to a more global network
+connection perspective. A linkage is possible, only if all of the
+connectors are connected, only if they are connected in a way that
+preserves the connector types (so that the two endpoints can actually
+talk to one-another.)
+
+This kind of capability is not needed for the Internet, or for
+peer-to-peer networks, which is why you don't see this "in real life".
+That's because humans and sysadmins and software developers are smart
+enough to figure out how to connect what to what, and corporate
+executives can say "make it so". However, machine agents and "bots" are
+not this smart.
+
+So the aim of this project is to create a sensory-motor system, which
+self-describes using Link Grammar-style disjuncts. Each "external world"
+(the unix filesystem, IRC chat, a webcam or microphone, etc.) exposes
+a collection of connectors that describe the data coming from that
+sensor (text, images ...) and a collection of connectors that describe
+the actions that can be taken (move, open, ...) These connector-sets
+are "affordances" to the external world: they describe how an agent can
+work with the sensori-motor interface to "do things" in the external
+world.
 
 
 
