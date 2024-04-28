@@ -135,8 +135,8 @@ void FileSysStream::do_describe(void)
 				createLink(CONNECTOR,
 					createNode(SEX_NODE, "reply"),
 					createLink(LINK_SIGNATURE_LINK,
-						createNode(TYPE_NODE, "LinkValue")),
-						createNode(TYPE_NODE, "StringValue"))));
+						createNode(TYPE_NODE, "LinkValue"),
+						createNode(TYPE_NODE, "StringValue")))));
 	cmds.emplace_back(ls_cmd);
 
 	Handle pwd_cmd =
@@ -152,8 +152,8 @@ void FileSysStream::do_describe(void)
 				createLink(CONNECTOR,
 					createNode(SEX_NODE, "reply"),
 					createLink(LINK_SIGNATURE_LINK,
-						createNode(TYPE_NODE, "LinkValue")),
-						createNode(TYPE_NODE, "StringValue"))));
+						createNode(TYPE_NODE, "LinkValue"),
+						createNode(TYPE_NODE, "StringValue")))));
 	cmds.emplace_back(pwd_cmd);
 
 	Handle cd_cmd =
@@ -172,8 +172,8 @@ void FileSysStream::do_describe(void)
 				createLink(CONNECTOR,
 					createNode(SEX_NODE, "reply"),
 					createLink(LINK_SIGNATURE_LINK,
-						createNode(TYPE_NODE, "LinkValue")),
-						createNode(TYPE_NODE, "StringValue"))));
+						createNode(TYPE_NODE, "LinkValue"),
+						createNode(TYPE_NODE, "StringValue")))));
 	cmds.emplace_back(cd_cmd);
 
 #ifdef LATER
