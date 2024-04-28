@@ -6,6 +6,9 @@
 // Stream that can be written to.
 OUTPUT_STREAM <- LINK_STREAM_VALUE
 
+// File system stream
+FILE_SYS_STREAM <- OUTPUT_STREAM
+
 // Stream of text
 TEXT_STREAM <- OUTPUT_STREAM
 TEXT_FILE_STREAM <- TEXT_STREAM
@@ -21,6 +24,9 @@ I_R_CHAT_STREAM <- TEXT_STREAM
 // TagNode cause base AtomSpace already calls them "data streams".
 // BondNode cause they are connector-like?
 SENSORY_NODE <- TAG_NODE
+
+// Calling execute() provides description of stream.
+LOOKUP_LINK <- EXECUTABLE_LINK
 
 // Calling execute() creates a new stream of the given type.
 OPEN_LINK <- EXECUTABLE_LINK
