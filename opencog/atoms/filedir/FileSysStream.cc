@@ -57,6 +57,7 @@ FileSysStream::FileSysStream(const Handle& senso)
 FileSysStream::FileSysStream(void)
 	: OutputStream(FILE_SYS_STREAM)
 {
+	do_describe();
 }
 
 FileSysStream::~FileSysStream()
@@ -88,7 +89,6 @@ void FileSysStream::init(const std::string& url)
 			"Unsupported URL \"%s\"\n", url.c_str());
 
 	_cwd = url;
-
 	do_describe();
 
 #if LATER
@@ -174,7 +174,7 @@ void FileSysStream::do_describe(void)
 ValuePtr FileSysStream::describe(AtomSpace* as, bool silent)
 {
 	if (_description) return as->add_atom(_description);
-	_description = as->add_atom(_description);
+	_description = as->add_atom(_global_desc);
 	return _description;
 }
 
