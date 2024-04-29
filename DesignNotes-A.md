@@ -1,5 +1,5 @@
-Design Notes A
-==============
+Design Notes A -- Read/Write
+============================
 *** Early April 2024 ***
 
 (Some of the) Thought process that went into the earliest design:

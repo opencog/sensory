@@ -1,5 +1,5 @@
-Design Notes B
-==============
+Design Notes B -- IRC
+=====================
 ***Mid-April 2024***
 
 Task is to design an API for Internet Relay Chat (IRC). How?
