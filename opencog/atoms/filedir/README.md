@@ -27,9 +27,21 @@ Additional ruminations and design criteria can be found in the
 these streams be as similar as is reasonable, so that the agent does
 not need to re-learn eintirely new interaction styles.
 
-Design
-------
+Examples
+--------
 The `TextFileStream` can be used to read and write files. See the
 See the [examples](../../../examples) directory.
+
+Design
+------
+OK, Let's take the notes in [IRChatStream README](../irc/README.md) to
+heart. It says that actions, and the result of those actions, should be
+described by a `ChoiceLink` of `Section`s. The current filesys example,
+as it stands, treats this as a DTD and attempts to manually pick it
+apart and create just one single link. And ... almost works but fails.
+Because it's complicated.  This hooking-up of things needs to be
+abstracted and automated.
+
+
 
 -----------------------------------

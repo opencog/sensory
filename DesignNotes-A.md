@@ -1,94 +1,18 @@
-Design notes
-============
-(Some of the) Thought process that went into current design.
+Design Notes A
+==============
+*** Mid-April 2024 ***
 
-See the [examples](examples) directory for actual demos that should
-actually work.
+(Some of the) Thought process that went into the earliest design:
+the ReadLink, WriteLink and TextStream. This is not the current
+documentation; this is the thought process that lead to the current
+design.
 
-Current Implementation
-----------------------
-There are two basic Atoms: `OpenLink` and `WriteLink`. The `OpenLink`
-command is used to create a new I/O stream, and `WriteLink` is used to
-write to the stream. Philosophically, `OpenLink` is a command that says
-"go to a new place/location in the environment/exterior world, and open
-a sensory stream at that location."  By contrast, `WriteLink` says "stay
-at the current location, but spew text there." Write does not create a
-new stream.
-
-The `OpenLink` API is
-```
-	(OpenLink
-		(TypeNode 'FoobarStream) ; e.g. TextFileStream or IRChatStream
-		(SensoryNode "url://of/some/sort")) ; e.g file:// or irc://
-```
-The `TypeNode` must indicate a valid Atomese type that can be created.
-The `SensoryNode` is just some text passed into the stream constructor.
-
-Currently supported are `TextFileStream` and `IRChatStream`
-
-The `WriteLink` API is
-```
- (WriteLink
-    (TextStream)   ; iterator to write to.
-    (StringValue)) ; strings to write
-```
-Since links can't actually store Values, the above have to be executable
-things that return the desired streams.
-
-How does the C++ perform the write?
-```
-class OutputStream
-	: public LinkStreamValue
-{
-	virtual ValuePtr write_out(const Handle&) = 0;
-};
-
-class TextFileStream : public OutputStream
-{
-private:
-	FILE* _fh;
-
-	ValuePtr write_out(const Handle& cref)
-   {
-		ValuePtr content =  cref->execute();
-		StringValuePtr sv = StringValueCast(content);
-		fprintf(_fh, "%s", sv->get_value());
-		return sv;
-	}
-};
-
-ValuePtr WriteLink::execute()
-{
-	TextStreamPtr = TextStreamCast(_outgoing[0]->execute());
-	return ->write_out(_outgoing[1]);
-}
-```
-That's it.
-
-The `TextFileNode::execute()` creates new iterator,
-and opens it for reading and writing.
-
-TODO List
----------
-* The text API should probably be changed to use StringValue instead
-  of ItemNode. But this breaks LG parser, for now. FIXME
-* The text file reader should probably throw on end-of-file, instead
-  of returning empty content. This would allow intermediate processors
-  to have an easier time of it.
-* The concurrent queue should be changed to finite-size buffer and
-  discard old data. Goal is to avoid unbounded-size chat buffers.
-* The NICK command gets a badly-parsed response if the nick is in use.
-* Need some kind of modal-open, so that the IRC nick is not hard-coded
-  into the URL, but is rather specified during the open. So, open
-  parameters.
-* Implement DontExecLink so when executed, it unwraps itself.
-  Right now, this is hacked around in LinkSignatureLink
-
+See the [mean design document](Design.md) for an overview.
 
 Early draft notes
 -----------------
-Earlier ideas that lead up to the above.
-For what the sensory I/O interface could be like.
+Earlier ideas that lead up to what the sensory I/O interface could
+be like.
 
 Needs to be generic, powerful, flexible, anticipate future IO
 requirements, be simple to use, simple to understand.
