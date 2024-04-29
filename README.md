@@ -225,7 +225,7 @@ we, or is this a bad idea? Let's review the situation.
   human engineer designs an electronic circuit, so a human engineer
   designs the network to be trained (using TensorFlow, or whatever).
 
-The proposal here is to "learn by walking aboud". A decade ago, the MIT
+The proposal here is to "learn by walking around". A decade ago, the MIT
 Robotics Lab (and others) demoed randomly-constructed virtual robots
 that, starting from nothing, learned how to walk, run, climb, jump,
 navigate obstacles. The training here is "learning by doing", rather
