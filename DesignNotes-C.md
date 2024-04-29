@@ -102,8 +102,94 @@ The above is so low level, it feels crazy. Lets take a more careful
 look, and see if that's true, if there's a better design or a simpler
 design or the whole thing is pointless. So, bullet by bullet.
 
-* Terminal I/O
-* Message routing/multiplexing
+* Terminal I/O -- Well, of course, if we buy into the rest of the design
+  framework here, then of course we need a terminal I/O device.
+* Message routing/multiplexing -- This is a central concept in many many
+  systems: of course, internet packet routers. Of course, e-mail
+  store-and-forward agents. Of course, in electronic circuit design.
+  None of them are generic Atomese. If we buy into the rest of the
+  design framework here, then of course a multiplexor is needed.
 
+* Atomese vs. other languages. So, for example, a hardware multiplexor is
+  written in VHDL or Verilog. Internet routers are written in embedded
+  languages. Email routers are generic software. No commonality. How
+  about IRC chatbots? How are they designed?
+
+A traditional IRC chatbot can be done in several ways. At lowest-level,
+open a socket and read/write it. At the next layer up, find some IRC
+handling library (or write your own) like the IRC.cc file in this git
+repo. Then write ad hoc C++ code to work with it.  At the next layer up,
+find someone else's chatbot scripting toolkit, which is typically a
+super-easy toy scripting language that allows complete novices to create
+reasonably interesting bots.
+
+Am I creating a clumsy, awkward chatbot scripting language? Maybe. But
+it is supposed to be more general than just IRC, its supposed to do the
+full action-perception sensory stack.
+
+Why am I using Atomese, instead of, say, straight-up scheme? Well,
+because I can save Atomese to the AtomSpace. But why does this matter?
+Because I can do introspection on Atomese, and one needs a graph
+database to store the introspection results. Also, I keep saying
+"introspection" but almost never actually do it. Well, I guess the
+pattern-matcher/query engine does this, but its again, very low-level.
+
+If I tried very very hard, I could build a version of Scheme that was
+Atomese-like, storable in a graph database, and somewhat easy to
+introspct. I'm not sure, I think that is what MeTTa was supposed to be.
+Yes, straight-up scheme is a lot more readable than Atomese, and so
+perhaps the idea was a straight-up MeTTa woud also be a lot more readable
+than Atomese. But its all harder to introspect.
+
+That is, I could write an IRC echobot in scheme. It would be easy: just
+a very short read-modify-write loop. But there's no easy way to
+introspect this, because there are no attachements, no handles, to
+perform actions like "disconnect the read from the modify, and insert
+a filter at that location", because programming languages almost never
+come with such modifier handles that can be grabbed and manipulated.
+
+This is in contrast to things like Blender, or LEGO mindstorms or any
+other graphical programming system, which does explicitly have handles
+that can be grabbed, because the GUI needs to expose these to the user,
+who will drag-n-drop these with a mouse. I think maybe SmallTalk had
+some kind of modules for this. But its too late for SmallTalk.
+
+This is in contrast to internet firewall rules, which are a sequence of
+rules to be applied to message data flowing into/out of a specific
+computer network.
+
+Which brings us to rule systems, such as Drools, or the Java rules
+thing, or the now obsolete URE. Which brings us to the doorstep of
+parsing. Which is hy Link Grammar. But this brings us to the doorstep
+of the theorem-provers, like HOL or Agda. And so hhere we are...
+
+Are there any programming languages that allow:
+* Constructs to be grabbed drag-n-dropped with a GUI, like in
+  Mindstorms? (Or the historically older systems e.g. the NeXT GUI
+  constructor, or Explorer from SGI)
+* Allows data to flow on the pipes? (SGI Explorer, Blender do not;
+  the objects are 3D shapes.)
+* Allows typed data, in the sense of HTML DTD's ...
+* Verifies typed linkages ...
+* Provides I/O devices...
+* Provide a database with a query language, instead of text files ...
+
+Conclusion: I'm reinventing really ancient concepts (terminal I/O really
+is from the 1960's. Unix pipes are from the 1970's, NeXT GUI builder
+from the 1980's, SGI's Explorer from the 1990's, Internet firewall rules
+from the 1990's ...) but all of these ancient concepts are reworked in
+an integrated setting that aims to be generic.
+
+I dunno. I don't see any other way. This stuff nags me, but what else
+can I do? No one else seems to have anything even close to being this
+generic. The system I'm building is klunky and awkward, but what the
+heck. Is there any other path forward?
+
+Conclusion: I'm in a thicket, but there's no turning back. The
+ingedients to this recipie are all well, known individually. No one has
+combined them in quite this way, before. I don't see any other way.
+Onwards.
+
+So that was a moment of doubt. Alas.
 
 -----------------------------------
