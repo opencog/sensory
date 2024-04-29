@@ -37,16 +37,73 @@ Examples
 The `TextFileStream` can be used to read and write files. See the
 See the [examples](../../../examples) directory.
 
-Design
-------
+Link Grammar
+------------
 OK, Let's take the notes in [Design Notes B](DesignNotes-B.md) to
 heart. It says that actions, and the result of those actions, should be
-described by a `ChoiceLink` of `Section`s. The current filesys example,
+described by a `ChoiceLink` of `Section`s. The
+[current filesys example](examples/filesys.scm),
 as it stands, treats this as a DTD and attempts to manually pick it
 apart and create just one single link. And ... almost works but fails.
 Because it's complicated.  This hooking-up of things needs to be
-abstracted and automated.
+abstracted and automated. How?
 
+Part of the problem is that theres a DTD for the filesys commands,
+but no matching connector-sets describing the pipeline. So we really
+want:
+* An API for terminal I/O
+* An LG-style DTD for the terminal I/O
+* A linker that can construct a pipeline from the Filesys 'ls' command
+  to the terminal. The linker auto-connects, so that none of the icky
+  code in the demo would need to be written.
+* Repeat above, for IRC. Terminal I/O is easier, cause we can punt on
+  channel joins, for now. Alternately, could build a pipe from 'ls' to
+  a file, but that is lesss fun, because files are not interactive.
+
+WTF is this? The 1960's? I'm reinventing terminal I/O? Really? Didn't
+someone else do this, 60 years ago? Am I crazy?
+
+Another task is to pipe the output of the IRC channel list command to a
+file (or a terminal), or to create a spybot, that reads IRC channel
+convos and writes them to a file.
+
+Can this be done with a single linkage, or are multiple linkages needed?
+The IRC echobot seems to require multiple linkages. It reads, then
+applies some decision filters to figure out if it is on a public or
+private channel, then it applies one of two different kinds of
+responses, depending on which, and finally, it writes. So a grand total
+of six elements and two linkages:
+
+* Read target
+* Public/private decision filter
+* Two different reply formulators
+* If on public, then only when addressed filter
+* Write target
+
+Try it in ASCII graphics
+```
+                         x --> pub-maybe --> pub-reply -x
+                        /                                \
+   Read --> pub/priv --x                                  x--> Write
+                        \                                /
+                         x ----> private reply >--------x
+```
+Each of the dashed lines is an LG link; the link-type is NOT noted.
+The data flow is mostly text. However, the data to indicate if a
+messages came via public or private channel, how does that work?
+Does it come as a distinct data type flowing on a pipeline? Or
+does it manifest into a different connector?  Maybe both, so that
+there is a multiplexor or router node, that routes to different pipes,
+depending on the prior message it received?
+
+Am I navel gazing?
+------------------
+The above is so low level, it feels crazy. Lets take a more careful
+look, and see if that's true, if there's a better design or a simpler
+design or the whole thing is pointless. So, bullet by bullet.
+
+* Terminal I/O
+* Message routing/multiplexing
 
 
 -----------------------------------
