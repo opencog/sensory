@@ -76,8 +76,8 @@ TerminalStream::~TerminalStream()
 	if (_fh)
 		fclose (_fh);
 
-printf("duuude kill %d\n", _xterm);
-	kill(_xterm, SIGKILL);
+	// Runs only if GC runs. This is a problem.
+	kill (_xterm, SIGKILL);
 }
 
 /// Attempt to open the URL for reading and writing.
@@ -104,8 +104,6 @@ void TerminalStream::init(const std::string& url)
 		throw RuntimeException(TRACE_INFO, "Can't open PTY %d %s",
 			errno, strerror(errno));
 
-	_fh = fdopen(fd, "a+");
-
 	int rc = unlockpt(fd);
 	if (0 != rc)
 		throw RuntimeException(TRACE_INFO, "Can't unlock PTY %d %s",
@@ -113,16 +111,18 @@ void TerminalStream::init(const std::string& url)
 
 	// Get the PTY name
 	#define PTSZ 256
-	char buff[PTSZ];
-	rc = ptsname_r(fd, buff, PTSZ);
+	char my_ptsname[PTSZ];
+	rc = ptsname_r(fd, my_ptsname, PTSZ);
 	if (0 != rc)
 		throw RuntimeException(TRACE_INFO, "Can't get PTY name %d %s",
 			errno, strerror(errno));
 
+	printf("Opened %s\n", my_ptsname);
+
 	// Build arguments for xterm
-	std::string ptsn = "-S";
-	ptsn += buff;
-	ptsn += "/" + std::to_string(fd);
+	std::string ccn = "-S";
+	ccn += buff;
+	ccn += "/" + std::to_string(fd);
 
 	// Insane old-school hackery
 	_xterm = fork();
@@ -131,9 +131,15 @@ void TerminalStream::init(const std::string& url)
 			errno, strerror(errno));
 
 	if (0 == _xterm)
-		execl("/usr/bin/xterm", "xterm", ptsn.c_str(), (char *) NULL);
+		execl("/usr/bin/xterm", "xterm", ccn.c_str(), (char *) NULL);
 
 	printf("Created xterm pid=%d\n", _xterm);
+
+	// Hmm. Seems like the right thing to do is to close the controlling
+	// terminal created by open_pt() above, and open another, as a slave.
+	close(fd);
+
+	_fh = fopen(buff, "a+");
 	fprintf(_fh, "Hello world this is so chill\n");
 	fprintf(_fh, "Chillin\n");
 
@@ -142,20 +148,10 @@ void TerminalStream::init(const std::string& url)
 		buff[0] = 0;
 		char * s = fgets(buff, PTSZ, _fh);
 		if (nullptr == s) break;
-		if (buff[0] != 0)
-			printf("you %d said %s\n", i, buff);
+		printf("you %d said %s\n", i, buff);
+		fprintf(_fh, "you %d said %s\n", i, buff);
 	}
 	printf("exited loop\n");
-	sleep(10);
-	for (int i=0; i<2500000; i++)
-	{
-		buff[0] = 0;
-		char * s = fgets(buff, PTSZ, _fh);
-		if (nullptr == s) break;
-		if (buff[0] != 0)
-			printf("you %d msaid %s\n", i, buff);
-	}
-	printf("tried again\n");
 
 #if 0
 	if (0 != url.compare(0, 8, "file:///"))
