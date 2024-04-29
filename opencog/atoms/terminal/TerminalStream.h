@@ -47,7 +47,6 @@ protected:
 
 	std::string _uri;
 	mutable FILE* _fh;
-	mutable bool _fresh;
 	virtual void do_write(const std::string&);
 
 public:
@@ -72,7 +71,7 @@ static inline std::shared_ptr<TerminalStream> createTerminalStream(Type&&... arg
 } // namespace opencog
 
 extern "C" {
-void opencog_sensory_filedir_init(void);
+void opencog_sensory_terminal_init(void);
 };
 
 #endif // _OPENCOG_TERMINAL_STREAM_H

@@ -21,6 +21,8 @@
  */
 
 #include <errno.h>
+#include <fcntl.h>
+#include <stdlib.h>
 #include <string.h> // for strerror()
 
 #include <opencog/util/exceptions.h>
@@ -33,6 +35,9 @@
 #include "TerminalStream.h"
 
 using namespace opencog;
+
+// Terminal I/O using posix_openpt(), ptsname(), grantpt(), and unlockpt()
+// ttyname() pts(4), pty(7)
 
 TerminalStream::TerminalStream(Type t, const std::string& str)
 	: OutputStream(t)
@@ -81,8 +86,23 @@ TerminalStream::~TerminalStream()
 
 void TerminalStream::init(const std::string& url)
 {
-	_fresh = true;
 	_fh = nullptr;
+
+	int fd = posix_openpt(O_RDWR|O_NOCTTY);
+	if (0 > fd)
+		throw RuntimeException(TRACE_INFO, "Can't open PTY %d %s",
+			errno, strerror(errno));
+
+	#define PTSZ 256
+	char buff[PTSZ];
+	int rc = ptsname_r(fd, buff, PTSZ);
+	if (0 != rc)
+		throw RuntimeException(TRACE_INFO, "Cen't get PTY name %d %s",
+			errno, strerror(errno));
+
+	printf("duuude %d pts== %s\n", rc, buff);
+
+#if 0
 	if (0 != url.compare(0, 8, "file:///"))
 		throw RuntimeException(TRACE_INFO,
 			"Unsupported URL \"%s\"\n", url.c_str());
@@ -106,6 +126,7 @@ void TerminalStream::init(const std::string& url)
 			"Unable to open URL \"%s\"\nError was \"%s\"\n",
 			url.c_str(), ers);
 	}
+#endif
 }
 
 // ==============================================================
@@ -123,18 +144,6 @@ ValuePtr TerminalStream::describe(AtomSpace* as, bool silent)
 void TerminalStream::update() const
 {
 	if (nullptr == _fh) { _value.clear(); return; }
-
-	// The very first call after opening a file will typically
-	// be a bogus update, so as to give the caller something,
-	// anything. There will be trouble down the line, when
-	// actually reading. So first time through, return the URL
-	if (_fresh)
-	{
-		_fresh = false;
-		_value.resize(1);
-		_value[0] = createNode(ITEM_NODE, _uri);
-		return;
-	}
 
 #define BUFSZ 4080
 	char buff[BUFSZ];
@@ -178,7 +187,7 @@ DEFINE_VALUE_FACTORY(TERMINAL_STREAM, createTerminalStream, Handle)
 
 // ====================================================================
 
-void opencog_sensory_filedir_init(void)
+void opencog_sensory_terminal_init(void)
 {
    // Force shared lib ctors to run
 };
