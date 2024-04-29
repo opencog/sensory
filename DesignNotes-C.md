@@ -192,4 +192,46 @@ Onwards.
 
 So that was a moment of doubt. Alas.
 
+ROS
+---
+Oh, hang on. ROS provides a framework for routing data, hooking things
+up and unhooking them, using GUI tools, even, and also a DTD-style
+system, using YAML files. It's not Atomese, but its close. And it has a
+huge set of supported I/O devices.
+
+Is this what I've missed? Is this what I should be integrating with?
+Do I need an Atomese/ROS supernode? Huh. You know what? Yes, I think I
+do. I need Atomese/ROS interop.
+
+OK, that will be the next project, but first, I need to bring the
+current linking idea into fruition.
+
+Linking
+-------
+Resume the linkage ideas. There is a text source. There is a text sink.
+There  is a command "hookup" to join these two. What does the hookup
+command do?
+* Verify that one is a source, the other is a sink.
+* Verify that the types agree (that both handle text data)
+
+If either end presents itself as a ChoiceLink, and multiple hookups are
+possible, then a list of possible linkages are required. So, this is now
+parsing.
+* Stage zero: get endpoint descriptions/DTD's (as Sections)
+* Stage one: parse, propose linkages.
+* Stage two: select one or more linkages.
+* Stage three: perform the actual hookup, create the network.
+* Stage four: execute, start data flowing.
+
+Solution:
+* Stage zero: this is what LookupLink does.
+* Stage one: build a connector-matcher. This is not a full parser,
+  but is a prereq for matching connetors. MatchLink
+* Stage two: punt, build a random selector.
+* Stage three: build a HookupLink
+* Stage four: `cog-execute!` is all we need.
+
+How does MatchLink work?
+
+
 -----------------------------------
