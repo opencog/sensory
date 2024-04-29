@@ -47,11 +47,13 @@ protected:
 
 	std::string _uri;
 	mutable FILE* _fh;
+	pid_t _xterm;
 	virtual void do_write(const std::string&);
 
 public:
 	TerminalStream(const Handle&);
 	TerminalStream(const std::string&);
+	TerminalStream(const ValueSeq&);
 	virtual ~TerminalStream();
 
 	virtual ValuePtr describe(AtomSpace*, bool);

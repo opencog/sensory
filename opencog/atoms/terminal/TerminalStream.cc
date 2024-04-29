@@ -22,8 +22,10 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <string.h> // for strerror()
+#include <unistd.h>
 
 #include <opencog/util/exceptions.h>
 #include <opencog/util/oc_assert.h>
@@ -53,6 +55,12 @@ TerminalStream::TerminalStream(const std::string& str)
 	init(str);
 }
 
+TerminalStream::TerminalStream(const ValueSeq& seq)
+	: OutputStream(TERMINAL_STREAM) // seq
+{
+	init("foo");
+}
+
 TerminalStream::TerminalStream(const Handle& senso)
 	: OutputStream(TERMINAL_STREAM)
 {
@@ -67,6 +75,9 @@ TerminalStream::~TerminalStream()
 {
 	if (_fh)
 		fclose (_fh);
+
+printf("duuude kill %d\n", _xterm);
+	kill(_xterm, SIGKILL);
 }
 
 /// Attempt to open the URL for reading and writing.
@@ -93,14 +104,45 @@ void TerminalStream::init(const std::string& url)
 		throw RuntimeException(TRACE_INFO, "Can't open PTY %d %s",
 			errno, strerror(errno));
 
-	#define PTSZ 256
-	char buff[PTSZ];
-	int rc = ptsname_r(fd, buff, PTSZ);
+	_fh = fdopen(fd, "a+");
+
+	int rc = unlockpt(fd);
 	if (0 != rc)
-		throw RuntimeException(TRACE_INFO, "Cen't get PTY name %d %s",
+		throw RuntimeException(TRACE_INFO, "Can't unlock PTY %d %s",
 			errno, strerror(errno));
 
-	printf("duuude %d pts== %s\n", rc, buff);
+	// Get the PTY name
+	#define PTSZ 256
+	char buff[PTSZ];
+	rc = ptsname_r(fd, buff, PTSZ);
+	if (0 != rc)
+		throw RuntimeException(TRACE_INFO, "Can't get PTY name %d %s",
+			errno, strerror(errno));
+
+	// Build arguments for xterm
+	std::string ptsn = "-S";
+	ptsn += buff;
+	ptsn += "/" + std::to_string(fd);
+
+	// Insane old-school hackery
+	_xterm = fork();
+	if (-1 == _xterm)
+		throw RuntimeException(TRACE_INFO, "Failed to fork %d %s",
+			errno, strerror(errno));
+
+	if (0 == _xterm)
+		execl("/usr/bin/xterm", "xterm", ptsn.c_str(), (char *) NULL);
+
+	fprintf(_fh, "Hello world this is so chill\n");
+	fprintf(_fh, "Chillin\n");
+
+/*
+	for (int i=0; i<5; i++)
+	{
+		fgets(buff, PTSZ, _fh);
+		printf("you %d said %s\n", i, buff);
+	}
+*/
 
 #if 0
 	if (0 != url.compare(0, 8, "file:///"))
@@ -184,6 +226,7 @@ ValuePtr TerminalStream::write_out(AtomSpace* as, bool silent,
 // Adds factory when library is loaded.
 DEFINE_VALUE_FACTORY(TERMINAL_STREAM, createTerminalStream, std::string)
 DEFINE_VALUE_FACTORY(TERMINAL_STREAM, createTerminalStream, Handle)
+DEFINE_VALUE_FACTORY(TERMINAL_STREAM, createTerminalStream, ValueSeq)
 
 // ====================================================================
 
