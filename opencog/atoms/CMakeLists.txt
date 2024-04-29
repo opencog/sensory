@@ -5,6 +5,7 @@ ADD_SUBDIRECTORY (sensory-types)
 ADD_SUBDIRECTORY (filedir)
 ADD_SUBDIRECTORY (irc)
 ADD_SUBDIRECTORY (sensory)
+ADD_SUBDIRECTORY (terminal)
 
 # Testing framework boilerplate.
 WRITE_GUILE_CONFIG(${GUILE_BIN_DIR}/opencog/sensory-config.scm SCM_CONFIG TRUE)
