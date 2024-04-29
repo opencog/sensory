@@ -1,6 +1,6 @@
 Sensory Atomese
 ===============
-This repo explores how perception and action with an external world
+This repo explores how perception and action within an external world
 might work with the [AtomSpace](https://github.com/opencog/atomspace).
 
 TL;DR: Explores philosophical approaches to perception & action via
@@ -156,8 +156,8 @@ Autonomous Agents
 The sensori-motor system is just an interface. In between must lie a
 bunch of data-processing nodes that take "inputs" and convert them to
 "outputs". There are several ways to do this. One is to hand-code,
-hard-code these connections, to create a "stimulous-response" (SRAI)
-type system. For each input (stimulous) some processing happens,
+hard-code these connections, to create a "stimulus-response" (SRAI)
+type system. For each input (stimulus) some processing happens,
 and then some output is generated (response). A second way is to create
 a dictionary of processing elements, each of which can take assorted
 inputs or outputs, defined by connector types. Link Grammar can then be
@@ -185,10 +185,10 @@ seen in deep-learning neural nets (DLNN).
 
 Deep learning now outperforms random forests. Can we (how can we) attach
 a DLNN system to the sensori-motor system being described here? Should
-we, or is this a bad idea? Lets review the situation.
+we, or is this a bad idea? Let's review the situation.
 
 * Yes, maybe hooking up DLNN to the sensory system here is a stupid
-  idea. Maybe its just technically ill-founded, and there are easier
+  idea. Maybe it's just technically ill-founded, and there are easier
   ways of doing this. But I don't know; that's why I'm doing these
   experiments.
 
@@ -240,7 +240,7 @@ in some 3D landscape (Gazebo, Stage/Player, Minecraft...) to instead
 do it in a generic sensori-motor landscape.
 
 Thus, the question becomes: "What is a generic sensori-motor landscape?"
-and "how does a learning system intoerface to such a thing?" This git
+and "how does a learning system interface to such a thing?" This git
 repo is my best attempt to try to understand these two questions, and to
 find answers to them. Apologies if the current state is underwhelming.
 

@@ -62,7 +62,7 @@
 
 ; --------------------------------------------------------
 ; Now lets look at how the API for the above is represented.
-; This builds a crude stimulous-reponse pipeline in scheme.
+; This builds a crude stimulus-reponse pipeline in scheme.
 ; Ultimately, we want such pipes to be in Atomese, not scheme,
 ; but it is easier to poke at bit bits and pieces with scheme.
 
@@ -120,7 +120,7 @@ some-cmd
 
 ; --------------------------------------------------------
 ; Repeat the above, but this time in Atomese.
-; This builds a crude stimulous-reponse pipeline.
+; This builds a crude stimulus-reponse pipeline.
 ; Under construction, broken.
 
 ; Lets take a look at the landscape, again
