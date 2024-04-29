@@ -133,16 +133,29 @@ void TerminalStream::init(const std::string& url)
 	if (0 == _xterm)
 		execl("/usr/bin/xterm", "xterm", ptsn.c_str(), (char *) NULL);
 
+	printf("Created xterm pid=%d\n", _xterm);
 	fprintf(_fh, "Hello world this is so chill\n");
 	fprintf(_fh, "Chillin\n");
 
-/*
-	for (int i=0; i<5; i++)
+	for (int i=0; i<2500000; i++)
 	{
-		fgets(buff, PTSZ, _fh);
-		printf("you %d said %s\n", i, buff);
+		buff[0] = 0;
+		char * s = fgets(buff, PTSZ, _fh);
+		if (nullptr == s) break;
+		if (buff[0] != 0)
+			printf("you %d said %s\n", i, buff);
 	}
-*/
+	printf("exited loop\n");
+	sleep(10);
+	for (int i=0; i<2500000; i++)
+	{
+		buff[0] = 0;
+		char * s = fgets(buff, PTSZ, _fh);
+		if (nullptr == s) break;
+		if (buff[0] != 0)
+			printf("you %d msaid %s\n", i, buff);
+	}
+	printf("tried again\n");
 
 #if 0
 	if (0 != url.compare(0, 8, "file:///"))
