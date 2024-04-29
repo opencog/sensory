@@ -1,6 +1,6 @@
 Design Notes A
 ==============
-*** Mid-April 2024 ***
+*** Early April 2024 ***
 
 (Some of the) Thought process that went into the earliest design:
 the ReadLink, WriteLink and TextStream. This is not the current

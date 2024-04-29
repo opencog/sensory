@@ -293,7 +293,7 @@ See also:
 ### Design specifics
 Details of the design in this git repo are explored in several places:
 
-* [Design Notes](Design.md) -- Design of `OpenLink` and `WriteLink`
+* [Design Overview](Design.md) -- Current design & TODO List.
 * [IRChatStream](opencog/atoms/irc/README.md) -- IRC chat design.
 * [TextFileStream](opencog/atoms/filedir/README.md) -- Directory navigation design.
 

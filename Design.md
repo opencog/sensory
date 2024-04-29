@@ -18,7 +18,11 @@ incomplete ideas about how things could work. Others are fundamental
 design choices governing the system.
 
 * [Notes Part A](DesignNotes-A.md) -- Early ideas for the design of
-  the WriteLink. (15 April 2024)
+  the ReadLink & WriteLink. (early April 2024)
+* [Notes Part B](DesignNotes-B.md) -- Basic idea of Action/Perception
+  and basic idea of a DTD (Document Type Definition) for IRC chat.
+  First description of using Link Grammar Sections for the DTD.
+  (mid-April 2024)
 
 Current Implementation
 ----------------------
