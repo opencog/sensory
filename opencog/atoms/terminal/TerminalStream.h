@@ -34,25 +34,25 @@ namespace opencog
  */
 
 /**
- * TerminalStreams provide a stream of ItemNodes read from a text file,
- * and, more generally, from unix socket sources. This is experimental.
+ * TerminalStreams provide a text stream connected to an instance of an
+ * xterm. Due to the general weirdness of attaching terminals to running
+ * processes, this is what it is because the alternative is to build a
+ * telnet sserver, and I don't want to do that.
  */
 class TerminalStream
 	: public OutputStream
 {
 protected:
 	TerminalStream(Type t, const std::string&);
-	void init(const std::string&);
+	void init(void);
 	virtual void update() const;
 
-	std::string _uri;
 	mutable FILE* _fh;
 	pid_t _xterm;
 	virtual void do_write(const std::string&);
 
 public:
-	TerminalStream(const Handle&);
-	TerminalStream(const std::string&);
+	TerminalStream(void);
 	TerminalStream(const ValueSeq&);
 	virtual ~TerminalStream();
 

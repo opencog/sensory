@@ -46,29 +46,19 @@ TerminalStream::TerminalStream(Type t, const std::string& str)
 {
 	OC_ASSERT(nameserver().isA(_type, TERMINAL_STREAM),
 		"Bad TerminalStream constructor!");
-	init(str);
+	init();
 }
 
-TerminalStream::TerminalStream(const std::string& str)
+TerminalStream::TerminalStream(void)
 	: OutputStream(TERMINAL_STREAM)
 {
-	init(str);
+	init();
 }
 
 TerminalStream::TerminalStream(const ValueSeq& seq)
 	: OutputStream(TERMINAL_STREAM) // seq
 {
-	init("foo");
-}
-
-TerminalStream::TerminalStream(const Handle& senso)
-	: OutputStream(TERMINAL_STREAM)
-{
-	if (SENSORY_NODE != senso->get_type())
-		throw RuntimeException(TRACE_INFO,
-			"Expecting SensoryNode, got %s\n", senso->to_string().c_str());
-
-	init(senso->get_name());
+	init();
 }
 
 TerminalStream::~TerminalStream()
@@ -80,22 +70,7 @@ TerminalStream::~TerminalStream()
 	kill (_xterm, SIGKILL);
 }
 
-/// Attempt to open the URL for reading and writing.
-/// The URL format is described in
-/// https://en.wikipedia.org/wiki/File_URI_scheme
-/// and we adhere to that.
-///
-/// URI formats are:
-/// file:/path       ; Not currently supported
-/// file:///path     ; Yes, use this
-/// file://host/path ; Not currently supported
-/// file://./path    ; Dot means localhost
-///
-/// Possible extensions:
-/// file:mode//...
-/// where mode is one of the modes described in `man 3 fopen`
-
-void TerminalStream::init(const std::string& url)
+void TerminalStream::init(void)
 {
 	_fh = nullptr;
 
@@ -121,7 +96,7 @@ void TerminalStream::init(const std::string& url)
 
 	// Build arguments for xterm
 	std::string ccn = "-S";
-	ccn += buff;
+	ccn += my_ptsname;
 	ccn += "/" + std::to_string(fd);
 
 	// Insane old-school hackery
@@ -137,12 +112,16 @@ void TerminalStream::init(const std::string& url)
 
 	// Hmm. Seems like the right thing to do is to close the controlling
 	// terminal created by open_pt() above, and open another, as a slave.
+	// And I guess this works because fd was opened with O_NOCTTY
 	close(fd);
 
-	_fh = fopen(buff, "a+");
+	_fh = fopen(my_ptsname, "a+");
+
 	fprintf(_fh, "Hello world this is so chill\n");
 	fprintf(_fh, "Chillin\n");
 
+	#define PTSZ 256
+	char buff[PTSZ];
 	for (int i=0; i<2500000; i++)
 	{
 		buff[0] = 0;
@@ -225,7 +204,7 @@ ValuePtr TerminalStream::write_out(AtomSpace* as, bool silent,
 {
 	if (nullptr == _fh)
 		throw RuntimeException(TRACE_INFO,
-			"Text stream not open: URI \"%s\"\n", _uri.c_str());
+			"Text stream not open\n");
 
 	return do_write_out(as, silent, cref);
 }
@@ -233,8 +212,7 @@ ValuePtr TerminalStream::write_out(AtomSpace* as, bool silent,
 // ==============================================================
 
 // Adds factory when library is loaded.
-DEFINE_VALUE_FACTORY(TERMINAL_STREAM, createTerminalStream, std::string)
-DEFINE_VALUE_FACTORY(TERMINAL_STREAM, createTerminalStream, Handle)
+DEFINE_VALUE_FACTORY(TERMINAL_STREAM, createTerminalStream)
 DEFINE_VALUE_FACTORY(TERMINAL_STREAM, createTerminalStream, ValueSeq)
 
 // ====================================================================
