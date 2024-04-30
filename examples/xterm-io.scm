@@ -9,6 +9,13 @@
 ; demos, but more fun than working with a single static file. You can
 ; directly interact with an agent, using this device.
 ;
+; The first part of the demo is almost identical to the file-read and
+; file-write demos, and provides a basic sanity check that everything
+; works.
+;
+; The second part of the demo demonstrates auto-pipelining.
+; Under construction.
+;
 (use-modules (opencog) (opencog exec) (opencog sensory))
 
 ; --------------------------------------------------------
@@ -75,6 +82,11 @@ term-stream
 (cog-execute! writer)
 (cog-execute! writer)
 (cog-execute! writer)
+
+; --------------------------------------------------------
+; Look at available commands.
+
+(cog-execute! (Lookup (Type 'TerminalStream)))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!

@@ -48,6 +48,9 @@ protected:
 	void halt(void) const;
 	virtual void update() const;
 
+	Handle _description;
+	void do_describe(void);
+
 	mutable FILE* _fh;
 	mutable pid_t _xterm_pid;
 	virtual void do_write(const std::string&);

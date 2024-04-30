@@ -29,6 +29,8 @@
 
 #include <opencog/util/exceptions.h>
 #include <opencog/util/oc_assert.h>
+#include <opencog/atomspace/AtomSpace.h>
+#include <opencog/atoms/base/Link.h>
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/value/StringValue.h>
 #include <opencog/atoms/value/ValueFactory.h>
@@ -131,10 +133,42 @@ void TerminalStream::init(void)
 
 // ==============================================================
 
+Handle _global_desc = Handle::UNDEFINED;
+
+void TerminalStream::do_describe(void)
+{
+	if (_global_desc) return;
+
+	HandleSeq cmds;
+
+	// List files
+	Handle write_cmd =
+		createLink(SECTION,
+			createNode(ITEM_NODE, "the write stuff command"),
+			createLink(CONNECTOR_SEQ,
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "command"),
+					createNode(TYPE_NODE, "WriteLink")),
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "command"),
+					createNode(TYPE_NODE, "ItemNode")),
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "reply"),
+					createLink(LINK_SIGNATURE_LINK,
+						createNode(TYPE_NODE, "LinkValue"),
+						createNode(TYPE_NODE, "StringValue")))));
+	cmds.emplace_back(write_cmd);
+
+	_global_desc = createLink(cmds, CHOICE_LINK);
+}
+
+// This is totally bogus because it is unused.
+// This should be class static member
 ValuePtr TerminalStream::describe(AtomSpace* as, bool silent)
 {
-	throw RuntimeException(TRACE_INFO, "Not implemeneted");
-	return Handle::UNDEFINED;
+	if (_description) return as->add_atom(_description);
+	_description = as->add_atom(_global_desc);
+	return _description;
 }
 
 // ==============================================================
