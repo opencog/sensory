@@ -63,11 +63,21 @@ TerminalStream::TerminalStream(const ValueSeq& seq)
 
 TerminalStream::~TerminalStream()
 {
+	// Runs only if GC runs. This is a problem.
+	halt();
+}
+
+void TerminalStream::halt(void) const
+{
 	if (_fh)
 		fclose (_fh);
+	_fh = nullptr;
 
-	// Runs only if GC runs. This is a problem.
-	kill (_xterm, SIGKILL);
+	if (_xterm_pid)
+		kill (_xterm_pid, SIGKILL);
+	_xterm_pid= 0;
+
+	_value.clear();
 }
 
 void TerminalStream::init(void)
@@ -100,63 +110,23 @@ void TerminalStream::init(void)
 	ccn += "/" + std::to_string(fd);
 
 	// Insane old-school hackery
-	_xterm = fork();
-	if (-1 == _xterm)
+	_xterm_pid = fork();
+	if (-1 == _xterm_pid)
 		throw RuntimeException(TRACE_INFO, "Failed to fork %d %s",
 			errno, strerror(errno));
 
-	if (0 == _xterm)
+	if (0 == _xterm_pid)
 		execl("/usr/bin/xterm", "xterm", ccn.c_str(), (char *) NULL);
 
-	printf("Created xterm pid=%d\n", _xterm);
+	printf("Created xterm pid=%d\n", _xterm_pid);
 
 	// Hmm. Seems like the right thing to do is to close the controlling
 	// terminal created by open_pt() above, and open another, as a slave.
 	// And I guess this works because fd was opened with O_NOCTTY
+	// The alternative is `_fh = fdopen(fd, "a+")` but this flakes.
 	close(fd);
 
 	_fh = fopen(my_ptsname, "a+");
-
-	fprintf(_fh, "Hello world this is so chill\n");
-	fprintf(_fh, "Chillin\n");
-
-	#define PTSZ 256
-	char buff[PTSZ];
-	for (int i=0; i<2500000; i++)
-	{
-		buff[0] = 0;
-		char * s = fgets(buff, PTSZ, _fh);
-		if (nullptr == s) break;
-		printf("you %d said %s\n", i, buff);
-		fprintf(_fh, "you %d said %s\n", i, buff);
-	}
-	printf("exited loop\n");
-
-#if 0
-	if (0 != url.compare(0, 8, "file:///"))
-		throw RuntimeException(TRACE_INFO,
-			"Unsupported URL \"%s\"\n", url.c_str());
-
-	// Make a copy, for debuggingg purposes.
-	_uri = url;
-
-	// Ignore the first 7 chars "file://"
-	const char* fpath = url.substr(7).c_str();
-	_fh = fopen(fpath, "a+");
-
-	if (nullptr == _fh)
-	{
-		int norr = errno;
-		char buff[80];
-		buff[0] = 0;
-		// Apparently, we are getting the Gnu version of strerror_r
-		// and not the XSI version. I suppose it doesn't matter.
-		char * ers = strerror_r(norr, buff, 80);
-		throw RuntimeException(TRACE_INFO,
-			"Unable to open URL \"%s\"\nError was \"%s\"\n",
-			url.c_str(), ers);
-	}
-#endif
 }
 
 // ==============================================================
@@ -177,12 +147,13 @@ void TerminalStream::update() const
 
 #define BUFSZ 4080
 	char buff[BUFSZ];
+	buff[0] = 0;
 	char* rd = fgets(buff, BUFSZ, _fh);
+
+	// nullptr is EOF
 	if (nullptr == rd)
 	{
-		fclose(_fh);
-		_fh = nullptr;
-		_value.clear();
+		halt();
 		return;
 	}
 

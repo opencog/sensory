@@ -45,10 +45,11 @@ class TerminalStream
 protected:
 	TerminalStream(Type t, const std::string&);
 	void init(void);
+	void halt(void) const;
 	virtual void update() const;
 
 	mutable FILE* _fh;
-	pid_t _xterm;
+	mutable pid_t _xterm_pid;
 	virtual void do_write(const std::string&);
 
 public:
