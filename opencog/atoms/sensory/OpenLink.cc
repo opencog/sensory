@@ -48,9 +48,9 @@ OpenLink::OpenLink(const Handle& h)
 
 void OpenLink::init(void)
 {
-	if (2 != _outgoing.size())
+	if (1 > _outgoing.size())
 		throw SyntaxException(TRACE_INFO,
-			"Expecting exactly two arguments!");
+			"Expecting at least one argument!");
 
 	if (TYPE_NODE != _outgoing[0]->get_type())
 		throw SyntaxException(TRACE_INFO,
@@ -60,7 +60,8 @@ void OpenLink::init(void)
 
 	// TODO: perhaps second argument is an executable link that
 	// returns a SensoryNode. So fix me later, someday.
-	if (not _outgoing[1]->is_type(SENSORY_NODE))
+	if (2 <= _outgoing.size() and
+	    not _outgoing[1]->is_type(SENSORY_NODE))
 		throw SyntaxException(TRACE_INFO,
 			"Expecting the second argument to be a SensoryNode!");
 }
@@ -70,7 +71,11 @@ void OpenLink::init(void)
 /// When executed, create an iterator stream for the given URL.
 ValuePtr OpenLink::execute(AtomSpace* as, bool silent)
 {
-	ValuePtr svp = valueserver().create(_kind, _outgoing[1]);
+	ValuePtr svp;
+	if (2 == _outgoing.size())
+		 svp = valueserver().create(_kind, _outgoing[1]);
+	else
+		 svp = valueserver().create(_kind);
 
 	OutputStreamPtr ost(OutputStreamCast(svp));
 	if (nullptr == ost)
