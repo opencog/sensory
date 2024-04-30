@@ -245,12 +245,14 @@ repo is my best attempt to try to understand these two questions, and to
 find answers to them. Apologies if the current state is underwhelming.
 
 ### Status
-***Version 0.2.7*** -- Experimental. Basic demos actually work. Overall
+***Version 0.2.8*** -- Experimental. Basic demos actually work. Overall
 architecture seems ok-ish. The grand questions above remain mysterious.
 
 Provides:
 * Basic File I/O stream.
+* Prototype Filesystem navigation stream.
 * Prototype IRC chatbot stream.
+* Basic interactive terminal I/O stream.
 
 See the [examples](examples) directory.
 
@@ -296,6 +298,7 @@ Details of the design in this git repo are explored in several places:
 * [Design Overview](Design.md) -- Current design & TODO List.
 * [IRChatStream](opencog/atoms/irc/README.md) -- IRC chat design.
 * [TextFileStream](opencog/atoms/filedir/README.md) -- Directory navigation design.
+* [TerminalStream](opencog/atoms/terminal/README.md) -- Interactive terminal design.
 
 ### Building
 This git repo follows the same directory structure and coding
