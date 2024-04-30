@@ -233,5 +233,74 @@ Solution:
 
 How does MatchLink work?
 
+Worked example of linkage
+-------------------------
+Lets take the simplest case: two `TerminalStream`. These are the
+simplest-possible systems. The have four modes:
+* LookupLink
+* OpenLink
+* read
+* WriteLink
+
+We want to hook them up, input of one is output of other, and vice-vera.
+Assume that `LookupLink` is a god-given right, and always valid. Lookup
+reveals that `TerminalStream` has two operations: the open operation
+uses `OpenLink` having no arguments and promises to deliver a steam of
+`ItemNode`s. So it is a pure source. The write operation uses `WriteLink`
+which takes one argument, an `ItemNode` and has no outputs. Its a pure sink.
+
+Specifically, running
+```
+(cog-execute! (Lookup (Type 'TerminalStream)))
+```
+returns the following:
+```
+(Choice
+  (Section
+    (Item "the open terminal command")
+    (ConnectorSeq
+      (Connector (Sex "command") (Type "OpenLink"))
+      (Connector (Sex "reply") (Type "TerminalStream"))))
+  (Section
+    (Item "the write stuff command")
+    (ConnectorSeq
+      (Connector (Sex "command") (Type "WriteLink"))
+      (Connector (Sex "command") (Type "ItemNode")))))
+```
+
+Now we have a problem. How connects up to the open command, and
+runs it? I could run it manually, of course, and then hook up
+everything else, too, manually. See the demo.
+
+But doing it manually is cheating: the agent needs to do this.
+So, for starters, for Linkages to make sense, the agent must exhibit
+a Section:
+```
+(cog-execute! (Lookup (Type 'MyFooAgent)))
+```
+which returns
+```
+  (Section
+    (Item "piping agent")
+    (ConnectorSeq
+      (Connector (Sex "issuer") (Type "OpenLink"))
+      (Connector (Sex "issuer") (Type "OpenLink"))))
+```
+Note this is constructed so that it can open two things. Since the only
+other thin in the dictionary will be the terminal, the result, after
+linkage, will be two open terminals.
+
+Note that the sexuality is a bit odd: The linker can pair up "issuer"
+to "command".  That seems to be fine for now. The result is two open
+terminals, call them A and B. Both of them have one unpaired connector,
+which looks like this:
+```
+  (Connector (Sex "reply") (Type "TerminalStream"))
+```
+Now what?
+
+Well, here's what we want to happen, but its not clear how. We want to
+somehow note that each open terminal has a write command, so we want to
+hook each reply stream to each writer. But how?
 
 -----------------------------------

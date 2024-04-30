@@ -167,12 +167,7 @@ void TerminalStream::do_describe(void)
 					createNode(TYPE_NODE, "WriteLink")),
 				createLink(CONNECTOR,
 					createNode(SEX_NODE, "command"),
-					createNode(TYPE_NODE, "ItemNode")),
-				createLink(CONNECTOR,
-					createNode(SEX_NODE, "reply"),
-					createLink(LINK_SIGNATURE_LINK,
-						createNode(TYPE_NODE, "LinkValue"),
-						createNode(TYPE_NODE, "StringValue")))));
+					createNode(TYPE_NODE, "ItemNode"))));
 	cmds.emplace_back(write_cmd);
 
 	_global_desc = createLink(cmds, CHOICE_LINK);
