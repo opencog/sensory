@@ -7,6 +7,7 @@
 ; actual autonomous agent might interact in a simple world.
 ;
 ; See `irc-api.scm` for a tutorial on the interfaces used here.
+; See `xterm-bridge.scm` for a simple demo of hooking input to output.
 ;
 (use-modules (ice-9 threads))
 (use-modules (srfi srfi-1))

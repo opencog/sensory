@@ -14,74 +14,53 @@
 (use-modules (opencog) (opencog exec) (opencog sensory))
 
 ; --------------------------------------------------------
-; Create an xterm for direct I/O. Executing the OpenLink will return
-; a stream value that deliver text strings typed into the xterm window,
-; and can print text to that window.
-(define term-stream
-	(cog-execute! (Open (Type 'TerminalStream))))
+; Create a pair of xterms; place them where they can be found.
 
-; Repeated references to the stream will return single lines from
-; the xterm window. These will hang, unless/until something is typed
-; into the terminal. The interface is line-oriented, you have to hit
-; enter at the end-of line.
-term-stream
-term-stream
-term-stream
-term-stream
+(cog-execute!
+	(SetValue
+		(Anchor "streams") (Predicate "term A")
+		(Open (Type 'TerminalStream))))
 
-; Typing a ctrl-D into ther terminal will close it, returning an empty
-; stream. (aka "end of file")
+(cog-execute!
+	(SetValue
+		(Anchor "streams") (Predicate "term B")
+		(Open (Type 'TerminalStream))))
 
-; A WriteLink consists of two parts: where to write, and what
-; to write. Since the write cursor is a Value, not an Atom, we
-; cannot specify it directly. Thus, we place it at an anchor
-; point. (Neither the name "xterm anchor", nor the key "output place"
-; matter. They can be anything, and any atom can be used in their
-; place, including Links.)
-(cog-set-value!
-	(Concept "xterm anchor") (Predicate "output place") term-stream)
-
-; Create a WriteLink
-(define writer
+; Create two copiers. Executing each of these once will result
+; in the copy of exactly one line of text.
+(define copy-b-to-a
 	(WriteLink
-		(ValueOf (Concept "xterm anchor") (Predicate "output place"))
-		(Concept "stuff to write to the terminal\n")))
+		(ValueOf (Anchor "streams") (Predicate "term A"))
+		(ValueOf (Anchor "streams") (Predicate "term B"))))
 
-; Write stuff to the terminal.
-(cog-execute! writer)
-
-; Do it a few more times.
-(cog-execute! writer)
-(cog-execute! writer)
-(cog-execute! writer)
-
-; --------------------------------------------------------
-; Demo: Perform indirect streaming. The text to write will be placed as
-; a StringValue at some location, and writing will be done from there.
-
-(cog-set-value!
-	(Concept "source") (Predicate "key")
-	(StringValue
-		"some text\n"
-		"without a newline"
-		"after it\n"
-		"Goodbye!\n"))
-
-; Redefine the writer.
-(define writer
+(define copy-a-to-b
 	(WriteLink
-		(ValueOf (Concept "xterm anchor") (Predicate "output place"))
-		(ValueOf (Concept "source") (Predicate "key"))))
+		(ValueOf (Anchor "streams") (Predicate "term B"))
+		(ValueOf (Anchor "streams") (Predicate "term A"))))
 
-; Write it out.
-(cog-execute! writer)
-(cog-execute! writer)
-(cog-execute! writer)
+; Place the copiers into infinite loops, so that they copy forever.
+; Two loops are needed, as each copier will block, waiting for input.
 
-; --------------------------------------------------------
-; Look at available commands.
+(define do-exit-loop #f)
+(define (inf-loop COPIER)
+   (cog-execute! COPIER)
+   (if (not do-exit-loop) (inf-loop COPIER)))
 
-(cog-execute! (Lookup (Type 'TerminalStream)))
+(define thread-one #f)
+(define thread-two #f)
+(define (exit-loop)
+   (set! do-exit-loop #t)
+   (join-thread thread-one)
+   (join-thread thread-two)
+   (format #t "Exited the loops\n")
+   (set! do-exit-loop #f))
+
+; Set the loops running.
+(define thread-one (call-with-new-thread (lambda () (inf-loop copy-b-to-a))))
+(define thread-one (call-with-new-thread (lambda () (inf-loop copy-a-to-b))))
+
+; Exit, if desired. May have to do some input in each, to unclog things.
+; (exit-loop)
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
