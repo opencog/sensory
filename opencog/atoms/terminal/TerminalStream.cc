@@ -211,7 +211,7 @@ void TerminalStream::update() const
 
 void TerminalStream::do_write(const std::string& str)
 {
-	if (nullptr == _fh) return;
+	if (nullptr == _fh)
 		throw RuntimeException(TRACE_INFO,
 			"Text stream not open\n");
 
