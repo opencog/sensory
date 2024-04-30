@@ -21,9 +21,9 @@ simple & easier machine interaction.
 ### API Basics
 Examples that demonstrate how the API works, and the most basic usage.
 
-* `file-read.scm` -- stream file contents to StreamValue
-* `file-write.scm` -- stream Atoms/Values to a file.
-* `xterm-io.scm` -- stream Atoms/Values fomr/to an interactive terminal.
+* `file-read.scm` -- Stream file contents to StreamValue
+* `file-write.scm` -- Stream Atoms/Values to a file.
+* `xterm-io.scm` -- Stream Atoms/Values fomr/to an interactive terminal.
 * `irc-api.scm` -- Demo of connecting to IRC and interacting.
 
 ### Agent demos
@@ -31,6 +31,7 @@ Examples showing how prototype agents can be built up in Atomese.
 These attach the API's (from the previous examples) to Atomese
 processing pipelines to build crude stimulus-response agents.
 
+* `xterm-bridge.scm` -- Copying text between two xterms
 * `irc-echo-bot.scm` -- IRC echo bot demo.
 * `filesys.scm` -- Demo of navigating a filesystem.
 

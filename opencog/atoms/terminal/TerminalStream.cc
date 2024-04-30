@@ -211,17 +211,18 @@ void TerminalStream::update() const
 
 void TerminalStream::do_write(const std::string& str)
 {
+	if (nullptr == _fh) return;
+		throw RuntimeException(TRACE_INFO,
+			"Text stream not open\n");
+
 	fprintf(_fh, "%s", str.c_str());
+	fflush(_fh);
 }
 
 // Write stuff to a file.
 ValuePtr TerminalStream::write_out(AtomSpace* as, bool silent,
                                    const Handle& cref)
 {
-	if (nullptr == _fh)
-		throw RuntimeException(TRACE_INFO,
-			"Text stream not open\n");
-
 	return do_write_out(as, silent, cref);
 }
 
