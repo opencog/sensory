@@ -84,6 +84,8 @@ void TerminalStream::halt(void) const
 
 void TerminalStream::init(void)
 {
+	do_describe();
+
 	_fh = nullptr;
 
 	int fd = posix_openpt(O_RDWR|O_NOCTTY);
@@ -141,7 +143,21 @@ void TerminalStream::do_describe(void)
 
 	HandleSeq cmds;
 
-	// List files
+	// Desribe exactly how to Open this stream.
+	// It needs no special arguments.
+	Handle open_cmd =
+		createLink(SECTION,
+			createNode(ITEM_NODE, "the open terminal command"),
+			createLink(CONNECTOR_SEQ,
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "command"),
+					createNode(TYPE_NODE, "OpenLink")),
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "reply"),
+					createNode(TYPE_NODE, "TerminalStream"))));
+	cmds.emplace_back(open_cmd);
+
+	// Write text
 	Handle write_cmd =
 		createLink(SECTION,
 			createNode(ITEM_NODE, "the write stuff command"),
