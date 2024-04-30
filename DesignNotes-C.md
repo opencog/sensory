@@ -303,4 +303,107 @@ Well, here's what we want to happen, but its not clear how. We want to
 somehow note that each open terminal has a write command, so we want to
 hook each reply stream to each writer. But how?
 
+Well, lookup is a god-given right, so we look at the agent again,
+but we've exhausted the possibilities. We've pruned the expression list
+to zero.
+
+We lookup the terminal again, and notice it has two choices: "open" and
+"write" The "open" connector sequence is useless, because there's
+nothing for it to connect to. It can be pruned. The "write" connector
+sequence looks plausible. Certainly, it has oe interesting connector:
+```
+   (Connector (Sex "command") (Type "ItemNode")))
+```
+which can be paired to the stream. For his, we have to allow sexual
+pairing of command-reply which I guess is a lot like issuer-commond,
+but I guess it impliictly says there's a stream here? vs. issuer is
+a command run only once, replies are necessarily streams? Something
+like that?
+
+This now raises another problem: we've got two unconnected connectors
+of the form
+```
+   (Connector (Sex "command") (Type "WriteLink"))
+```
+one of these on each terminal. So I guess we have to go back to the
+Agent, and discover that it also has
+```
+  (Section
+    (Item "piping agent")
+    (ConnectorSeq
+		(Connector (Sex "issuer") (Type "WriteLink"))
+		(Connector (Sex "issuer") (Type "WriteLink"))))
+```
+Given these, all connectors can now be full paired, the linkage is
+complete, and we created a fully linked parse.
+
+Did we need to create a second instance of the agent to obtain this
+Section? Sure, why not. At this time we have no machanism to ask
+the existing agent if it can also issue this alternate Section. Hmmm.
+This might eventually become a problem? For this demo, it seems not to
+be.
+
+We've successfully mated all of the connectors, so we are done with
+**stage one**. There is only one linkage, so **stage two** is trivial.
+Well returns to stage three shortly.
+
+For now, there remains a minor issue: we've been sloppy withy the
+connector mating.  Some of these seem like one-shot fires, some seem
+like streams, its confusing. This needs to be tightened up.
+
+Or maybe skip to stage three, and return to the connector mating issue
+later. Lets see... Hmmm.
+
+Stage three
+-----------
+In this stage, given the proprsed pairing, we create the actual pipes.
+Two problems:
+* How is the list of proposed pairings delivered to us?
+* How do we create actual links?
+
+If we do Stage One correctly, then no instances have been created yet.
+They will be, only now, during stage three. Stage One nees to return
+a list
+```
+(AndLink
+	(List (CrossSection...) (CrossSection...))
+	(List ... ...)
+	...)
+```
+Recall that `CrossSections` are built from Sections by isolating one
+particular connector: this is the connector that is to be mated. Yow!
+The good news is that we already invented the concept of `CrossSections`
+a few years ago. The bad news is they are a bit gnarly.
+
+Next, we walk over the list of pairs in the `AndLink`, and for each
+pair, create a link pf the appropriate type. What does this mean? How
+is this to be done? Ugh. Once again, dive into the details.
+
+Creating one link
+-----------------
+So, we now have to create  a link for
+```
+	; From the Agent CrossSection:
+   (Connector (Sex "issuer") (Type "OpenLink"))
+	; From the terminal CrossSection
+   (Connector (Sex "command") (Type "OpenLink"))
+```
+We already know the sex mating is allowed, we discovered this in stage
+one. We look at both cross sections, and discover that the body of the
+cross for the terminal is empty, so we can just perform
+```
+   (cog-execute (Open (Type 'TerminalStream)))
+```
+Oh effing A. This returns an instance. Is it a god-given fact that open
+always returns instances? I guess so. Which means we need to record this
+instance somwehere.
+
+We do this for the other terminal instance. But how do we know that the
+Agent can now be retired, because both commands ran? We got lucky, here,
+because the `Open` takes no arguments. For the `Write` we cannot retire
+so easily; we have to pass args which arrive on different connectors.
+Ick.
+
+... Hmmm
+
 -----------------------------------
