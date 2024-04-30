@@ -4,12 +4,17 @@
 ; Demo showing how to set up a pair of pipelines between two xterms.
 ; Text typed into one appears in the other, and vice-versa.
 ;
-; This manually constructs a bridge between the two devices. The
-; eventual goal, of a later demo, is to automatically construct this
-; bridge, be linking together all open connectors on all device
-; descriptions. This demo shows what that bridge would look like.
+; The bridge is constructed manually, without any automation. It is a
+; two-lane bridge, as each xterm can be both a source and also a sink
+; for text, and so there will be two connections, input to output.
 ;
-; It might be helpful to review the `xterm-io.scm` demo first.
+; The eventual goal, in a later demo, is to automatically construct
+; this bridge (these kinds of bridges), by linking together all open
+; connectors on all device descriptions. This demo shows one of the
+; simplest examples of what such running links could look like.
+;
+; For a more basic review of how to read and write from inputs and
+; outputs, review the `xterm-io.scm` demo first.
 ;
 (use-modules (opencog) (opencog exec) (opencog sensory))
 
@@ -57,7 +62,7 @@
 
 ; Set the loops running.
 (define thread-one (call-with-new-thread (lambda () (inf-loop copy-b-to-a))))
-(define thread-one (call-with-new-thread (lambda () (inf-loop copy-a-to-b))))
+(define thread-two (call-with-new-thread (lambda () (inf-loop copy-a-to-b))))
 
 ; Exit, if desired. May have to do some input in each, to unclog things.
 ; (exit-loop)
