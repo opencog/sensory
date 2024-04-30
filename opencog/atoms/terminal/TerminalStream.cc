@@ -20,6 +20,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <sys/ioctl.h>
+#include <asm/termbits.h>
+
 #include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
@@ -98,6 +101,10 @@ void TerminalStream::init(void)
 		throw RuntimeException(TRACE_INFO, "Can't unlock PTY %d %s",
 			errno, strerror(errno));
 
+	// Has no effect, but whatever.
+	// int arg = TIOCPKT_FLUSHWRITE;
+	// rc = ioctl(fd, TIOCPKT, &arg);
+
 	// Get the PTY name
 	#define PTSZ 256
 	char my_ptsname[PTSZ];
@@ -124,8 +131,8 @@ void TerminalStream::init(void)
 
 	printf("Created xterm pid=%d\n", _xterm_pid);
 
-	// Hmm. Seems like the right thing to do is to close the controlling
-	// terminal created by open_pt() above, and open another, as a slave.
+	// Hmm. Seems like the right thing to do is to close the terminal
+	// created by open_pt() above, and open another, as a slave.
 	// And I guess this works because fd was opened with O_NOCTTY
 	// The alternative is `_fh = fdopen(fd, "a+")` but this flakes.
 	close(fd);
@@ -193,7 +200,26 @@ void TerminalStream::update() const
 #define BUFSZ 4080
 	char buff[BUFSZ];
 	buff[0] = 0;
+
+	// locking and blocking. There seems to be a feature/bug in some
+	// combinations of linux kernel + glibc +xterm that prevents the
+	// `xterm-bridge.scm` demo from operating nicely, if plain old
+	// fgets() is used. I tried everything, including ioctl(TIOCPKT).
+	// The problem seems to be that fgets() grabs some lock, and so
+	// when another thread writes to this file handle, this thread
+	// remains blocked in fgets(), until yet another thread writes
+	// to this _fh, which then unblocks the read here. You can see
+	// the wonky behavior in the demo. Using fgets_unlocked() allows
+	// the demo to run "normally", at the cost that sometimes, the
+	// same data is returned twice! WTF. I can't tell if this is a
+	// feature or a bug or what the heck this is supposed to be.
+	// However, the xterm demo is low-priority, so further debugging
+	// seems unjustified.
+#ifdef _GNU_SOURCE
+	char* rd = fgets_unlocked(buff, BUFSZ, _fh);
+#else
 	char* rd = fgets(buff, BUFSZ, _fh);
+#endif
 
 	// nullptr is EOF
 	if (nullptr == rd)

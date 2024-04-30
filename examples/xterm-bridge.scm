@@ -16,6 +16,11 @@
 ; For a more basic review of how to read and write from inputs and
 ; outputs, review the `xterm-io.scm` demo first.
 ;
+; Minor warning: something with xterm might be slightly flakey, in
+; that sometimes, text is copied twice. This is not a bug in the
+; Atomese code, but some weirdness with xterm and pseudo-terminal
+; /dev/pts pipes. Not worth debugging, since this is not a critical
+; component. So, just FYI. See `fgets_unlocked` in the source for more.
 (use-modules (opencog) (opencog exec) (opencog sensory))
 
 ; --------------------------------------------------------
