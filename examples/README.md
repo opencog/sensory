@@ -18,6 +18,12 @@ human programmers. If you just wanted to work with files or chat on IRC,
 you need none of this stuff. All this complicated glop is meant to allow
 simple & easier machine interaction.
 
+That is to say, all of these examples are much too complicated and
+difficult. The eventual goal is to automate the hooking up of sensors to
+motors. That automation layer is completely missing, just right now.
+So instead, the below demo a big complex mess of the guts of the system.
+If you think this is fugnuts complicated, you're right, it is.
+
 ### API Basics
 Examples that demonstrate how the API works, and the most basic usage.
 

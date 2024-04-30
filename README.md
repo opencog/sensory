@@ -301,7 +301,7 @@ Details of the design in this git repo are explored in several places:
 * [TextFileStream](opencog/atoms/filedir/README.md) -- Directory navigation design.
 * [TerminalStream](opencog/atoms/terminal/README.md) -- Interactive terminal design.
 
-### Building
+### Build and Install
 This git repo follows the same directory structure and coding
 conventions used in other OpenCog/AtomSpace projects. This cannot be
 compiled before installing the prerequisite
@@ -316,5 +316,13 @@ sudo make install
 ```
 
 ### Examples
-See the [examples](examples) directory. Examples include file read &
-write, and a basic IRC echobot.
+See the [examples](examples) directory. The simplest example is for
+pinging text between two xterms. Other examples include opening,
+reading & writing a single text file, navigating the file system,
+and a basic IRC echobot.
+
+***Important*** All of this is pre-alpha! These examples are too
+low-level; the intent is to eventually automate the process for hooking
+up sensors to motors. Basic design work continues. But for now, these
+show some of the low-level infrstructure; the high-level stuff is still
+missing.
