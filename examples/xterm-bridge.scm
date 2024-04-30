@@ -1,23 +1,15 @@
 ;
-; xterm-io.scm -- xterminal I/O demo
+; xterm-bridge.scm -- copying between a pair of xterms.
 ;
-; Demo showing how to interact directly with the text I/O subsystem,
-; via an old-fashioned xterm.
+; Demo showing how to set up a pair of pipelines between two xterms.
+; Text typed into one appears in the other, and vice-versa.
 ;
-; The xterm interface is the simplest-possible non-null device. It has
-; only four valid operations: Lookat, Open, (read) and Write. There is
-; nowhere to go, nothing to do, except to exchange text with an xterm.
+; This manually constructs a bridge between the two devices. The
+; eventual goal, of a later demo, is to automatically construct this
+; bridge, be linking together all open connectors on all device
+; descriptions. This demo shows what that bridge would look like.
 ;
-; It is kind-of like working with a single file, but more fun because
-; its interactive. It also eliminates the complexity of walking through
-; the file system. It is kind of like chatting with IRC, but without any
-; of the complexity of IRC.
-;
-; This demo is almost identical to the file-read and file-write demos,
-; and provides a basic sanity check that everything works.
-;
-; Review the `xterm-bridge.scm` demo next. It builds a pipeline
-; connecting two xterms.
+; It might be helpful to review the `xterm-io.scm` demo first.
 ;
 (use-modules (opencog) (opencog exec) (opencog sensory))
 
@@ -87,9 +79,7 @@ term-stream
 (cog-execute! writer)
 
 ; --------------------------------------------------------
-; Look at available commands. For now, nothing to be done with these,
-; that comes in a later demo. Note that there are only two Sections,
-; and each Section has a minimal number of Connectors.
+; Look at available commands.
 
 (cog-execute! (Lookup (Type 'TerminalStream)))
 
