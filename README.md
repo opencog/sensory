@@ -5,6 +5,7 @@ might work with the [AtomSpace](https://github.com/opencog/atomspace).
 
 TL;DR: Explores philosophical approaches to perception & action via
 actual, working code using low-level AtomSpace sensory I/O Atoms.
+A software conception of "basal cognition".
 The experimental lab for this is "perceiving" filesystem files,
 "moving" through directories, and likewise for IRC chat streams.
 
