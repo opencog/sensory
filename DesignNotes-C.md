@@ -224,7 +224,7 @@ parsing.
 * Stage four: execute, start data flowing.
 
 Solution:
-* Stage zero: this is what LookupLink does.
+* Stage zero: this is what LookatLink does.
 * Stage one: build a connector-matcher. This is not a full parser,
   but is a prereq for matching connetors. MatchLink
 * Stage two: punt, build a random selector.
@@ -237,13 +237,13 @@ Worked example of linkage
 -------------------------
 Lets take the simplest case: two `TerminalStream`. These are the
 simplest-possible systems. The have four modes:
-* LookupLink
+* LookatLink
 * OpenLink
-* read
+* (read)
 * WriteLink
 
 We want to hook them up, input of one is output of other, and vice-vera.
-Assume that `LookupLink` is a god-given right, and always valid. Lookup
+Assume that `LookatLink` is a god-given right, and always valid. Lookup
 reveals that `TerminalStream` has two operations: the open operation
 uses `OpenLink` having no arguments and promises to deliver a steam of
 `ItemNode`s. So it is a pure source. The write operation uses `WriteLink`
@@ -394,9 +394,9 @@ cross for the terminal is empty, so we can just perform
 ```
    (cog-execute (Open (Type 'TerminalStream)))
 ```
-Oh effing A. This returns an instance. Is it a god-given fact that open
+Oh effing A. This returns an instance. Is it a god-given fact that Open
 always returns instances? I guess so. Which means we need to record this
-instance somwehere.
+instance somewhere.
 
 We do this for the other terminal instance. But how do we know that the
 Agent can now be retired, because both commands ran? We got lucky, here,

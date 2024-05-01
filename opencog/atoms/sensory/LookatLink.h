@@ -1,7 +1,7 @@
 /*
- * opencog/atoms/sensory/LookupLink.h
+ * opencog/atoms/sensory/LookatLink.h
  *
- * Copyright (C) 2018 Linas Vepstas
+ * Copyright (C) 2018,2024 Linas Vepstas
  * All Rights Reserved
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _LOOKUPCOG_LOOKUP_LINK_H
-#define _LOOKUPCOG_LOOKUP_LINK_H
+#ifndef _OPENCOG_LOOKAT_LINK_H
+#define _OPENCOG_LOOKAT_LINK_H
 
 #include <opencog/atoms/base/Link.h>
 #include <opencog/atoms/sensory-types/sensory_types.h>
@@ -32,20 +32,20 @@ namespace opencog
  *  @{
  */
 
-/// The LookupLink provides a description of a stream type.
+/// The LookatLink provides a description of a stream type.
 ///
-class LookupLink : public Link
+class LookatLink : public Link
 {
 private:
 	Type _kind;
 	void init(void);
 
 public:
-	LookupLink(const HandleSeq&&, Type = LOOKUP_LINK);
-	LookupLink(const Handle&);
+	LookatLink(const HandleSeq&&, Type = LOOKAT_LINK);
+	LookatLink(const Handle&);
 
-	LookupLink(const LookupLink&) = delete;
-	LookupLink& operator=(const LookupLink&) = delete;
+	LookatLink(const LookatLink&) = delete;
+	LookatLink& operator=(const LookatLink&) = delete;
 
 	Type get_kind(void) { return _kind; }
 
@@ -56,10 +56,10 @@ public:
 	static Handle factory(const Handle&);
 };
 
-LINK_PTR_DECL(LookupLink)
-#define createLookupLink CREATE_DECL(LookupLink)
+LINK_PTR_DECL(LookatLink)
+#define createLookatLink CREATE_DECL(LookatLink)
 
 /** @}*/
 }
 
-#endif // _LOOKUPCOG_LOOKUP_LINK_H
+#endif // _OPENCOG_LOOKAT_LINK_H

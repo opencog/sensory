@@ -91,7 +91,7 @@ term-stream
 ; that comes in a later demo. Note that there are only two Sections,
 ; and each Section has a minimal number of Connectors.
 
-(cog-execute! (Lookup (Type 'TerminalStream)))
+(cog-execute! (Lookat (Type 'TerminalStream)))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!

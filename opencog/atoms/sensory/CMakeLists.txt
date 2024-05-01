@@ -4,7 +4,7 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
 
 ADD_LIBRARY (sensory SHARED
-	LookupLink.cc
+	LookatLink.cc
 	OpenLink.cc
 	OutputStream.cc
 	SensoryNode.cc
@@ -25,7 +25,7 @@ INSTALL (TARGETS sensory EXPORT AtomSpaceTargets
 )
 
 INSTALL (FILES
-	LookupLink.h
+	LookatLink.h
 	OpenLink.h
 	OutputStream.h
 	SensoryNode.h

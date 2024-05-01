@@ -27,7 +27,7 @@ I_R_CHAT_STREAM <- TEXT_STREAM
 SENSORY_NODE <- TAG_NODE
 
 // Calling execute() provides description of stream.
-LOOKUP_LINK <- EXECUTABLE_LINK
+LOOKAT_LINK <- EXECUTABLE_LINK
 
 // Calling execute() creates a new stream of the given type.
 OPEN_LINK <- EXECUTABLE_LINK

@@ -1,5 +1,5 @@
 /*
- * LookupLink.cc
+ * LookatLink.cc
  *
  * Copyright (C) 2022 Linas Vepstas
  *
@@ -23,30 +23,30 @@
 
 #include <opencog/atoms/core/TypeNode.h>
 #include <opencog/atoms/value/ValueFactory.h>
-#include "LookupLink.h"
+#include "LookatLink.h"
 #include "OutputStream.h"
 
 using namespace opencog;
 
-LookupLink::LookupLink(const HandleSeq&& oset, Type t)
+LookatLink::LookatLink(const HandleSeq&& oset, Type t)
 	: Link(std::move(oset), t)
 {
-	if (not nameserver().isA(t, LOOKUP_LINK))
+	if (not nameserver().isA(t, LOOKAT_LINK))
 	{
 		const std::string& tname = nameserver().getTypeName(t);
 		throw InvalidParamException(TRACE_INFO,
-			"Expecting an LookupLink, got %s", tname.c_str());
+			"Expecting an LookatLink, got %s", tname.c_str());
 	}
 	init();
 }
 
-LookupLink::LookupLink(const Handle& h)
-	: Link({h}, LOOKUP_LINK)
+LookatLink::LookatLink(const Handle& h)
+	: Link({h}, LOOKAT_LINK)
 {
 	init();
 }
 
-void LookupLink::init(void)
+void LookatLink::init(void)
 {
 	if (1 != _outgoing.size())
 		throw SyntaxException(TRACE_INFO,
@@ -62,7 +62,7 @@ void LookupLink::init(void)
 // ---------------------------------------------------------------
 
 /// When executed, get the stream description for the given type.
-ValuePtr LookupLink::execute(AtomSpace* as, bool silent)
+ValuePtr LookatLink::execute(AtomSpace* as, bool silent)
 {
 	ValuePtr svp = valueserver().create(_kind);
 
@@ -74,6 +74,6 @@ ValuePtr LookupLink::execute(AtomSpace* as, bool silent)
 	return ost->describe(as, silent);
 }
 
-DEFINE_LINK_FACTORY(LookupLink, LOOKUP_LINK)
+DEFINE_LINK_FACTORY(LookatLink, LOOKAT_LINK)
 
 /* ===================== END OF FILE ===================== */

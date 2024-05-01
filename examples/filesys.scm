@@ -68,7 +68,7 @@
 
 ; Get the description of what this sensory device provides.
 (define fsys-descr
-	(cog-execute! (Lookup (Type 'FileSysStream))))
+	(cog-execute! (Lookat (Type 'FileSysStream))))
 
 ; Print it. It should be a ChoiceLink of a bunch of sections.
 fsys-descr
@@ -124,7 +124,7 @@ some-cmd
 ; Under construction, broken.
 
 ; Lets take a look at the landscape, again
-(cog-execute! (Lookup (Type 'FileSysStream)))
+(cog-execute! (Lookat (Type 'FileSysStream)))
 
 ; The landscape arrives as a ChoiceLink, of possible things to do.
 ; This makes it awkward for later processing stages, so unwrap the
@@ -132,7 +132,7 @@ some-cmd
 (cog-execute!
 	(Filter
 		(LinkSignature (Type 'Choice) (Glob "$x"))
-		(Lookup (Type 'FileSysStream))))
+		(Lookat (Type 'FileSysStream))))
 
 ; Extract the command, and it's argument, and then the rest.
 ; The result is a simplified form of the description. We need
@@ -153,7 +153,7 @@ some-cmd
 		; The unwrappped ChoiceLink, from above.
 		(Filter
 			(LinkSignature (Type 'Choice) (Glob "$x"))
-			(Lookup (Type 'FileSysStream)))))
+			(Lookat (Type 'FileSysStream)))))
 
 ; Look for commands that do not require any additional arguments.
 (cog-execute!
@@ -172,7 +172,7 @@ some-cmd
 					(TypeCoInh 'Atom))))  ; also (Variable "$foo")
 		(Filter
 			(LinkSignature (Type 'Choice) (Glob "$x"))
-			(Lookup (Type 'FileSysStream)))))
+			(Lookat (Type 'FileSysStream)))))
 
 ; XXX Notice how painfully complicated all of the above is. Ugh!
 ; What we *really* want to do is the use Link Grammar to perform
@@ -184,7 +184,7 @@ some-cmd
 ; --------------------------------------------------------
 
 ; Throws because wrong number of args. XXX FIXME
-(cog-execute! (Lookup (Type 'TextFileStream)))
+(cog-execute! (Lookat (Type 'TextFileStream)))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
