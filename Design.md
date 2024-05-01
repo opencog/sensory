@@ -23,6 +23,13 @@ design choices governing the system.
   and basic idea of a DTD (Document Type Definition) for IRC chat.
   First description of using Link Grammar Sections for the DTD.
   (mid-April 2024)
+* [Notes Part C](DesignNotes-C.md) -- Sketch how to create a netlist
+  or hookup diagram. The hookup requires assembling together a
+  collection of disjuncts into a closed network.
+  (late-April 2024)
+* [Notes Part D](DesignNotes-D.md) -- Detail how to implement the
+  hooker-upper.
+  (late-April 2024)
 
 Current Implementation
 ----------------------
@@ -105,7 +112,7 @@ TODO List
 * The NICK command gets a badly-parsed response if the nick is in use.
 * Need some kind of modal-open, so that the IRC nick is not hard-coded
   into the URL, but is rather specified during the open. So, open
-  parameters.
+  parameters. The Section concept fixes this, but remains unimplemented.
 * Implement DontExecLink so when executed, it unwraps itself.
   Right now, this is hacked around in LinkSignatureLink
 

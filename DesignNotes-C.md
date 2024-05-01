@@ -1,10 +1,10 @@
-Design Notes Part C -- Filesystem
-=================================
+Design Notes Part C -- Parsing and Linking
+==========================================
 ***Late April 2024***
 
 File and Directory Navigation - Navigating through directories and
 interacting with files. Exploration of using a Link Grammar formalism
-for hooking things up.
+for hooking things up. Detailing how linking and hooking might work.
 
 Perception and Action
 ---------------------
@@ -48,7 +48,7 @@ apart and create just one single link. And ... almost works but fails.
 Because it's complicated.  This hooking-up of things needs to be
 abstracted and automated. How?
 
-Part of the problem is that theres a DTD for the filesys commands,
+Part of the problem is that there's a DTD for the filesys commands,
 but no matching connector-sets describing the pipeline. So we really
 want:
 * An API for terminal I/O
@@ -138,12 +138,12 @@ If I tried very very hard, I could build a version of Scheme that was
 Atomese-like, storable in a graph database, and somewhat easy to
 introspct. I'm not sure, I think that is what MeTTa was supposed to be.
 Yes, straight-up scheme is a lot more readable than Atomese, and so
-perhaps the idea was a straight-up MeTTa woud also be a lot more readable
+perhaps the idea was a straight-up MeTTa would also be a lot more readable
 than Atomese. But its all harder to introspect.
 
 That is, I could write an IRC echobot in scheme. It would be easy: just
 a very short read-modify-write loop. But there's no easy way to
-introspect this, because there are no attachements, no handles, to
+introspect this, because there are no attachments, no handles, to
 perform actions like "disconnect the read from the modify, and insert
 a filter at that location", because programming languages almost never
 come with such modifier handles that can be grabbed and manipulated.
@@ -182,11 +182,11 @@ an integrated setting that aims to be generic.
 
 I dunno. I don't see any other way. This stuff nags me, but what else
 can I do? No one else seems to have anything even close to being this
-generic. The system I'm building is klunky and awkward, but what the
+generic. The system I'm building is clunky and awkward, but what the
 heck. Is there any other path forward?
 
 Conclusion: I'm in a thicket, but there's no turning back. The
-ingedients to this recipie are all well, known individually. No one has
+ingedients to this recipe are all well, known individually. No one has
 combined them in quite this way, before. I don't see any other way.
 Onwards.
 
@@ -338,7 +338,7 @@ Given these, all connectors can now be full paired, the linkage is
 complete, and we created a fully linked parse.
 
 Did we need to create a second instance of the agent to obtain this
-Section? Sure, why not. At this time we have no machanism to ask
+Section? Sure, why not. At this time we have no mechanism to ask
 the existing agent if it can also issue this alternate Section. Hmmm.
 This might eventually become a problem? For this demo, it seems not to
 be.
@@ -356,13 +356,13 @@ later. Lets see... Hmmm.
 
 Stage three
 -----------
-In this stage, given the proprsed pairing, we create the actual pipes.
+In this stage, given the proposed pairing, we create the actual pipes.
 Two problems:
 * How is the list of proposed pairings delivered to us?
 * How do we create actual links?
 
 If we do Stage One correctly, then no instances have been created yet.
-They will be, only now, during stage three. Stage One nees to return
+They will be, only now, during stage three. Stage One needs to return
 a list
 ```
 (AndLink
