@@ -36,8 +36,16 @@
 		(Anchor "streams") (Predicate "term B")
 		(Open (Type 'TerminalStream))))
 
-; Create two copiers. Executing each of these once will result
-; in the copy of exactly one line of text.
+; Create two copiers. Executing each of these once will create
+; a pipe that will flow text from one terminal to the other, for
+; as long as the terminals are running. The flow is done by an
+; infinite loop in the C++ method OutputStream::do_write_out().
+; Ths method, when given a stream to read, will keep pulling data
+; from that stream until the stream closes. Since the inf loop runs
+; in the current thread, calling cog-execute! on these will not
+; return until the streams close. Thus, to keep the streams running,
+; and have the current thread availabe for other work, it is best
+; to execute these each in their own thread.
 (define copy-b-to-a
 	(WriteLink
 		(ValueOf (Anchor "streams") (Predicate "term A"))
@@ -48,29 +56,8 @@
 		(ValueOf (Anchor "streams") (Predicate "term B"))
 		(ValueOf (Anchor "streams") (Predicate "term A"))))
 
-; Place the copiers into infinite loops, so that they copy forever.
-; Two loops are needed, as each copier will block, waiting for input.
-
-(define do-exit-loop #f)
-(define (inf-loop COPIER)
-   (cog-execute! COPIER)
-   (if (not do-exit-loop) (inf-loop COPIER)))
-
-(define thread-one #f)
-(define thread-two #f)
-(define (exit-loop)
-   (set! do-exit-loop #t)
-   (join-thread thread-one)
-   (join-thread thread-two)
-   (format #t "Exited the loops\n")
-   (set! do-exit-loop #f))
-
-; Set the loops running.
-(define thread-one (call-with-new-thread (lambda () (inf-loop copy-b-to-a))))
-(define thread-two (call-with-new-thread (lambda () (inf-loop copy-a-to-b))))
-
-; Exit, if desired. May have to do some input in each, to unclog things.
-; (exit-loop)
+(call-with-new-thread (lambda () (cog-execute! copy-b-to-a))))
+(call-with-new-thread (lambda () (cog-execute! copy-a-to-b))))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!

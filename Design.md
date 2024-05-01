@@ -115,5 +115,6 @@ TODO List
   parameters. The Section concept fixes this, but remains unimplemented.
 * Implement DontExecLink so when executed, it unwraps itself.
   Right now, this is hacked around in LinkSignatureLink
+* The `load_csv_table` in AtomSpace persist should be a sensory node.
 
 --------------------------------

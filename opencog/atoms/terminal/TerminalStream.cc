@@ -202,13 +202,13 @@ void TerminalStream::update() const
 	buff[0] = 0;
 
 	// locking and blocking. There seems to be a feature/bug in some
-	// combinations of linux kernel + glibc +xterm that prevents the
+	// combinations of linux kernel + glibc + xterm that prevents the
 	// `xterm-bridge.scm` demo from operating nicely, if plain old
 	// fgets() is used. I tried everything, including ioctl(TIOCPKT).
 	// The problem seems to be that fgets() grabs some lock, and so
-	// when another thread writes to this file handle, this thread
-	// remains blocked in fgets(), until yet another thread writes
-	// to this _fh, which then unblocks the read here. You can see
+	// when there are two threads using two pipes to talk to two xterm
+	// processes, data is not sent/received in one pipe until the
+	// other is nudged, momentarily dropping the lock.  You can see
 	// the wonky behavior in the demo. Using fgets_unlocked() allows
 	// the demo to run "normally", at the cost that sometimes, the
 	// same data is returned twice! WTF. I can't tell if this is a
