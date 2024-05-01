@@ -21,3 +21,11 @@ The design has several unsolved issues.
 * Clear up the connector sex semantics. It's messy, right now.
   Clear up flow data types, they're wonky: either strings or `ItemNode`s
   or whatever. String processing is biting us in the butt.
+
+* The xterm demo creates hookups of streams running in inf loops,
+  because `OutputStrem::do_write_out()` enters an inf loop when the
+  source is a stream. The IRC demo does not run in an inf loop, because,
+  after all the filtering, the code does not realize that there is a
+  stream source at the far end, and as a result, each I/O has to be
+  single-stepped. So which is it: automatic info loop, or
+  single-stepping?
