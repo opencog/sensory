@@ -278,13 +278,18 @@
 
 ; -------------------------------------------------------
 
-; Create an infinite loop. The AGENT must be an ececutable Atom;
-; presumably, it is some Atom that interacts with IRC in some way.
-; As long as AGENT exits every now and then, the loop can be
-; interrupted, as shown below.
+; Hack for long-running streams. This part of the system is not yet
+; fully designed. Details will change.
 ;
-; XXX Tail-recursive loops can also be done in Atomese, and perhaps
-; the below should be replaced by a pure-Atomese version. XXX FIXME.
+; The `OutputStream::do_write_out()` method does enter an inf loop,
+; copying source to sink for as long as the source stays open. For
+; whatever reason, that is not happening in this IRC demo, probably
+; because all the filters obscure that there is a stream at the far
+; end. So this needs work.
+;
+; So, for now, hack around this. Create an inf loop here, and run it
+; in it's own thread. FYI, Tail-recursive loops can also be done in
+; Atomese; the below is done in pure scheme.
 
 (define do-exit-loop #f)
 (define (inf-loop AGENT)
