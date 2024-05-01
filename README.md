@@ -247,7 +247,9 @@ find answers to them. Apologies if the current state is underwhelming.
 
 ### Status
 ***Version 0.2.8*** -- Experimental. Basic demos actually work. Overall
-architecture seems ok-ish. The grand questions above remain mysterious.
+low-level parts of the architecture and implementation seem ok-ish. The
+upper-level parts have not yet been designed. The grand questions above
+remain mysterious, but are starting to clarify.
 
 Provides:
 * Basic File I/O stream.
