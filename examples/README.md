@@ -24,6 +24,9 @@ motors. That automation layer is completely missing, just right now.
 So instead, the below demo a big complex mess of the guts of the system.
 If you think this is fugnuts complicated, you're right, it is.
 
+The [Architecture Overview](Architecture.md) provides a sketch of how
+things should work, eventually (if that day ever comes).
+
 ### API Basics
 Examples that demonstrate how the API works, and the most basic usage.
 

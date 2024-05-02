@@ -174,7 +174,7 @@ complicated, and so the Atomese connectors have a `SexNode` which can be
 `+` or `-` but can also be other things with different kinds of mating
 rules.  The `+`/`-` rules are enough to implement classical lambda
 calculus and beta reduction, so such a language is "Turing complete".
-Although lambda calculus is great for conventional sofware
+Although lambda calculus is great for conventional software
 programming (e.g. the Lisp, Scheme programming languages), it is not
 appropriate for network descriptions.
 
@@ -189,7 +189,7 @@ which is just `lambda.x` there `x` is typed to be `S` and the result of
 the beta-reduction with `x` (a common noun) is of type `O`. Clearly,
 using typed lambda calculus is awkward for expressing grammatical rules.
 
-A differrent solution to this problem is seen in pregroup grammars and
+A different solution to this problem is seen in pregroup grammars and
 in combinatory categorial grammars (CCG), which use forward and
 backslashes to indicate direction. Thus, notations like `S/NP` or
 `VP\S` show up in those notational systems. The slashes are type
@@ -217,7 +217,7 @@ introduces the `SexNode`, so as to provide more complex mating rules.
 To recap: lambdas and beta-reduction is sufficient to get a
 Turing-complete system, but leads to awkward notation for
 daggar-symmetric monoidal categories and linear type systems, where
-two directions need to be acknowledged. For most natural langauge,
+two directions need to be acknowledged. For most natural language,
 e.g. English, it is enough to throw away the "symmetric" part of
 the category, and two directions are still enough. For free-word-order
 langages (or freer) such as Turkish, Lithuanian, Finnish, etc. it is
@@ -233,7 +233,7 @@ these systems, focusing on the similar components.
 
 ### ROS
 The Robot Operating System (ROS) already implements half of the ideas
-described above. It has explict sensor devices, and explicit motors,
+described above. It has explicit sensor devices, and explicit motors,
 each of which can be hooked up to others for perception and action. The
 hookups take the form of unix UDP pipes, although recent ROS has moved
 to a message-passing system. Once a network pipe is connected (linked)
@@ -318,14 +318,19 @@ The above systems seem to be missing several desirable properties:
   in English, and is usually on a website far away from the actual
   control file.
 
-Both of he above complaints can be waived away by noting that GPT-type
+The goal of this project is to plug those gaps: to provide I/O devices
+that come with descriptions of how to actually use them, and to have
+those descriptions in a form such that logical reasoning can be
+performed.
+
+Both of the above complaints can be waived away by noting that GPT-type
 systems can kind of deal with these complexities. A properly-trained GPT
 system will have had the ROS documentation and the node.js documentation
 in it's training set, and so it kind-of-ish already kind-of knows how
 this stuff works. The Microsoft Codepilot can already write
 semi-coherent snippets of code that are grammatically correct, and
 kind-of do sort-of what you want them to do, in a way. So maybe all this
-effort to design a low-level system that behaves correcly for
+effort to design a low-level system that behaves correctly for
 sensori-motor processing is a waste of time, and I should just kicj=k
 back and wait for GPT and OpenAI to figure it out. Who the hell knows.
 It is a plausible answer.

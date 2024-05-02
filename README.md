@@ -69,17 +69,18 @@ These are the questions that seem to matter, for agent design. The code
 in this git repo is some extremely low-level, crude Atomese interfaces
 that try to expose these issues up into the AtomSpace.
 
-Currently, two interfaces are being explored: a unix filesystem
-interface, and an IRC chat interface. Hopefully, this is broad enough to
-expose some of the design issues. Basically, chat is not like a
-filesystem: there is a large variety of IRC commands, there are public
-channels, there are private conversations. They are bi-directional.
-The kind of sensory information coming from chat is just different than
-the sensory information coming from files (even though, as a clever
-software engineer, one could map chat I/O to a filesystem-style
-interface.) The point here is not to be "clever", but to design
-action-perception correctly.  Trying to support very different kinds
-of sensorimotor systems keeps us honest.
+Currently, four interfaces are being explored: a basic text-terminal,
+a single-file reader/writer, a unix filesystem navigator, and an IRC
+chat interface. Hopefully, this is broad enough to expose some of the
+design issues. Basically, chat is not like a filesystem: there is a
+large variety of IRC commands, there are public channels, there are
+private conversations. They are bi-directional.  The kind of sensory
+information coming from chat is just different than the sensory
+information coming from files (even though, as a clever software
+engineer, one could map chat I/O to a filesystem-style interface.)
+The point here is not to be "clever", but to design action-perception
+correctly.  Trying to support very different kinds of sensorimotor
+systems keeps us honest.
 
 Typed Pipes and Data Processing Networks
 ----------------------------------------
@@ -252,12 +253,18 @@ upper-level parts have not yet been designed. The grand questions above
 remain mysterious, but are starting to clarify.
 
 Provides:
+* Basic interactive terminal I/O stream.
 * Basic File I/O stream.
 * Prototype Filesystem navigation stream.
 * Prototype IRC chatbot stream.
-* Basic interactive terminal I/O stream.
 
-See the [examples](examples) directory.
+The [Architecture Overview](Architecture.md) provides a more detailed
+and specific description of how the system is supposed to look like, and
+how it is to work, when it gets farther along. The
+[Design Diary](Design.md) documents the thought process used to obtain
+code that actually works and does what it needs to do.
+
+See the [examples](examples) directory for working examples.
 
 The [AtomSpace Bridge](https://github.com/opencog/atomspace-bridge)
 provides an API between the AtomSpace and SQL. It almost conforms to
@@ -282,7 +289,9 @@ to convert that stuff into Atomese Atoms that higher-layer Atomese
 agents make use of to communicate with, interact with the external
 world.
 
-A general overview can be found in the AGI 2022 paper:
+The [Architecture Overview](Architecture.md) provides a detailed
+description of how this can work.  A general overview can be found
+in the AGI 2022 paper:
 [Purely Symbolic Induction of Structure](https://github.com/opencog/learn/tree/master/learn-lang-diary/agi-2022/grammar-induction.pdf).
 
 General system architecture is discussed in a number of places,
@@ -298,6 +307,7 @@ See also:
 ### Design specifics
 Details of the design in this git repo are explored in several places:
 
+* [Architecture](Architecture.md) -- Architecture overview.
 * [Design Overview](Design.md) -- Current design & TODO List.
 * [IRChatStream](opencog/atoms/irc/README.md) -- IRC chat design.
 * [TextFileStream](opencog/atoms/filedir/README.md) -- Directory navigation design.
@@ -323,8 +333,11 @@ pinging text between two xterms. Other examples include opening,
 reading & writing a single text file, navigating the file system,
 and a basic IRC echobot.
 
+It will probably be useful to read the
+[Architecture Overview](Architecture.md) first.
+
 ***Important*** All of this is pre-alpha! These examples are too
 low-level; the intent is to eventually automate the process for hooking
 up sensors to motors. Basic design work continues. But for now, these
-show some of the low-level infrstructure; the high-level stuff is still
+show some of the low-level infrastructure; the high-level stuff is still
 missing.
