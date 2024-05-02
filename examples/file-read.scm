@@ -129,6 +129,10 @@ txt-stream
 		(Open (Type 'TextFileStream)
 			(Sensory "file:///tmp/demo.txt"))))
 
+; Gentle reminder of how to fetch this:
+(define txt-stream-gen
+	(ValueOf (Concept "foo") (Predicate "some place")))
+
 ; Parse the file contents, one line at a time. The "any" dict generates
 ; random word-pairs. The (Number 1) asks for only one parse per
 ; sentence.
