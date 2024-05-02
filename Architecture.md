@@ -225,14 +225,119 @@ convenient to have more than two connection possibilities. The `SexNode`
 provides a good way to do this, in Atomese.
 
 Similar Systems
-Please note that ROS (the Robot Operating System) already implements maybe half or 2/3rds of what I describe above. The LG links are unix pipes and/or tcpip sockets. The "dictionary" is actually a YAML file that describes the motor and/or sensor. Then there are additional YAML files that provide the netlist of what hooks up to what. The problem is, of course, the YAML is not written in link-grammar format, nor is int in Atomese format, so you can't just slap around some Atomese can get a working ROS netlist out of it. And, if you have used ROS, then you know that writing ROS YAML is just about as hard as writing Atomese: they're both annoyingly difficult to tweak.
+---------------
+The ideas outlined above are widespread in modern software. There are
+already many systems in the software world that already do most (but not
+all) of the things mentioned above. Here's a lightning review of some of
+these systems, focusing on the similar components.
 
-If you use github actions, some of the above might remind you of the github actions or circleci  YML files. This is not an accident: the circleci files are describing a process network flow to perform unit tests, where the sensory device is a read of a git repo, the agents and actions are compile & run of the unit tests, and the output is whether the unit tests passed or failed.
+### ROS
+The Robot Operating System (ROS) already implements half of the ideas
+described above. It has explict sensor devices, and explicit motors,
+each of which can be hooked up to others for perception and action. The
+hookups take the form of unix UDP pipes, although recent ROS has moved
+to a message-passing system. Once a network pipe is connected (linked)
+and started, the data flows continuously, forever, until the pipe is
+closed.
 
-If you've ever screwed around with javascript node.js then you know ` package.json` and `package-lock.json` These are sensory-device description files (or more accurately, agent-description files), in that they describe what this particular node.js device provides: the inputs, the outputs. You then use `npm run make` to parse the system and perform all the hookups. You will also be familiar with the carpet burns you get from screwing the electron. hooking together open connectors into a function network is difficult.
+Both sensors and motors are described with YAML files. These are the
+analogs of the Link Grammar dictionary.  Other YAML files provide the
+netlist of what hooks up to what: they describe the actual robot. They
+list what sensors and motors are actually used in a given robot, how
+they are attached to one-another. The robot-engineer designs these
+linkages. Hitting "run" hooks up all the devices, allowing data to
+flow on the network pipes.
 
-There's no "one ring to rule them all". I am not aware of any generic comp-sci theory for exploring the autogeneration of networks.  Doing Atomese Sensory is sort of my personal best-guess for the generic theory/system of "making things hook together into a sensible autopoetic system". The "basal cognition" for agent-environment interaction.
+One can write the netlist YAML files by hand; there are also GUI tools
+that can be used to drag-n-drop sensors/motors and to create links
+between them.
 
-Anyway, this is the current status of the language-learning effort. The demos work but are incomplete. Version 0.2 at https://github.com/opencog/sensory
+The primary issue here, from the perspective, is that none of this is
+done in Atomese, and there's no particular sense of Link Grammar
+connectors or linkages. These concepts are "ad hoc" in ROS. The robot
+designer implicitly knows them and uses them, but there's no explicit
+manipulable system or API for dealing with this. Yes, the GUI designer
+can open a YAML file, and "parse" what's inside of it, but the "parsing"
+is naive and ad hoc. The YAML files are stored as text files in a
+conventional file system.
 
+This presents a challenge for an AGI system looking to have a robot
+embodiment: it has to navigate a file system, find a bunch of YAML
+files, edit those YAML files, examine megabytes of debug output dumped
+into log files in yet another location of the file system ... there's no
+YAML file that describes the logfile, that says "heres how you can read
+a logfile and debug it". The autopoetic aspect is missing in ROS.
 
+Off-topic remark: writing and tweaking ROS YAML is hard. It is
+comparable to the difficulty of writing Atomese. Both take time and
+effort to learn.
+
+### Github actions, Circle-CI
+If you use github actions, some of the above might remind you of the
+github actions or circleci YML files. This is not an accident: the
+circleci files are describing a process network flow to perform unit
+tests, where the sensory device is a read of a git repo, the agents and
+actions are to compile & run the unit tests, and the output is whether
+the unit tests passed or failed.
+
+### Node.js
+If you've ever screwed around with javascript node.js then you know
+`package.json` and `package-lock.json` These are sensory-device
+description files (or, more accurately, agent-description files), in
+that they describe what a particular node.js device provides: the
+inputs, the outputs of the "node". You then use `npm run make` to
+parse the system and perform all the hookups. You will also be
+familiar with the carpet burns you get from screwing with electron.
+Hooking together open connectors into a functioning network is
+difficult.
+
+The idea of node.js is hardly an accident. Shortly after the very
+first-ever websites were created, and the very first `cgi-bin` scripts
+were written, it became clear that a sophisticated website needed a
+complex process flow, of users logins flowing to an authentication agent
+which authorizes user access to a shopping cart and enables the movement
+of that shopping cart to the one-click checkout page. This is a complex
+functional flow, where lots of things have to flow into other things.
+So, of course, you have to solve a network design and dataflow problem.
+It has to be solved in such a way that the devops people can do their
+job. And so onwards ho the march of technology.
+
+### Missing Concepts
+The above systems seem to be missing several desirable properties:
+
+* Configuration is done with files, and can only be edited with GUI
+  tools. By contrast, Atomese is stored in the AtomSpace, where it is
+  searchable. Also, Atomese can be controlled, edited and altered by
+  other Atomese. Atomese is "visible" to Atomese, and is thus
+  controllable, editable and manipulable by Atomese.
+
+* The syntax of YAML files is not self-describing. If you want to know
+  what some particular YAML does, you have to RTFM, and the docs are
+  written in English. There's no way of opening a YAML file, and finding
+  a machine-readable description of what's in there. The description is
+  in English, and is usually on a website far away from the actual
+  control file.
+
+Both of he above complaints can be waived away by noting that GPT-type
+systems can kind of deal with these complexities. A properly-trained GPT
+system will have had the ROS documentation and the node.js documentation
+in it's training set, and so it kind-of-ish already kind-of knows how
+this stuff works. The Microsoft Codepilot can already write
+semi-coherent snippets of code that are grammatically correct, and
+kind-of do sort-of what you want them to do, in a way. So maybe all this
+effort to design a low-level system that behaves correcly for
+sensori-motor processing is a waste of time, and I should just kicj=k
+back and wait for GPT and OpenAI to figure it out. Who the hell knows.
+It is a plausible answer.
+
+Conclusion
+----------
+There's no "one ring to rule them all". I am not aware of any generic
+comp-sci theory for exploring the autogeneration of networks.  Doing
+Atomese Sensory is sort of my personal best-guess for the generic
+theory/system of "making things hook together into a sensible autopoetic
+system". The "basal cognition" for agent-environment interaction.
+
+I'm not sure if any of this is useful, or if this is just a screwball
+low-level academic exercise in comp-sci trivia. That's why this whole
+git repo is labelled "experiment".  Build it, and see what happens.
