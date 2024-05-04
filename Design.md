@@ -30,6 +30,8 @@ design choices governing the system.
 * [Notes Part D](DesignNotes-D.md) -- Detail how to implement the
   hooker-upper.
   (late-April 2024)
+* [Notes Part E](DesignNotes-E.md) -- Pipe and matrix ruminations.
+  (early May 2024)
 
 Current Implementation
 ----------------------
