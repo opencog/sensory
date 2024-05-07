@@ -20,8 +20,9 @@ design choices governing the system.
 * [Notes Part A](DesignNotes-A.md) -- Early ideas for the design of
   the ReadLink & WriteLink. (early April 2024)
 * [Notes Part B](DesignNotes-B.md) -- Basic idea of Action/Perception
-  and basic idea of a DTD (Document Type Definition) for IRC chat.
-  First description of using Link Grammar Sections for the DTD.
+  and basic idea of a DTD (Document Type Definition) or IDL (Interface
+  Description Lanuage) for IRC chat.  First description of using Link
+  Grammar Sections for the DTD/IDL.
   (mid-April 2024)
 * [Notes Part C](DesignNotes-C.md) -- Sketch how to create a netlist
   or hookup diagram. The hookup requires assembling together a

@@ -228,9 +228,11 @@ The oversimplified example DTD for HTML is:
 <!ELEMENT p (#PCDATA | p | ul | dl | table | h1|h2|h3)*>
 ```
 We need a DTD-like description of the data flowing on the data stream.
+Even older: an [Interface Description
+Language](https://en.wikipedia.org/wiki/Interface_description_language)
 
 ### Syntactical parsing for sensory-motor action chains
-Now comes the interesting part. We have a DTD-like data descriptor
+Now comes the interesting part. We have a DTD/IDL-like data descriptor
 of what is being sent out on a sensory stream. What happens after
 that data has been transformed a few times, e.g. by FilterLinks
 with RuleLinks?

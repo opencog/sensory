@@ -43,16 +43,16 @@ OK, Let's take the notes in [Design Notes B](DesignNotes-B.md) to
 heart. It says that actions, and the result of those actions, should be
 described by a `ChoiceLink` of `Section`s. The
 [current filesys example](examples/filesys.scm),
-as it stands, treats this as a DTD and attempts to manually pick it
+as it stands, treats this as a IDL/DTD and attempts to manually pick it
 apart and create just one single link. And ... almost works but fails.
 Because it's complicated.  This hooking-up of things needs to be
 abstracted and automated. How?
 
-Part of the problem is that there's a DTD for the filesys commands,
+Part of the problem is that there's a IDL/DTD for the filesys commands,
 but no matching connector-sets describing the pipeline. So we really
 want:
 * An API for terminal I/O
-* An LG-style DTD for the terminal I/O
+* An LG-style IDL/DTD for the terminal I/O
 * A linker that can construct a pipeline from the Filesys 'ls' command
   to the terminal. The linker auto-connects, so that none of the icky
   code in the demo would need to be written.

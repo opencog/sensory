@@ -100,7 +100,9 @@ formats at the meta level. In a few rare cases, one can get a machine-
 [Data Type Definition](https://en.wikipedia.org/wiki/Document_type_definition),
 which is used by web browsers to figure out what kind of HTML is being
 delivered (although the DTD is meant to be general enough for "any" use.)
-Other examples include the X.500 and LDAP schemas, as well as SNMP.
+Other examples include [Interface Sescription
+Languages](https://en.wikipedia.org/wiki/Interface_description_language),
+the X.500 and LDAP schemas, as well as SNMP.
 
 However, there is no generic way of asking a pipe "hey mister pipe, what
 are you? What kind of data passes over you?" or "how do I communicate
