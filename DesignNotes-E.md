@@ -35,6 +35,66 @@ Third alternative: half-way house, use the old matrix API (there's a lot
 there) and swap out perfomance critical bits on an as-needed bases. Kind
 of ugly, this last, but its easier!?
 
+Overview
+--------
+There are several distinct questions this work is trying to address:
+
+(1) How does one declare the function signature of a pipe in Atomese?
+(2) How does one associate such signatures to specific instance of
+    objects; that is, how does one declare an object in Atomese?
+(3) How do we distinguish objects and instances?
+(4) What is the simplest way of wiring up pipes, given their function
+    signatures? Of course, this can always be done manually, which is
+    requires no sophistication or abstraction, just brute-force coding
+    willpower. The goal is to be able to say "please hok this to that"
+    and have the wiring robot solder together that particular circuit.
+(5) Aside from (4), what is the point of all of this? Why bother?
+
+Some ruminations on (5):
+
+It seems that Atomese is primarilty a declarative language, and not a
+functional one. So parts one through 4 are hard, because they are
+asking: how does one do functional programming within a declarative
+language? The answer is "not very easily". The signature declarations
+along are insanely complicated and tedious. Building up the wiring
+system desired in part (4) will be a huge and complex task. And given
+the requied expenditure of effort, the question is "why bother?"
+
+The answer is that I want to be able to build such processing pipelines
+using whiz-bangy higher-level algorithms. Some hand-wavey intersection
+of how sentences can be generated with link grammar, how effective trees
+can be created and scored with as-moses, and how electronics-wiring
+netlists can be generated with DL-NN. Exactly which and how, I don't
+know, but the prerequisite is to be able to wire things up, and this
+prerueq is not yet satisfied.
+
+Asking any of these meta-layers to "describe" the circuit means that, at
+lower layers, the lanugage does have to a declarative language; if not
+Atomese, then something like it.
+
+The classical way of doing this is with a compiler: the program
+desciption is compiled into an executable; so here, the description
+netlist, and the off-the-shelf library of pipeline pieces with their
+description are wired up.
+
+Why not start with the existing matrix API, and use that as the
+compilation target? Because the current matrix API does not provide an
+interface definition (IDL, interface description language)
+https://en.wikipedia.org/wiki/Interface_description_language
+
+Why not use onf of the existing IDL's and taget that? Might get more
+mindshare that way? At the risk of fragility and inability to extend
+and progress, because those IDL's have design philosophies that are not
+aligned with the AtomSpace design goals and infrastructure. Effin A.
+Why is everything so hard?
+
+Lets say we did have the necessary IDL for Atomese pipes, and the
+compiler to hook them up. Then what? What reasonable expectations can we
+have of the higher-level systems?  Will they be able to do anything
+noteworthy? Or is this a grand hope of "build it and they will come"?
+
+Clearly this needs work and articulation.  Maybe elsewhere, not here.
+
 Method calls
 ------------
 The nice thing about KVP is that an atom+key can be interpreted as
