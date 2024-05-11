@@ -155,6 +155,77 @@ are "affordances" to the external world: they describe how an agent can
 work with the sensori-motor interface to "do things" in the external
 world.
 
+Auto-wiring and theorem proving
+-------------------------------
+The goal of describing system blocks with some DTD or IDL langauge,
+and then hooking them up "automatically", is not new. Four approaches
+are worth mentioning.
+
+* [ProLog](https://en.wikipedia.org/wiki/Prolog) and
+  [Answer Set Programming (ASP)](https://en.wikipedia.org/wiki/Answer_set_programming).
+  In these systems, one asserts a collection of facts/assertions, and
+  then says "let's go". Prolog uses a chaining algorithm, and ASP uses
+  a [SAT solver](https://en.wikipedia.org/wiki/SAT_solver) to determine
+  a "solution" satisfying the constraints embodied in the facts. One
+  does _not_ get back the actual inference chain that was used. For
+  this project, we want to know *how* things got hooked together.
+  We're not interested in a true/false satisfiability answer, but
+  rather in finding out how assemble a processing chain.
+
+* [Automated theorem provers](https://en.wikipedia.org/wiki/Automated_theorem_proving).
+  These are systems that, given a set of facts/assertions, together
+  with a collection of inference rules, provide an actual inference
+  chain, aka a "proof", that explicitly gives the steps from the
+  hypothesis (the input claims) to the result (that the input claims
+  are consistent and simultaneously satisfiable.) This gets closer to
+  what we want: we want the chain. However, unlike theorem provers,
+  we're not particularly interested in satisfiability, other than to
+  find out if a partially-assembled pipeline still has some missing
+  end-points. This is why we work with sheaves or jigsaws: we want to
+  know not only how to assemble the jigsaw pieces, but to also know
+  what the remaining, open (unconnected) connectors are. Theorem
+  provers do not provide such info.
+
+* The [SOAR Cognitive Architecture](https://en.wikipedia.org/wiki/Soar_%28cognitive_architecture%29).
+  This is a production system that applies production rules to state.
+  This captures a different aspect of what we want to do here: we want
+  to have data, and to apply rules to that data to transform it.
+  However, our data is not so much "state" as it is a "stream": think
+  of an audio or video stream. SOAR selects a rule (analogous to an
+  inference rule, in theorem proving) and applies it immediately, to
+  mutate the state. By contrast, we want to think of inference rules as
+  jigsaw pieces: how can they be assembled? Once assempled, then these
+  rules can be applied to not just "state" in a single-shot fashion,
+  but repeatedly, to a flowing stream of data (say, video, to find all
+  cats in the video).
+
+* [Programming language compilers](https://en.wikipedia.org/wiki/Compiler).
+  These are able to take high-level specifications and convert them
+  into an equivelent program written in
+  [assembly language](https://en.wikipedia.org/wiki/Assembly_language).
+  The assembly instructions can be thought of as jigsaws, and when they
+  are assembled, the mating rules must be closely followed: the output
+  registers in one instruction must attach to the inputs of another.
+  The resulting program has to be runnable, executable. This is exactly
+  what we want here: an assembly of interconnected jigsaws. However,
+  unlike a compiler, our "assembly language" consists of various
+  abstract processing components: filters, transforms, etc. It doesn't
+  run on a (real or virtual) CPU, but on an abstract machine. It is not
+  registers and RAM that the instructions/jigsaws act on, but on
+  sensory data (again: think video/audio).  Worse yet, the instructions
+  aren't even fixed: new ones might get invented at any time. These
+  might supplement or replace old ones. Compilers also want a program,
+  written in a high-level language, as input. In this project, we won't
+  have such a program; our situation is closer too SOAR or ProLog or
+  theorem provers: we have a collection of jigsaws (insturction) to
+  assemble, but no high-level porgram to specify that assembly.
+
+The above systems solve some of the aspects of what we want to do here,
+but only some of them, and not in the format that we actually need.
+The above should give a flavor of why we're embarked on the crazy
+journey we're on. No one else does this.
+
+
 Autonomous Agents
 -----------------
 The sensori-motor system is just an interface. In between must lie a
