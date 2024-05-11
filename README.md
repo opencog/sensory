@@ -100,7 +100,7 @@ formats at the meta level. In a few rare cases, one can get a machine-
 [Data Type Definition](https://en.wikipedia.org/wiki/Document_type_definition),
 which is used by web browsers to figure out what kind of HTML is being
 delivered (although the DTD is meant to be general enough for "any" use.)
-Other examples include [Interface Sescription
+Other examples include [Interface Description
 Languages](https://en.wikipedia.org/wiki/Interface_description_language),
 the X.500 and LDAP schemas, as well as SNMP.
 
@@ -247,6 +247,41 @@ Thus, the question becomes: "What is a generic sensori-motor landscape?"
 and "how does a learning system interface to such a thing?" This git
 repo is my best attempt to try to understand these two questions, and to
 find answers to them. Apologies if the current state is underwhelming.
+
+Related ideas
+-------------
+A distantly related set of ideas can be found in the [SOAR Cognitive
+Architecture](https://en.wikipedia.org/wiki/Soar_%28cognitive_architecture%29)
+from Laird, Newell & Rosenbloom. Examples of SOAR agents can be
+seen in the [SOAR Agent github repo](https://github.com/SoarGroup/Agents/).
+SOAR is a production rule system, and so resembles the AtomSpace query
+subsystem. The manner in which SOAR rules are applied resembles the
+[OpenCog Unified Rule Engine (URE)](https://github.com/opencog/ure)
+(which is unsupported and now deprecated) and also
+[OpenCog Probabilistic Logic Networks (PLN)](https://github.com/opencog/pln)
+(also unsupported & deprecated).
+
+There are many differences between this work and Atomese:
+* SOAR production rules are written in ASCII (in the SOAR language), and
+  are stored in flat files.  AtomSpace production rules are written in
+  Atomese, and stored in the AtomSpace.
+* SOAR production rules are applied to "state", and work within a
+  "context". This is similar to the AtomSpace, which can store state.
+  However, the AtomSpace can also store the rules themselves (as
+  "state") and the rules can be applied to external data streams
+  (e.g. audio, video).
+* SOAR production rules are crafted by humans, encoding knowledge.
+  Atomese rules are meant to be algorithmically generated and
+  assembled.
+* SOAR state mutation is boolean-valued: either something is done, or
+  it isn't. There does not appear to be any concept of Bayesian
+  possible-worlds.
+* The OpenCog URE and PLN elements, which most closely resembled the
+  SOAR state mutation system, are abandoned for a reason: the naive
+  idea of human-authored rules repeatedly applied to mutate state
+  turned out to be too limited and inadequate for the contemplated
+  problems being faced here. PLN and URE still work, but meh.
+
 
 ### Status
 ***Version 0.3.0*** -- Experimental. Basic demos actually work. Overall
