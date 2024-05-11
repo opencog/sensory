@@ -353,6 +353,11 @@ There are many differences between this work and Atomese:
   turned out to be too limited and inadequate for the contemplated
   problems being faced here. PLN and URE still work, but meh.
 
+A nice, quick & easy overview of SOAR can be found here:
+"[An Introduction to the Soar Cognitive
+Architecture](https://acs.ist.psu.edu/ist597/pst-soar%20v14.2.pdf)",
+Tony Kalus and Frank Ritter (2010)
+
 
 ### Status
 ***Version 0.3.0*** -- Experimental. Basic demos actually work. Overall
