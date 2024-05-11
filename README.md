@@ -157,7 +157,7 @@ world.
 
 Auto-wiring and theorem proving
 -------------------------------
-The goal of describing system blocks with some DTD or IDL langauge,
+The goal of describing system blocks with some DTD or IDL language,
 and then hooking them up "automatically", is not new. Four approaches
 are worth mentioning.
 
@@ -201,7 +201,7 @@ are worth mentioning.
 
 * [Programming language compilers](https://en.wikipedia.org/wiki/Compiler).
   These are able to take high-level specifications and convert them
-  into an equivelent program written in
+  into an equivalent program written in
   [assembly language](https://en.wikipedia.org/wiki/Assembly_language).
   The assembly instructions can be thought of as jigsaws, and when they
   are assembled, the mating rules must be closely followed: the output
@@ -218,7 +218,7 @@ are worth mentioning.
   written in a high-level language, as input. In this project, we won't
   have such a program; our situation is closer too SOAR or ProLog or
   theorem provers: we have a collection of jigsaws (insturction) to
-  assemble, but no high-level porgram to specify that assembly.
+  assemble, but no high-level program to specify that assembly.
 
 The above systems solve some of the aspects of what we want to do here,
 but only some of them, and not in the format that we actually need.
@@ -347,11 +347,16 @@ There are many differences between this work and Atomese:
 * SOAR state mutation is boolean-valued: either something is done, or
   it isn't. There does not appear to be any concept of Bayesian
   possible-worlds.
-* The OpenCog URE and PLN elements, which most closely resembled the
-  SOAR state mutation system, are abandoned for a reason: the naive
-  idea of human-authored rules repeatedly applied to mutate state
-  turned out to be too limited and inadequate for the contemplated
-  problems being faced here. PLN and URE still work, but meh.
+* SOAR appears to use a very simplistic forward-chaining approach to
+  inference. For any given SOAR state, a collection of possible rules
+  is determined. Of these, one rule is selected, and then it is
+  applied to mutate the state. It has long been recognized that other
+  kinds of chaining is interesting: not just forward chaining, but also
+  backwards. One might not just chain (as in ProLog), but ask for
+  constraint satisfaction (in ASP and automated theorem provers.)
+* The OpenCog URE and PLN elements are capable of performing chaining.
+  They are currently deprecated/obsolescent, for a variety of technical
+  and philosophical reasons.
 
 A nice, quick & easy overview of SOAR can be found here:
 "[An Introduction to the Soar Cognitive
