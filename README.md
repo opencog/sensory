@@ -14,6 +14,11 @@ Philosophical Overview
 The issue for any agent is being able to perceive the environment that
 it is in, and then being able to interact with this environment.
 
+The goal in this project is to find a theory of a minimum viable
+low-level sensory API. Having such a theory would clarify how learning
+systems might learn how to use it, or, more generally, how to
+"use things", how to have a cause-and-effect in the universe.
+
 For OpenCog, and, specifically, for OpenCog Atomese, all interaction,
 knowledge, data and reasoning is represented with and performed by
 Atoms (stored in a hypergraph database) and Values (transient data
