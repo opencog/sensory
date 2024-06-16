@@ -324,6 +324,35 @@ and "how does a learning system interface to such a thing?" This git
 repo is my best attempt to try to understand these two questions, and to
 find answers to them. Apologies if the current state is underwhelming.
 
+
+Self-observing systems
+----------------------
+Perception need not be limited to "the external world"; one may also
+observe oneself. Action need not be limited to the movement of limbs; it
+can also be a control over one's own thoughts. Imagine the case of
+"stewing in one's own juice's": a dreamlike state, where you ruminate
+over old memories of pst events. As one does so, one selects, picks and
+chooses: fond memories are noted for their emotional content, are given
+further thought; boring memories stay unexamined, unless forced.
+
+The perception-action system described above can be aimed not just at
+the external world, but also at internal state. Imagine, for example, a
+trained LSTM or maybe an LLM that is placed into a "dream state", where
+it generates a sequence of free-association outputs. An agent can watch
+over this stream, and, in response to certain outputs, it can "prompt"
+the system, to guide further "reminiscences". More directly, it can
+"choose" to force the system to concentrate on a specific topic. To
+"focus one's thoughts". This kind of hierarchical layering, where an
+agent steers the thoughts of an underlying system results in a form of
+self-awareness and self-control.
+
+Thus, in addition to the previously-described perception-action agents
+(e.g. traversing the file system or interacting via chat) one can build
+an agent that monitors the state of a neural network, and then controls
+it, via prompts, or perhaps much more directly with gates (tanh/signmoid
+blending.)
+
+
 Related ideas
 -------------
 A distantly related set of ideas can be found in the [SOAR Cognitive
