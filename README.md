@@ -9,6 +9,13 @@ A software conception of "basal cognition".
 The experimental lab for this is "perceiving" filesystem files,
 "moving" through directories, and likewise for IRC chat streams.
 
+This is part of a group of inter-related research projects:
+* [Agents](https://github.com/opencog/agents), which aims to make use
+  of the structures developed here.
+* [Motor](https://github.com/opencog/motor), which looks at the issues
+  raised below from a different perspective, perhaps simplifying the
+  problem into a more tractable and practical form.
+
 Philosophical Overview
 ----------------------
 The issue for any agent is being able to perceive the environment that
