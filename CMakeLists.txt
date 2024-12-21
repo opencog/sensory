@@ -58,3 +58,9 @@ ADD_CUSTOM_TARGET(check
 	COMMAND ${CMAKE_CTEST_COMMAND} $(ARGS)
 	COMMENT "Running tests..."
 )
+
+# ===================================================================
+# Show a summary of what we found, what we will do.
+
+SUMMARY_ADD("Python bindings" "Python (cython) bindings" HAVE_CYTHON)
+SUMMARY_SHOW()
