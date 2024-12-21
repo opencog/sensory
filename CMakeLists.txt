@@ -33,7 +33,7 @@ ENDIF()
 # Guile Python and Cython
 
 include(OpenCogFindGuile)
-# include(OpenCogFindPython)
+include(OpenCogFindPython)
 
 # Load cmake functions defined in cogutil repo that depend on Guile.
 INCLUDE(OpenCogMacros)
