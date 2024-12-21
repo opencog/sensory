@@ -7,15 +7,10 @@
 # This imports all the python wrappers for atom creation.
 #
 import warnings
-# from cython.operator cimport dereference as deref
 
 from opencog.atomspace import types
 from opencog.atomspace import regenerate_types
-# from opencog.utilities import add_node, add_link
-
-# from opencog.atomspace cimport cValuePtr, cHandle, cAtomSpace
-# from opencog.atomspace cimport Atom
-# from opencog.atomspace cimport create_python_value_from_c_value
+from opencog.utilities import add_node, add_link
 
 # The list of Atom Types that python knows about has to be rebuilt,
 # before much else can be done.
