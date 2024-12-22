@@ -307,28 +307,31 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 				time_t epoch = statxbuf.stx_btime.tv_sec;
 				vs.emplace_back(createStringValue(
 					ctime(&epoch)));
+				vents.emplace_back(createLinkValue(vs));
+				continue;
 			}
-			else
+
 			if (0 == cmd.compare("mtime"))
 			{
 				time_t epoch = statxbuf.stx_mtime.tv_sec;
 				vs.emplace_back(createStringValue(
 					ctime(&epoch)));
+				vents.emplace_back(createLinkValue(vs));
+				continue;
 			}
-			else
+
 			if (0 == cmd.compare("filesize"))
 			{
 				vs.emplace_back(createFloatValue(
-					(double) statxbuf.stx_size ));
-			}
-			else
-			{
-				closedir(dir);
-				throw RuntimeException(TRACE_INFO,
-					"Unknown command \"%s\"\n", cmd.c_str());
+					(double) statxbuf.stx_size));
+				vents.emplace_back(createLinkValue(vs));
+				continue;
 			}
 
-			vents.emplace_back(createLinkValue(vs));
+			// If we are here, its an unknown commans
+			closedir(dir);
+			throw RuntimeException(TRACE_INFO,
+				"Unknown command \"%s\"\n", cmd.c_str());
 		}
 		closedir(dir);
 		return createLinkValue(vents);
