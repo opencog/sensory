@@ -256,14 +256,18 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 
 		ValueSeq vents;
 		struct dirent* dent = readdir(dir);
-		while (dent)
+		for (; dent; dent = readdir(dir))
 		{
 			ValuePtr locurl = createStringValue(_cwd + "/" + + dent->d_name);
 
 			// Dispatch by command
 			if (0 == cmd.compare("ls"))
+			{
 				vents.emplace_back(locurl);
-			else if (0 == cmd.compare("special"))
+				continue;
+			}
+
+			if (0 == cmd.compare("special"))
 			{
 				std::string ftype = "unknown";
 				switch (dent->d_type)
@@ -280,54 +284,51 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 				ValueSeq vs({locurl});
 				vs.emplace_back(createStringValue(ftype));
 				vents.emplace_back(createLinkValue(vs));
+				continue;
+			}
+
+			// The remaining commands require performing a stat()
+			unsigned int mask = STATX_BTIME | STATX_MTIME | STATX_SIZE;
+			struct statx statxbuf;
+			int rc = statx(fd, dent->d_name, 0, mask, &statxbuf);
+			if (rc)
+			{
+				int norr = errno;
+				closedir(dir);
+				throw RuntimeException(TRACE_INFO,
+					"Location %s error: %s",
+					StringValueCast(locurl)->value()[0].c_str(),
+					strerror(norr));
+			}
+
+			ValueSeq vs({locurl});
+			if (0 == cmd.compare("btime"))
+			{
+				time_t epoch = statxbuf.stx_btime.tv_sec;
+				vs.emplace_back(createStringValue(
+					ctime(&epoch)));
+			}
+			else
+			if (0 == cmd.compare("mtime"))
+			{
+				time_t epoch = statxbuf.stx_mtime.tv_sec;
+				vs.emplace_back(createStringValue(
+					ctime(&epoch)));
+			}
+			else
+			if (0 == cmd.compare("filesize"))
+			{
+				vs.emplace_back(createFloatValue(
+					(double) statxbuf.stx_size ));
 			}
 			else
 			{
-				// The remaining commands require performing a stat()
-				unsigned int mask = STATX_BTIME | STATX_MTIME | STATX_SIZE;
-				struct statx statxbuf;
-				int rc = statx(fd, dent->d_name, 0, mask, &statxbuf);
-				if (rc)
-				{
-					int norr = errno;
-					closedir(dir);
-					throw RuntimeException(TRACE_INFO,
-						"Location %s error: %s",
-						StringValueCast(locurl)->value()[0].c_str(),
-						strerror(norr));
-				}
-
-				ValueSeq vs({locurl});
-				if (0 == cmd.compare("btime"))
-				{
-					time_t epoch = statxbuf.stx_btime.tv_sec;
-					vs.emplace_back(createStringValue(
-						ctime(&epoch)));
-				}
-				else
-				if (0 == cmd.compare("mtime"))
-				{
-					time_t epoch = statxbuf.stx_mtime.tv_sec;
-					vs.emplace_back(createStringValue(
-						ctime(&epoch)));
-				}
-				else
-				if (0 == cmd.compare("filesize"))
-				{
-					vs.emplace_back(createFloatValue(
-						(double) statxbuf.stx_size ));
-				}
-				else
-				{
-					closedir(dir);
-					throw RuntimeException(TRACE_INFO,
-						"Unknown command \"%s\"\n", cmd.c_str());
-				}
-
-				vents.emplace_back(createLinkValue(vs));
+				closedir(dir);
+				throw RuntimeException(TRACE_INFO,
+					"Unknown command \"%s\"\n", cmd.c_str());
 			}
 
-			dent = readdir(dir);
+			vents.emplace_back(createLinkValue(vs));
 		}
 		closedir(dir);
 		return createLinkValue(vents);
