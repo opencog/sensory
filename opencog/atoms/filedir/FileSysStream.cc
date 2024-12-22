@@ -223,7 +223,14 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 			"Expecting a Node: %s", cref->to_string().c_str());
 
 	const std::string& cmd = cref->get_name();
-	if (0 == cmd.compare("ls"))
+	if (0 == cmd.compare("pwd"))
+	{
+		return createStringValue(_cwd);
+	}
+
+	// Commands without any arguments. These are applied to all
+	// files/dirs in the current working dir.
+	if (1 == cmdref->size())
 	{
 		const std::string& path = _cwd.substr(_pfxlen);
 		DIR* dir = opendir(path.c_str());
@@ -242,16 +249,33 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 		struct dirent* dent = readdir(dir);
 		while (dent)
 		{
-			vents.emplace_back(createStringValue(_cwd + "/" + + dent->d_name));
+			ValuePtr locurl = createStringValue(_cwd + "/" + + dent->d_name);
+			// Dispatch by command
+			if (0 == cmd.compare("ls"))
+				vents.emplace_back(locurl);
+			else if (0 == cmd.compare("special"))
+			{
+				std::string ftype = "unknown";
+				switch (dent->d_type)
+				{
+					case DT_BLK: ftype = "block"; break;
+					case DT_CHR: ftype = "char"; break;
+					case DT_DIR: ftype = "dir"; break;
+					case DT_FIFO: ftype = "fifo"; break;
+					case DT_LNK: ftype = "lnk"; break;
+					case DT_REG: ftype = "reg"; break;
+					case DT_SOCK: ftype = "sock"; break;
+					default: break;
+				}
+				ValueSeq vs({locurl});
+				vs.emplace_back(createStringValue(ftype));
+				vents.emplace_back(createLinkValue(vs));
+			}
+
 			dent = readdir(dir);
 		}
 		closedir(dir);
 		return createLinkValue(vents);
-	}
-
-	if (0 == cmd.compare("pwd"))
-	{
-		return createStringValue(_cwd);
 	}
 
 	// Commands taking a single argument; in all cases, it *must*.
