@@ -284,8 +284,9 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 			else
 			{
 				// The remaining commands require performing a stat()
-				struct stat statbuf;
-				int rc = fstatat(fd, dent->d_name, &statbuf, 0);
+				unsigned int mask = STATX_BTIME | STATX_MTIME | STATX_SIZE;
+				struct statx statxbuf;
+				int rc = statx(fd, dent->d_name, 0, mask, &statxbuf);
 				if (rc)
 				{
 					int norr = errno;
@@ -297,16 +298,24 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 				}
 
 				ValueSeq vs({locurl});
+				if (0 == cmd.compare("btime"))
+				{
+					time_t epoch = statxbuf.stx_btime.tv_sec;
+					vs.emplace_back(createStringValue(
+						ctime(&epoch)));
+				}
+				else
 				if (0 == cmd.compare("mtime"))
 				{
+					time_t epoch = statxbuf.stx_mtime.tv_sec;
 					vs.emplace_back(createStringValue(
-						ctime(&statbuf.st_mtime)));
+						ctime(&epoch)));
 				}
 				else
 				if (0 == cmd.compare("filesize"))
 				{
 					vs.emplace_back(createFloatValue(
-						(double) statbuf.st_size ));
+						(double) statxbuf.stx_size ));
 				}
 				else
 				{
