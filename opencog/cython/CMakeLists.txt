@@ -30,8 +30,13 @@ ADD_LIBRARY(sensory_cython SHARED
 
 ADD_DEPENDENCIES(sensory_cython sensory_atom_types)
 
+# The NO_AS_NEEDED forces the shared library ctors to run
+# for the libsensory.so which are needed to get the assorted
+# atom type factories to get installed into the nameserver.
 TARGET_LINK_LIBRARIES(sensory_cython
+	${NO_AS_NEEDED}
 	sensory-types
+	sensory
 	atomspace
 	${PYTHON_LIBRARIES}
 )
