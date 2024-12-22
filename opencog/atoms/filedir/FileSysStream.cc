@@ -24,6 +24,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h> // for strerror()
+#include <sys/stat.h>
 #include <sys/types.h>
 
 #include <opencog/util/exceptions.h>
@@ -31,6 +32,7 @@
 #include <opencog/atomspace/AtomSpace.h>
 #include <opencog/atoms/base/Link.h>
 #include <opencog/atoms/base/Node.h>
+#include <opencog/atoms/value/FloatValue.h>
 #include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atoms/value/StringValue.h>
 #include <opencog/atoms/value/ValueFactory.h>
@@ -115,6 +117,11 @@ void FileSysStream::init(const std::string& url)
 
 Handle _global_desc = Handle::UNDEFINED;
 
+// TODO: The below lists only enough of the commands to do the
+// basic wiring diagram work. There are additional commands,
+// supported i an ad hoc manner, so that the motor demos can
+// be developed. The motor demos are kind of independent of the
+// wiring demos (for now).
 void FileSysStream::do_describe(void)
 {
 	if (_global_desc) return;
@@ -223,47 +230,142 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 			"Expecting a Node: %s", cref->to_string().c_str());
 
 	const std::string& cmd = cref->get_name();
-	if (0 == cmd.compare("ls"))
-	{
-		const std::string& path = _cwd.substr(_pfxlen);
-		DIR* dir = opendir(path.c_str());
-
-		ValueSeq vents;
-		struct dirent* dent = readdir(dir);
-		while (dent)
-		{
-			vents.emplace_back(createStringValue(_cwd + "/" + + dent->d_name));
-			dent = readdir(dir);
-		}
-		closedir(dir);
-		return createLinkValue(vents);
-	}
-
 	if (0 == cmd.compare("pwd"))
 	{
 		return createStringValue(_cwd);
 	}
 
-	// Commands taking arguments
+	// Commands without any arguments. These are applied to all
+	// files/dirs in the current working dir.
+	if (1 == cmdref->size())
+	{
+		const std::string& path = _cwd.substr(_pfxlen);
+		DIR* dir = opendir(path.c_str());
+
+		// XXX FIXME: for now, throw an error if the location cannot
+		// be opened. Some better long-term architecture is desired.
+		if (nullptr == dir)
+		{
+			int norr = errno;
+			throw RuntimeException(TRACE_INFO,
+				"Location %s inaccessible: %s",
+				path.c_str(), strerror(norr));
+		}
+
+		int fd = dirfd(dir);
+
+		ValueSeq vents;
+		struct dirent* dent = readdir(dir);
+		for (; dent; dent = readdir(dir))
+		{
+			ValuePtr locurl = createStringValue(_cwd + "/" + + dent->d_name);
+
+			// Dispatch by command
+			if (0 == cmd.compare("ls"))
+			{
+				vents.emplace_back(locurl);
+				continue;
+			}
+
+			if (0 == cmd.compare("special"))
+			{
+				std::string ftype = "unknown";
+				switch (dent->d_type)
+				{
+					case DT_BLK: ftype = "block"; break;
+					case DT_CHR: ftype = "char"; break;
+					case DT_DIR: ftype = "dir"; break;
+					case DT_FIFO: ftype = "fifo"; break;
+					case DT_LNK: ftype = "lnk"; break;
+					case DT_REG: ftype = "reg"; break;
+					case DT_SOCK: ftype = "sock"; break;
+					default: break;
+				}
+				ValueSeq vs({locurl});
+				vs.emplace_back(createStringValue(ftype));
+				vents.emplace_back(createLinkValue(vs));
+				continue;
+			}
+
+			// The remaining commands require performing a stat()
+			unsigned int mask = STATX_BTIME | STATX_MTIME | STATX_SIZE;
+			struct statx statxbuf;
+			int rc = statx(fd, dent->d_name, 0, mask, &statxbuf);
+			if (rc)
+			{
+				int norr = errno;
+				closedir(dir);
+				throw RuntimeException(TRACE_INFO,
+					"Location %s error: %s",
+					StringValueCast(locurl)->value()[0].c_str(),
+					strerror(norr));
+			}
+
+			ValueSeq vs({locurl});
+			if (0 == cmd.compare("btime"))
+			{
+				time_t epoch = statxbuf.stx_btime.tv_sec;
+				vs.emplace_back(createStringValue(
+					ctime(&epoch)));
+				vents.emplace_back(createLinkValue(vs));
+				continue;
+			}
+
+			if (0 == cmd.compare("mtime"))
+			{
+				time_t epoch = statxbuf.stx_mtime.tv_sec;
+				vs.emplace_back(createStringValue(
+					ctime(&epoch)));
+				vents.emplace_back(createLinkValue(vs));
+				continue;
+			}
+
+			if (0 == cmd.compare("filesize"))
+			{
+				vs.emplace_back(createFloatValue(
+					(double) statxbuf.stx_size));
+				vents.emplace_back(createLinkValue(vs));
+				continue;
+			}
+
+			// If we are here, its an unknown commans
+			closedir(dir);
+			throw RuntimeException(TRACE_INFO,
+				"Unknown command \"%s\"\n", cmd.c_str());
+		}
+		closedir(dir);
+		return createLinkValue(vents);
+	}
+
+	// Commands taking a single argument; in all cases, it *must*.
+	// be a file URL, presumably obtained percviously with `ls`.
 	cref = cmdref;
-	if (not cref->is_link() or cref->size() < 2)
+	if (not cref->is_link() or cref->size() != 2)
 		throw RuntimeException(TRACE_INFO,
-			"Expecting arguments: %s", cref->to_string().c_str());
+			"Expecting arguments; got %s", cref->to_string().c_str());
+
 	const Handle& arg1 = cref->getOutgoingAtom(1);
+	if (not arg1->is_node())
+		throw RuntimeException(TRACE_INFO,
+			"Expecting filepath; got %s", arg1->to_string().c_str());
+
+	const std::string& fpath = arg1->get_name();
+	if (fpath.compare(0, _pfxlen, _prefix))
+		throw RuntimeException(TRACE_INFO,
+			"Expecting file URL; got %s", arg1->to_string().c_str());
 
 	if (0 == cmd.compare("cd"))
 	{
-		if (not arg1->is_node())
-			throw RuntimeException(TRACE_INFO,
-				"Expecting filepath: %s", arg1->to_string().c_str());
-
-		const std::string& fpath = arg1->get_name();
-		if (fpath.compare(0, _pfxlen, _prefix))
-			throw RuntimeException(TRACE_INFO,
-				"Expecting filepath: %s", arg1->to_string().c_str());
-
 		_cwd = fpath;
 		return createStringValue(_cwd);
+	}
+
+	if (0 == cmd.compare("special"))
+	{
+	}
+
+	if (0 == cmd.compare("magic"))
+	{
 	}
 
 	throw RuntimeException(TRACE_INFO,
