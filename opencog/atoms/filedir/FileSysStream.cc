@@ -244,26 +244,35 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 		return createStringValue(_cwd);
 	}
 
-	// Commands taking arguments
+	// Commands taking a single argument; in all cases, it *must*.
+	// be a file URL, presumably obtained percviously with `ls`.
 	cref = cmdref;
-	if (not cref->is_link() or cref->size() < 2)
+	if (not cref->is_link() or cref->size() != 2)
 		throw RuntimeException(TRACE_INFO,
-			"Expecting arguments: %s", cref->to_string().c_str());
+			"Expecting arguments; got %s", cref->to_string().c_str());
+
 	const Handle& arg1 = cref->getOutgoingAtom(1);
+	if (not arg1->is_node())
+		throw RuntimeException(TRACE_INFO,
+			"Expecting filepath; got %s", arg1->to_string().c_str());
+
+	const std::string& fpath = arg1->get_name();
+	if (fpath.compare(0, _pfxlen, _prefix))
+		throw RuntimeException(TRACE_INFO,
+			"Expecting file URL; got %s", arg1->to_string().c_str());
 
 	if (0 == cmd.compare("cd"))
 	{
-		if (not arg1->is_node())
-			throw RuntimeException(TRACE_INFO,
-				"Expecting filepath: %s", arg1->to_string().c_str());
-
-		const std::string& fpath = arg1->get_name();
-		if (fpath.compare(0, _pfxlen, _prefix))
-			throw RuntimeException(TRACE_INFO,
-				"Expecting filepath: %s", arg1->to_string().c_str());
-
 		_cwd = fpath;
 		return createStringValue(_cwd);
+	}
+
+	if (0 == cmd.compare("special"))
+	{
+	}
+
+	if (0 == cmd.compare("magic"))
+	{
 	}
 
 	throw RuntimeException(TRACE_INFO,
