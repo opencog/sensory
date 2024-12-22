@@ -364,6 +364,9 @@ This glosses over several things. These are:
   then get the menu of places we can go to, from there.
 * The Write command is not usable until after the stream has been
   opened. Where is this encoded?
+* An error handling architecture. For example, attempting to `cd`
+  to a directory that does not exist, or getting a 'permission
+  denied' on opening a file.
 
 There's confusion about the what flows where on the IRC stream.
 Before the channel join, we can only issue IRC commands. After

@@ -228,6 +228,16 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 		const std::string& path = _cwd.substr(_pfxlen);
 		DIR* dir = opendir(path.c_str());
 
+		// XXX FIXME: for now, throw an error if the location cannot
+		// be opened. Some better long-term architecture is desired.
+		if (nullptr == dir)
+		{
+			int norr = errno;
+			throw RuntimeException(TRACE_INFO,
+				"Location %s inaccessible: %s",
+				path.c_str(), strerror(norr));
+		}
+
 		ValueSeq vents;
 		struct dirent* dent = readdir(dir);
 		while (dent)
