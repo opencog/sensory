@@ -24,6 +24,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h> // for strerror()
+#include <sys/stat.h>
 #include <sys/types.h>
 
 #include <opencog/util/exceptions.h>
@@ -31,6 +32,7 @@
 #include <opencog/atomspace/AtomSpace.h>
 #include <opencog/atoms/base/Link.h>
 #include <opencog/atoms/base/Node.h>
+#include <opencog/atoms/value/FloatValue.h>
 #include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atoms/value/StringValue.h>
 #include <opencog/atoms/value/ValueFactory.h>
@@ -115,6 +117,11 @@ void FileSysStream::init(const std::string& url)
 
 Handle _global_desc = Handle::UNDEFINED;
 
+// TODO: The below lists only enough of the commands to do the
+// basic wiring diagram work. There are additional commands,
+// supported i an ad hoc manner, so that the motor demos can
+// be developed. The motor demos are kind of independent of the
+// wiring demos (for now).
 void FileSysStream::do_describe(void)
 {
 	if (_global_desc) return;
@@ -245,11 +252,14 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 				path.c_str(), strerror(norr));
 		}
 
+		int fd = dirfd(dir);
+
 		ValueSeq vents;
 		struct dirent* dent = readdir(dir);
 		while (dent)
 		{
 			ValuePtr locurl = createStringValue(_cwd + "/" + + dent->d_name);
+
 			// Dispatch by command
 			if (0 == cmd.compare("ls"))
 				vents.emplace_back(locurl);
@@ -269,6 +279,42 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 				}
 				ValueSeq vs({locurl});
 				vs.emplace_back(createStringValue(ftype));
+				vents.emplace_back(createLinkValue(vs));
+			}
+			else
+			{
+				// The remaining commands require performing a stat()
+				struct stat statbuf;
+				int rc = fstatat(fd, dent->d_name, &statbuf, 0);
+				if (rc)
+				{
+					int norr = errno;
+					closedir(dir);
+					throw RuntimeException(TRACE_INFO,
+						"Location %s error: %s",
+						StringValueCast(locurl)->value()[0].c_str(),
+						strerror(norr));
+				}
+
+				ValueSeq vs({locurl});
+				if (0 == cmd.compare("mtime"))
+				{
+					vs.emplace_back(createStringValue(
+						ctime(&statbuf.st_mtime)));
+				}
+				else
+				if (0 == cmd.compare("filesize"))
+				{
+					vs.emplace_back(createFloatValue(
+						(double) statbuf.st_size ));
+				}
+				else
+				{
+					closedir(dir);
+					throw RuntimeException(TRACE_INFO,
+						"Unknown command \"%s\"\n", cmd.c_str());
+				}
+
 				vents.emplace_back(createLinkValue(vs));
 			}
 
