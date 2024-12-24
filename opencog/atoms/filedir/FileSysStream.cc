@@ -45,15 +45,30 @@ using namespace opencog;
 /// Under construction.
 /// The implementation here is attempting to follow the ideas sketched
 /// in opencog/atoms/irc/README.md
+///
+/// Descriptions of a few basic connectors are given.
+/// The rest have not been described.
+///
+/// There are half-a-dozen commands implemented, enough to
+/// make this stream semi-usable in a pseudo "real-world" app.
 
-FileSysStream::FileSysStream(const Handle& senso)
+FileSysStream::FileSysStream(const Handle& sensor)
 	: OutputStream(FILE_SYS_STREAM)
 {
-	if (SENSORY_NODE != senso->get_type())
-		throw RuntimeException(TRACE_INFO,
-			"Expecting SensoryNode, got %s\n", senso->to_string().c_str());
+	Handle senso(sensor);
 
-	init(senso->get_name());
+	// Execute now, so we can get the URL. Perhaps execution
+	// can be or should be defered till later?
+	if (senso->is_executable())
+		senso = HandleCast(senso->execute());
+
+	if (senso and senso->is_type(SENSORY_NODE))
+	{
+		init(senso->get_name());
+		return;
+	}
+	throw RuntimeException(TRACE_INFO,
+		"Expecting SensoryNode, got %s\n", sensor->to_string().c_str());
 }
 
 FileSysStream::FileSysStream(void)
