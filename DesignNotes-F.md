@@ -111,3 +111,8 @@ Atomese already as a `SequentialAndLink`, but it already has defined
 semantics, and repurposing it for stream processing seems wrong.
 Perhaps `ExecuteThreadedLink`, which has the desired semantics, I think?
 Atomese is complicated. Who came up with this shit?
+
+The problem with `ExecuteThreadedLink` is that it assumes a list or
+sequence as it's argument. But here, what we really want to do is to
+**apply** the `OpenLink` to each in a sequence.  Current Atomese does
+not have an `ApplyLink`. Sigh.
