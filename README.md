@@ -235,6 +235,18 @@ basic rewrite rules in Atomese is the one that moves Values into Atoms,
 storing them in the AtomSpace, and vice-versa, streams Atoms out of the
 AtomSpace, and into Values.
 
+Some generalizations and generalities: in chemistry, one has literal
+atoms, which, like tinker toys or jigsaw-puzzle pieces, can hook up one
+to the other, to form complex molecules. The process is recursive:
+certain complex molecules, such as DNA and protiens, can further hook up
+and participate in processing. The idea of hooking up and connecting is
+pervasive. It's in chemistry certainly, and obviously in mechanical
+linkages. One builds high-rises by connecting steel girders.
+
+One of the sub-goals of this project is to understand the generic,
+mathematical, philsophical nature of what it means to "hook things up",
+in full abstractness.
+
 
 Auto-wiring and theorem proving
 -------------------------------
@@ -345,6 +357,38 @@ given purpose. A collection of such trees is called a "random forest" or
 "decision tree forest", and, until a few years ago, random forests were
 competitive in the machine-learning industry, equaling the performance
 seen in deep-learning neural nets (DLNN).
+
+(Footnote: A collection of items, each given a score, is termed an
+["ensemble"](https://en.wikipedia.org/wiki/Ensemble_(mathematical_physics))
+in statistical physics. Thus, a
+[random forest](https://en.wikipedia.org/wiki/Random_forest),
+where each tree is assigned a real-number fitness score, is an
+ensemble of trees.  Ensembles are described by
+[partition functionss](https://en.wikipedia.org/wiki/Partition_function_(mathematics)):
+roughly, functions that tell you how many items there are having a given
+score. Partition functions tend to have a Gaussian (Bell curve)
+distribution, with the mean of the curve given by an
+[Action](https://en.wikipedia.org/wiki/Action_principles).
+This last is highly technical: the action describes not only the mean
+but also how neighboring items are related.  When the ensemble forms a
+continuum, the action can be used to obtain equations of motion; these
+are the
+[Hamilton-Jacobi equations](https://en.wikipedia.org/wiki/Hamilton%E2%80%93Jacobi_equation)
+There is a very rich theory surrounding these, everything from geodesics
+on Riemann surfaces to quantum field theory, with applications ranging
+from chemical reaction rates to petroleum exploration to
+measure-preserving dynamical systems. It is no accident that Bill Frist
+proposes free energy as the fundamental underlying theoretical principle
+that can be used to understand AGI or general intelligence.  The
+ensemble is a powerful concept, and when coupled to a fitness score and
+teh accompanying mathemetcial apparatus of Gibbs free energy and
+Boltzmann distributions, it aappears to be pervasive. The issue here is
+that we are still grasping at basic principles: the AtomSpace and Atomese
+allow for ensembles of representations of "mechanical parts" to be
+created, but it is not yet clear how to score them, how to create the
+Ising-like model of interacting, self-assembling components. We are
+still very far away from being able to write down a generic action for
+Atomese.)
 
 Deep learning now outperforms random forests. Can we (how can we) attach
 a DLNN system to the sensori-motor system being described here? Should
