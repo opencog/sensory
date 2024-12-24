@@ -58,3 +58,14 @@ into the file system will create even more.  This is OK if we've got
 multiple threads to do the work of looking, but probably wrong for a
 single-threaded process, which needs to serialize observations.
 But how?
+
+Decision-Making
+---------------
+The next obvious answer is that each directory in the listing, i.e. the
+`(StringValue "file:///etc/ldap")` should be passed to an examiner,
+which makes a go/no-go decision for how to act next. A go decision then
+results in a conversion of the `StringValue` to a `SensoryNode`, to
+which the `OpenLink` is applied. The decision is then a stream of
+directories to be examined. But this takes us back to where we started:
+the stream is just a `LinkValue`. I guess we could dress this up, and
+call it a `LinkStream` but ... Hmmm.
