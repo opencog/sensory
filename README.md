@@ -298,7 +298,7 @@ are worth mentioning.
   might supplement or replace old ones. Compilers also want a program,
   written in a high-level language, as input. In this project, we won't
   have such a program; our situation is closer too SOAR or ProLog or
-  theorem provers: we have a collection of jigsaws (insturction) to
+  theorem provers: we have a collection of jigsaws (instructions) to
   assemble, but no high-level program to specify that assembly.
 
 The above systems solve some of the aspects of what we want to do here,
@@ -327,6 +327,13 @@ tool, generating only valid linkages. The (human) user still had to
 select the "LG words" or "EDA parts", but LG/EDA does the rest,
 generating a "netlist" (in the case of EDA) or a "linkage" (in the case
 of LG).
+
+(Footnote:
+[Stimulus-response](https://en.wikipedia.org/wiki/Stimulus%E2%80%93response_model)
+is an old concept in psychology, dating back to Pavlov. SRAI is the name
+given to the rules used by the
+[AIML](https://en.wikipedia.org/wiki/Artificial_Intelligence_Markup_Language)
+chatbot language. The terminology is not accidental.)
 
 What if there is no human to guide parts selection and circuit design?
 You can't just give an EDA tool a BOM (Bill of Materials) and say
