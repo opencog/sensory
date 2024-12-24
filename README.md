@@ -125,8 +125,10 @@ when two parties connect.
 The experiment being done here, in this git repo, in this code-base, is
 to assign a type to a pipe. This replaces the earliest stages of
 protocol negotiation: if a system wishes only connect to pipes of type
-`FOO`, then it can know what is available a priori, by examining the
-connection types attached to that pipe. If they are
+`FOO`, then it can find out what is available by examining ("looking
+at") the pipe description. The pipe descrription is a disjoint list
+of connector types: types that caharacterize how a connection can be
+made.  If this list is
 `BAR+ or FOO+ or BLITZ+`, then we're good: the `or` is a disjunctive-or,
 a menu choice of what is being served on that pipe. Upon opening that
 pipe, some additional data descriptors might be served up, again in the
@@ -166,6 +168,73 @@ the actions that can be taken (move, open, ...) These connector-sets
 are "affordances" to the external world: they describe how an agent can
 work with the sensori-motor interface to "do things" in the external
 world.
+
+Wiring
+------
+The words "wiring", "wire up" and "connect up" are being used
+self-consciously.  This is what one does for electrical and electronic
+circuits; but it is also what is done for plumbing, say, for a chemical
+refining plant. One distinguishes the devices connected up, from the
+current flowing on the wires. The current itself has properties:
+different voltages, or, in the case of chemical processing, different
+substances.
+
+Wiring is conventionally done by specifying netlists: lists of what is
+connected to what, organized by type of wire. There's a multi-billion
+dollar industry dealing in
+[Electronic Design Automation (EDA)](https://en.wikipedia.org/wiki/Electronic_design_automation)
+tools. Prominant programming languages include
+[VHDL](https://en.wikipedia.org/wiki/VHDL) and
+[Verilog](https://en.wikipedia.org/wiki/Verilog) for digital circuits,
+and
+[SPICE](https://en.wikipedia.org/wiki/SPICE) for analog circuit design.
+Verilog has been adapted for mixed-signal design, and also for
+[synthetic biological circuits](https://en.wikipedia.org/wiki/Synthetic_biological_circuit),
+and so is relatively generic.
+
+This project is explicitly performing a kind of wiring, but it is using
+Atomese, not Verilog, for that wiring. Could this project be done in
+Verilog? Possibly. When Atomese was being invented, this wasn't
+foreseen.
+
+There is another example where "wiring" is commonly done: in
+[compilers](https://en.wikipedia.org/wiki/Compiler). A compiler takes a
+high-level language (C, C++, Java) and converts it to
+[assembly code](https://en.wikipedia.org/wiki/Assembly_language).
+Part of the magic of doing this is to describe CPU hardware, and
+specifically the assembly instructions, as if they were electronic
+devices, having inputs and generating outputs. The assembly instructions
+are then "wired up", so tht data flows correctly through them. Thus, for
+example, the ADD instruction has two inputs, one output, all of which
+are registers; the result must go into the register that the next
+instruction is expecting, or must be routed to memory.
+
+Examples of such data-flow descriptions include gcc's
+[Register Transfer Language (RTL)](https://en.wikipedia.org/wiki/Register_transfer_language)
+and [GIMPLE](https://gcc.gnu.org/onlinedocs/gccint/GIMPLE.html).
+There are many more: the idea of an
+[intermediate representation (IR)](https://en.wikipedia.org/wiki/Intermediate_representation)
+language is generic in programming language design.
+
+Just like Verilog is intended for electronic circuits, the IR langauges
+are intended for programming languages. Neither of these generalize very
+well to domains outside of their original specification. Atomese is
+attempting to be the superset or generalization of all of these
+different approaches to wiring. It is trying to capture the generic
+abstraction of "what is wiring" and "what does it mean to hook things
+together".
+
+Two side-comments: it is not an accident that Atomese resembles GCC's
+RTL. Both capture something fundamental about wiring. There is also
+another tickling analogy: Atomese Values are meant to be transient
+changing things, while Atoms in the AtomSpace are meant to be static,
+with the AtomSpace a repository, a database for these Atoms. This
+resembles the relatioship between CPU registers, where computation takes
+place, and system RAM, while holds and "remembers" stuff. One of the
+basic rewrite rules in Atomese is the one that moves Values into Atoms,
+storing them in the AtomSpace, and vice-versa, streams Atoms out of the
+AtomSpace, and into Values.
+
 
 Auto-wiring and theorem proving
 -------------------------------
