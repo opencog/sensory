@@ -106,6 +106,13 @@ can be understood as a mixed state of Bayesian priors. Hooking up is
 tensor contraction, weighted as a maxied state, so a different hookup
 for each "possible world" of the "many worlds". But I digress.
 
+At any rate, the concept of an
+[Action](https://en.wikipedia.org/wiki/Action_principles) is a powerful
+organizing principle. The action for electronic circuits and
+assembly-langauge instructions remains unknown. The generic action for
+sensori-motor systems done up in Atomese remains equally out of reach.
+
+
 Chatbots and Agents
 -------------------
 Returning to the base example. Consider adding a chatbot to this mix.

@@ -10,11 +10,11 @@ good. Raises the questions:
   write counts. Can we replace the matrix API, now? How?
 * Some of the atomese pipelines does things the matrix API used to do,
   like insert StoreValue in the chain. This is now done in the pipe.
-  How do we specifiy pipe properties how to hook them up that isn't
+  How do we specify pipe properties how to hook them up that isn't
   total ad hoc seat-of-the-pants stuff.
 
 The `LookatLink` can return the API, describable as always. Some of the
-API needs to only run once, to get a paramter, and not attach a stream.
+API needs to only run once, to get a parameter, and not attach a stream.
 So, if `WriteLink` attaches streams, maybe we can have `SendLink` to get
 short non-streaming things? For example, to find the correct location to
 store counts... or should there be a counting sensor, to which updated
@@ -32,7 +32,7 @@ verbosity? How are the connections formed? As in DesignNotes-C, we need
 a connection compiler to perform the actual hookup.
 
 Third alternative: half-way house, use the old matrix API (there's a lot
-there) and swap out perfomance critical bits on an as-needed bases. Kind
+there) and swap out performance critical bits on an as-needed bases. Kind
 of ugly, this last, but its easier!?
 
 Overview
@@ -58,7 +58,7 @@ asking: how does one do functional programming within a declarative
 language? The answer is "not very easily". The signature declarations
 along are insanely complicated and tedious. Building up the wiring
 system desired in part (4) will be a huge and complex task. And given
-the requied expenditure of effort, the question is "why bother?"
+the required expenditure of effort, the question is "why bother?"
 
 The answer is that I want to be able to build such processing pipelines
 using whiz-bangy higher-level algorithms. Some hand-wavey intersection
@@ -69,11 +69,11 @@ know, but the prerequisite is to be able to wire things up, and this
 prerueq is not yet satisfied.
 
 Asking any of these meta-layers to "describe" the circuit means that, at
-lower layers, the lanugage does have to a declarative language; if not
+lower layers, the language does have to a declarative language; if not
 Atomese, then something like it.
 
 The classical way of doing this is with a compiler: the program
-desciption is compiled into an executable; so here, the description
+description is compiled into an executable; so here, the description
 netlist, and the off-the-shelf library of pipeline pieces with their
 description are wired up.
 
@@ -82,7 +82,7 @@ compilation target? Because the current matrix API does not provide an
 interface definition (IDL, interface description language)
 https://en.wikipedia.org/wiki/Interface_description_language
 
-Why not use onf of the existing IDL's and taget that? Might get more
+Why not use onf of the existing IDL's and target that? Might get more
 mindshare that way? At the risk of fragility and inability to extend
 and progress, because those IDL's have design philosophies that are not
 aligned with the AtomSpace design goals and infrastructure. Effin A.

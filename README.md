@@ -183,7 +183,7 @@ Wiring is conventionally done by specifying netlists: lists of what is
 connected to what, organized by type of wire. There's a multi-billion
 dollar industry dealing in
 [Electronic Design Automation (EDA)](https://en.wikipedia.org/wiki/Electronic_design_automation)
-tools. Prominant programming languages include
+tools. Prominent programming languages include
 [VHDL](https://en.wikipedia.org/wiki/VHDL) and
 [Verilog](https://en.wikipedia.org/wiki/Verilog) for digital circuits,
 and
@@ -204,7 +204,7 @@ high-level language (C, C++, Java) and converts it to
 Part of the magic of doing this is to describe CPU hardware, and
 specifically the assembly instructions, as if they were electronic
 devices, having inputs and generating outputs. The assembly instructions
-are then "wired up", so tht data flows correctly through them. Thus, for
+are then "wired up", so that data flows correctly through them. Thus, for
 example, the ADD instruction has two inputs, one output, all of which
 are registers; the result must go into the register that the next
 instruction is expecting, or must be routed to memory.
@@ -216,7 +216,7 @@ There are many more: the idea of an
 [intermediate representation (IR)](https://en.wikipedia.org/wiki/Intermediate_representation)
 language is generic in programming language design.
 
-Just like Verilog is intended for electronic circuits, the IR langauges
+Just like Verilog is intended for electronic circuits, the IR languages
 are intended for programming languages. Neither of these generalize very
 well to domains outside of their original specification. Atomese is
 attempting to be the superset or generalization of all of these
@@ -364,7 +364,7 @@ in statistical physics. Thus, a
 [random forest](https://en.wikipedia.org/wiki/Random_forest),
 where each tree is assigned a real-number fitness score, is an
 ensemble of trees.  Ensembles are described by
-[partition functionss](https://en.wikipedia.org/wiki/Partition_function_(mathematics)):
+[partition functions](https://en.wikipedia.org/wiki/Partition_function_(mathematics)):
 roughly, functions that tell you how many items there are having a given
 score. Partition functions tend to have a Gaussian (Bell curve)
 distribution, with the mean of the curve given by an
@@ -377,11 +377,11 @@ are the
 There is a very rich theory surrounding these, everything from geodesics
 on Riemann surfaces to quantum field theory, with applications ranging
 from chemical reaction rates to petroleum exploration to
-measure-preserving dynamical systems. It is no accident that Bill Frist
+measure-preserving dynamical systems. It is no accident that Bill Friston
 proposes free energy as the fundamental underlying theoretical principle
 that can be used to understand AGI or general intelligence.  The
 ensemble is a powerful concept, and when coupled to a fitness score and
-teh accompanying mathemetcial apparatus of Gibbs free energy and
+the accompanying mathemetcial apparatus of Gibbs free energy and
 Boltzmann distributions, it aappears to be pervasive. The issue here is
 that we are still grasping at basic principles: the AtomSpace and Atomese
 allow for ensembles of representations of "mechanical parts" to be
