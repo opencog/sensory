@@ -67,5 +67,24 @@ which makes a go/no-go decision for how to act next. A go decision then
 results in a conversion of the `StringValue` to a `SensoryNode`, to
 which the `OpenLink` is applied. The decision is then a stream of
 directories to be examined. But this takes us back to where we started:
-the stream is just a `LinkValue`. I guess we could dress this up, and
-call it a `LinkStream` but ... Hmmm.
+the stream is just a `LinkValue`.
+
+This can be dressed up in one of several ways. One is to wrap it in
+`LinkStreamValue` instead of `LinkValue`. The streams have the implicit
+semantic interpretation of pesenting items in sequential order, i.e.
+time-like order, whereas a plain `LinkValue` is merely a list.
+That is, a Stream implicitly asks that you dequeue values one at a time,
+and process them as individual units.
+
+So far, this semantic is just implicit. The documentation encourages you
+to think this way, without actually coming out and insisting upon it.
+Perhaps it is time to come out? The alternaitve isw to invent yet
+another `Value`, some `SerializedSequenceOfItemsValue`, which is
+explicit about the need to serialize processing. But perhaps this is not
+needed, and the existing collection of `Stream`s are enough for current
+needs.
+
+So, how does this actually work? Again, we've now got:
+```
+(Open (Type 'SomeSensoryType) (Stream item, item item ...))
+```
