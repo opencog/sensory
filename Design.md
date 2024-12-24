@@ -33,6 +33,9 @@ design choices governing the system.
   (late-April 2024)
 * [Notes Part E](DesignNotes-E.md) -- Pipe and matrix ruminations.
   (early May 2024)
+* [Notes Part F](DesignNotes-F.md) -- Recursion, decision making.
+  How to perform recursive walks of observable networks.
+  (Christmas 2024)
 
 Current Implementation
 ----------------------
