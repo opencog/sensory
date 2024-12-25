@@ -108,13 +108,31 @@ the C++ code implementing `OpenLink`, where CPU overhead is minimized.
 
 Decision-Making
 ---------------
-The next obvious answer is that each directory in the listing, i.e. the
-`(StringValue "file:///etc/ldap")` should be passed to an examiner,
-which makes a go/no-go decision for how to act next. A go decision then
-results in a conversion of the `StringValue` to a `SensoryNode`, to
-which the `OpenLink` is applied. The decision is then a stream of
-directories to be examined. But this takes us back to where we started:
-the stream is just a `LinkValue`.
+The Filter-Rule combination uses the Filter recognizer pattern to
+perform a simple go/no-go decision: either the recognizer pattern is
+matched, or it is not. What to do if additional decision-making is
+desired? Some design choices below.
+
+### Fancy rewrite patterns
+Additional decision-making can be done directly in the rewrite pattern,
+using the `CondLink`, for example. Thus,
+```
+   (Cond
+      (Equal (Variable "$file-type") (Node "dir"))
+      (Open (Variable "$file-name")))
+```
+assumes that there were two variables provided by the input pattern:
+the file name and the file type; if the type is a dir, then the
+directory is opened, else a null pointer is generated. I think the
+`FilterLink` interprets null pointers as something to be ignored, and
+just moves to the next item in the input. An alternative might be to
+generate a `VoidValue`, but this should probably be reserved for when
+actual void values are really needed for something.
+
+### Decision Rules
+Another alternativ
+
+
 
 
 Sequencing
