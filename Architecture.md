@@ -309,6 +309,38 @@ So, of course, you have to solve a network design and dataflow problem.
 It has to be solved in such a way that the devops people can do their
 job. And so onwards ho the march of technology.
 
+### UML
+The [Unified Modeling Language](https://en.wikipedia.org/wiki/Unified_Modeling_Language)
+provides a diagramatic system for describing process flows that occur
+in software design. It is broad enough to have been extended to other
+industrial process flows, but with limited sccess. As a graphical,
+visual notation for describing systems, helping human engineers
+understand the systems they are working with, it enjoyed some limited
+success.
+
+One issue is that there's no automation per-se: software does not turn
+into UML, or vice-versa. There's no one-to-one correspondence, and the
+diagrams are ultimately hand-drawn. The diagrams are also a bit
+inscrutable: yes, there are labelled boxes with interconnecting lines
+drawn between them but what do those circles and triangles mean? Go
+forbid you draw a circle where a triangle was intended.  Expending this
+kind of mental effort to draw UML seems a bit much. Compare to drawing
+electrical or electronic circuits correctly: the effort is worth it,
+because there is an actual physical system that corresponds,
+more-or-less one-to-one, to the diagram.
+
+But even then: designing electronics with diagrams is hard, once one
+gets past a certain size. Both VHDL and Verilog turn electronic circuit
+design into an act of programming resembling conventional software
+programming.  Using UML to convert software into diagrams is a
+technology that runs counter to natural human abilities. Yes, we think
+visually, but only up to a certain scale.
+
+For large systems, the visual field gets too busy, and the forest gets
+lost but for the trees. For small systems, where one is an expert, the
+compact notation provided by programming languages is easier to work
+with precisely because it is more compact and dense.
+
 ### Missing Concepts
 The above systems seem to be missing several desirable properties:
 
