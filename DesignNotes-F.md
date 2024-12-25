@@ -1,5 +1,5 @@
 Recursion
----------
+=========
 Observation is naturally recursive. When one looks, one typically sees
 many items. Now what? Some of these need to be examined in greater
 detail. This is "action selection", narrowed to the task of "looking".
@@ -20,7 +20,9 @@ only, once gets back
   (StringValue "file:///etc/lvm"))
 ```
 and so on.  In the current design, these can only be examined if
-converted to `SensoryNode`. The conversion is easy; one gets
+converted to `SensoryNode`. The conversion is easy; it can be done
+by a `Filter` `Rule` that accepts sole StringValues as items, and rewrites
+them with `StringOf`. One gets
 ```
 (LinkValue
    (SensoryNode "file:///etc/vim")
@@ -30,10 +32,14 @@ converted to `SensoryNode`. The conversion is easy; one gets
    (SensoryNode "file:///etc/lvm"))
 ```
 Next, one wishes to apply `OpenLink` to each of these, so as to observe
-what's in there. How should this be done?
+what's in there. How should this be done? Some design and implementation
+choices are pondered below.
 
-The easy (but probably wrong) design decision is to allow `OpenLink` to
-act on lists like these. Thus, one design choice is to allow
+Auto unwrapping
+---------------
+The easy (but wrong) design decision is to implement `OpenLink` so
+that it automatically distributes over lists.  Thus, one design choice
+is to have
 ```
 (OpenLink (Type 'FileSysStream)
    (LinkValue
@@ -52,12 +58,53 @@ to return
 )
 ```
 Thus, if we imagine a `SensoryNode` to be an eyeball, and an open
-sensroy node to be an eye looking at a specific thing, then the above
+sensory node to be an eye looking at a specific thing, then the above
 has created a rather large number of eyeballs, and resursive descent
-into the file system will create even more.  This is OK if we've got
-multiple threads to do the work of looking, but probably wrong for a
-single-threaded process, which needs to serialize observations.
-But how?
+into the file system will create even more.  Its a bit of a fork-bomb.
+It should probably not be built in as an automatic list iterator inside
+of the `OpenLink`.
+
+Filter rewriting
+----------------
+Fortunately, there already is a list iterator: the `FilterLink`.
+It makes the default assumption that it is given a sequence of items,
+and that the filter is to be applied to each item (sequentaily).
+
+In this project, the filters are almost always going to be `RuleLink`s,
+because they provide a reasonable way of specifying rewriting.
+`RuleLink`s, when combined with a filter, have two parts. The input
+pattern to a rule acts as a go/no-go decision maker: the rule is
+applied, only if the pattern matches. Then, variables in the pattern
+are grounded on the inputs, which are used in the rule's output
+(rewrite) pattern.
+
+For the problem proposed above, the acceptance pattern to the rue is
+easy:
+```
+   (VariableNode "$item")
+```
+This will match anything at all.  The output rewrite is then
+```
+   (Open (Type 'FileSysStream)
+      (StringOf (Type 'SensoryNode) (Variable "$item")))
+```
+Assuming the items are `StringValue`s (or `Node`s), the `StringOf`
+will mint a single `SensoryNode` corresponding to that item. The
+`Open` will then mint a `FileSysStream` value.  This produces the
+desired result: a list of `StringValue`s (holding directory names)
+have been converted into a list of open streams.
+
+If the input item is not a node or string, the `StringOf` will throw an
+exception. If the `SensoryNode` is not a directory, or it is a path
+that is not in the file system, or if it is an invalidly-formatted URL,
+then `OpenLink` will throw an exception.
+
+We don't have an exception-handling architecture, yet. However,
+exceptions do seem like the correct approach: the input pattern could
+have performed validation on the input, but this just wastes CPU cycles
+when the input is clean. Exceptions hide any manditory checking in
+the C++ code implementing `OpenLink`, where CPU overhead is minimized.
+
 
 Decision-Making
 ---------------
@@ -69,25 +116,6 @@ which the `OpenLink` is applied. The decision is then a stream of
 directories to be examined. But this takes us back to where we started:
 the stream is just a `LinkValue`.
 
-This can be dressed up in one of several ways. One is to wrap it in
-`LinkStreamValue` instead of `LinkValue`. The streams have the implicit
-semantic interpretation of pesenting items in sequential order, i.e.
-time-like order, whereas a plain `LinkValue` is merely a list.
-That is, a Stream implicitly asks that you dequeue values one at a time,
-and process them as individual units.
-
-So far, this semantic is just implicit. The documentation encourages you
-to think this way, without actually coming out and insisting upon it.
-Perhaps it is time to come out? The alternaitve isw to invent yet
-another `Value`, some `SerializedSequenceOfItemsValue`, which is
-explicit about the need to serialize processing. But perhaps this is not
-needed, and the existing collection of `Stream`s are enough for current
-needs.
-
-So, how does this actually work? Again, we've now got:
-```
-(Open (Type 'SomeSensoryType) (Stream item, item item ...))
-```
 
 Sequencing
 ----------
