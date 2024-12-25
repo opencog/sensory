@@ -159,31 +159,11 @@ which would then be combined with a vector of output rewrite patterns.
 But Atomese already has a collection of vector-processing Atoms, and
 creating some new, sideways interpretation here seems wrong.
 
+Parallelism
+-----------
+Short reminder: the `ExecuteThreadedLink` can take a sequence and run it
+in multpile threads. This should be enough to dissipate an concerns
+about serialization, sequencing and parallelism.
 
-Sequencing
-----------
-Here's the confusion. With a text stream, say, the IRC chat channel, or
-the xterm TTY, once a connection is made, the flowing items are text,
-and are explicitly handled line at a time. When some text shows up on an
-IRC channel, it shows up, and you process it, else you wait for more.
-
-Here, its recursive: the stream is a stream of sensory nodes.  Openening
-each crates a new stream. Which must then be processed. Either in
-serial, or in parallel. Lets do serial, first.
-
-Do we need some kind of ProccessNode or ProcessLink or RunLink that,
-when executed, runs the items in it's queue in serial or parallel?
-That is, all examples until now used `(cog-execute! foo)` and it would
-run the single thing `foo` which is typically just a single process
-stream, of the form `(Write (Open ...) stuff)`. It seems that we now
-need a `ForEachExecuteLink` to explicitly run each pending stream.
-
-Atomese already as a `SequentialAndLink`, but it already has defined
-semantics, and repurposing it for stream processing seems wrong.
-Perhaps `ExecuteThreadedLink`, which has the desired semantics, I think?
-Atomese is complicated. Who came up with this shit?
-
-The problem with `ExecuteThreadedLink` is that it assumes a list or
-sequence as it's argument. But here, what we really want to do is to
-**apply** the `OpenLink` to each in a sequence.  Current Atomese does
-not have an `ApplyLink`. Sigh.
+Recursion
+---------
