@@ -130,9 +130,34 @@ generate a `VoidValue`, but this should probably be reserved for when
 actual void values are really needed for something.
 
 ### Decision Rules
-Another alternativ
+An alternative is to invent a new kind of rule, that has an explicit
+slot for a decision-maker. Currently, rules are of the form
+```
+(RuleLink
+   <variable declarations>
+   <input-match pattern>
+   <output-rewrite pattern>)
+```
+The proposal is to define
+```
+(DecisionRuleLink
+   <variable declarations>
+   <input-match pattern>
+   <evaluatable clause>
+   <output-rewrite pattern>)
+```
+where the `<evaluatable clause>` is any Atom that is evaluatable, and
+returns a TV that can ultimately be interpreted as true/false.
 
+This does not seem to offer any advantage over the use of a `CondLink`,
+shown above, and is in some ways worse: the `CondLink` can process a
+sequence of conditionals, whereas the evaluatable clause delivers a
+single yes/no decision.
 
+One could arrange the evaluatable clause to return a boolean vector,
+which would then be combined with a vector of output rewrite patterns.
+But Atomese already has a collection of vector-processing Atoms, and
+creating some new, sideways interpretation here seems wrong.
 
 
 Sequencing
