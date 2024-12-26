@@ -167,4 +167,33 @@ about serialization, sequencing and parallelism.
 
 Recursion
 ---------
-With the above out of the way, `FeedbackLink` and ... recursive Filter.
+With the above out of the way, we can finally tackle recursion. How?
+Given a stream anchored at an Atom-Key location, that stream can be
+processed, and the results placed at that same Atom-Key location. Thus,
+calling `cog-execute!` once goes one level deep in the recursion.
+Several design issues arise:
+
+* Instead of using a specific anchoring location, can there be some
+  `FeedbackLink`  that explicitly wires the output back into the input?
+  The short answer seems to be "no". Contemplating the implementation
+  of such a link seems to necessitate some hidden, private variant
+  of an anchor, and it we're going to do that, then why bother with the
+  complexity of hiding it?
+
+* There does seem to be a need for a `ConcatenateLink` of some kind,
+  a way of flattening a list-of-lists, down to a single list. The need
+  for this arises in the recursion step: a single item (e.g. the name
+  of a directory) is turned into a list. A list of items becomes a list
+  of lists. If the recursive filter is to be applied, this list of lists
+  needs to be flattened. Perhaps List append? Maybe fold-list-nil?
+
+* Running `cog-execute!` once just takes one step in the processing.
+  Atomese does not currently have any direct form of "do until done"
+  structures, although this can be emulated using two techniques.
+  There is a tail-call example in the main AtomSpace examples dir,
+  and also a recursive pattern matching example. How to adaptt these
+  to filter chains is not yet clear.
+
+* Unix directory listings contain both `.` and `..` directories, and
+  recursing on these will lead to infinite loops. How is this to be
+  avoided?
