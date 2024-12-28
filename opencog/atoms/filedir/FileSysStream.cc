@@ -227,7 +227,29 @@ void FileSysStream::update() const
 }
 
 // ==============================================================
+// helper
 
+static ValuePtr make_stream_dirent(struct dirent* dent,
+                                   const ValuePtr& locurl)
+{
+	std::string ftype = "unknown";
+	switch (dent->d_type)
+	{
+		case DT_BLK: ftype = "block"; break;
+		case DT_CHR: ftype = "char"; break;
+		case DT_DIR: ftype = "dir"; break;
+		case DT_FIFO: ftype = "fifo"; break;
+		case DT_LNK: ftype = "lnk"; break;
+		case DT_REG: ftype = "reg"; break;
+		case DT_SOCK: ftype = "sock"; break;
+		default: break;
+	}
+	ValueSeq vs({locurl});
+	vs.emplace_back(createStringValue(ftype));
+	return createLinkValue(vs);
+}
+
+// ==============================================================
 // Process a command.
 ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
                                   const Handle& cmdref)
@@ -284,21 +306,7 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 
 			if (0 == cmd.compare("special"))
 			{
-				std::string ftype = "unknown";
-				switch (dent->d_type)
-				{
-					case DT_BLK: ftype = "block"; break;
-					case DT_CHR: ftype = "char"; break;
-					case DT_DIR: ftype = "dir"; break;
-					case DT_FIFO: ftype = "fifo"; break;
-					case DT_LNK: ftype = "lnk"; break;
-					case DT_REG: ftype = "reg"; break;
-					case DT_SOCK: ftype = "sock"; break;
-					default: break;
-				}
-				ValueSeq vs({locurl});
-				vs.emplace_back(createStringValue(ftype));
-				vents.emplace_back(createLinkValue(vs));
+				vents.emplace_back(make_stream_dirent(dent, locurl));
 				continue;
 			}
 
@@ -353,7 +361,7 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 	}
 
 	// Commands taking a single argument; in all cases, it *must*.
-	// be a file URL, presumably obtained percviously with `ls`.
+	// be a file URL, presumably obtained previously with `ls`.
 	cref = cmdref;
 	if (not cref->is_link() or cref->size() != 2)
 		throw RuntimeException(TRACE_INFO,
