@@ -300,6 +300,22 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 		struct dirent* dent = readdir(dir);
 		for (; dent; dent = readdir(dir))
 		{
+			// Vague attempt to avoid infinite loops during recursion.
+			// Directory listing is a recursive process, and recursively
+			// descending into the "." directory is an infinite loop.
+			// In principle, the agent should not do this. In practice,
+			// the current agent architecture is not sophisticated
+			// enough to handle this case cleanly. So, for now, as a
+			// quick hack, disable the "." and ".." directories.
+			// This is not enough for the general case, because
+			// softlinks can create loops, and we follow softlinks.
+			// Nor is this meant to be an inescapable gaol; soft links
+			// might send us off into wild territories. For now, just
+			// relax and go with the flow. We'll fix problems later.
+			// XXX FIXME the problem above, later.
+			if (0 == strcmp(dent->d_name, ".")) continue;
+			if (0 == strcmp(dent->d_name, "..")) continue;
+
 			ValuePtr locurl = createStringValue(_cwd + "/" + + dent->d_name);
 
 			// Dispatch by command
