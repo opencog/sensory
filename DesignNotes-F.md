@@ -185,7 +185,8 @@ Several design issues arise:
   for this arises in the recursion step: a single item (e.g. the name
   of a directory) is turned into a list. A list of items becomes a list
   of lists. If the recursive filter is to be applied, this list of lists
-  needs to be flattened. Perhaps List append? Maybe fold-list-nil?
+  needs to be flattened. Are there other ways of doing this? Perhaps
+  append? Maybe fold-list-nil? apply-append?
 
 * Running `cog-execute!` once just takes one step in the processing.
   Atomese does not currently have any direct form of "do until done"
@@ -197,3 +198,9 @@ Several design issues arise:
 * Unix directory listings contain both `.` and `..` directories, and
   recursing on these will lead to infinite loops. How is this to be
   avoided?
+
+* File permissions means that some files and directories will be
+  unaccessible. This is handled by having the the `FileSysStream`
+  throw exceptions for these cases. A design strategy is needed for
+  excpetion handling. For now, having `WriteLink` try and catch seems
+  like an OK solution.
