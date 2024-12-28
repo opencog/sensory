@@ -197,7 +197,10 @@ Several design issues arise:
 
 * Unix directory listings contain both `.` and `..` directories, and
   recursing on these will lead to infinite loops. How is this to be
-  avoided?
+  avoided? In the short-term, during bringup, by explicitly skipping
+  them in the directory traversal. Long term, when a motor control
+  architecture is sufficiently advanced, the controller itself should
+  be able to avoid such obvious inf loops and unintended crawls.
 
 * File permissions means that some files and directories will be
   unaccessible. This is handled by having the the `FileSysStream`
