@@ -33,4 +33,9 @@ You read that right. A skanky old xterm. It works, its super-simple
 to code up, and is more than enough to solve all the other research
 goals in this project. And so there it is. Brutish but servicable.
 
+One thing that `xterm` does that other terminals do not do is that you
+can attach it directly to `/dev/pts/NN` with the `-S` flag. Other
+(modern) terminals do not do this. Looking at you, `mate-terminal`.
+At any rate, this is "for demo purposes only", and not for production.
+
 -----------------------------------
