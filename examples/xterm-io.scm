@@ -2,7 +2,7 @@
 ; xterm-io.scm -- xterminal I/O demo
 ;
 ; Demo showing how to interact directly with the text I/O subsystem,
-; via an old-fashioned xterm.
+; via an old-fashioned xterm. (Be sure to install xterm, first!)
 ;
 ; The xterm interface is the simplest-possible non-null device. It has
 ; only four valid operations: Lookat, Open, (read) and Write. There is
@@ -24,7 +24,8 @@
 ; --------------------------------------------------------
 ; Create an xterm for direct I/O. Executing the OpenLink will return
 ; a stream value that deliver text strings typed into the xterm window,
-; and can print text to that window.
+; and can print text to that window. Be sure that xterm is installed,
+; else this won't work!
 (define term-stream
 	(cog-execute! (Open (Type 'TerminalStream))))
 
