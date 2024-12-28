@@ -388,8 +388,24 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 		return createStringValue(_cwd);
 	}
 
+	// Get dirent info for a single directory.
+	// XXX borken for files. Needs fixin.
 	if (0 == cmd.compare("special"))
 	{
+		const std::string& path = fpath.substr(_pfxlen);
+		DIR* dir = do_opendir(path.c_str());
+
+		ValueSeq vents;
+		struct dirent* dent = readdir(dir);
+		for (; dent; dent = readdir(dir))
+		{
+			if (strcmp(dent->d_name, ".")) continue;
+			ValuePtr locurl = createStringValue(fpath);
+			vents.emplace_back(make_stream_dirent(dent, locurl));
+			break;
+		}
+		closedir(dir);
+		return createLinkValue(vents);
 	}
 
 	if (0 == cmd.compare("magic"))
