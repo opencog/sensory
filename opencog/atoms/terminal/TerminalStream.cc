@@ -150,7 +150,7 @@ void TerminalStream::do_describe(void)
 
 	HandleSeq cmds;
 
-	// Desribe exactly how to Open this stream.
+	// Describe exactly how to Open this stream.
 	// It needs no special arguments.
 	Handle open_cmd =
 		createLink(SECTION,

@@ -4,8 +4,9 @@ Interacting with a Unix pty terminal. So, like IRC, but a lot simpler.
 
 Examples
 --------
-None yet. 
-See the [examples](../../../examples) directory.
+Two. The `xterm-io.scm` shows basic usage, while `xterm-bridge.scm`
+shows two of them, each echoing the other. Both examples are in the
+[examples](../../../examples) directory.
 
 Design
 ------
@@ -24,8 +25,8 @@ lot of work for little gain.
 
 A different design alternative is to build a telnet server, and tell
 everyone to telnet into it. This is a classic design point, I've done it
-too mmany times in my life so, and its not that interesting, and is not
-needed, its overkill for the intended research. Mybe some other day.
+too many times in my life so, and its not that interesting, and is not
+needed, its overkill for the intended research. Maybe some other day.
 
 The final design is brute-force stupid but ugly: open a slave xterm.
 You read that right. A skanky old xterm. It works, its super-simple
