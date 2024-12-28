@@ -37,7 +37,7 @@ term-stream
 term-stream
 term-stream
 
-; Typing a ctrl-D into ther terminal will close it, returning an empty
+; Typing a ctrl-D into the terminal will close it, returning an empty
 ; stream. (aka "end of file")
 
 ; A WriteLink consists of two parts: where to write, and what

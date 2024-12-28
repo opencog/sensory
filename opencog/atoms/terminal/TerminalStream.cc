@@ -123,11 +123,18 @@ void TerminalStream::init(void)
 	// Insane old-school hackery
 	_xterm_pid = fork();
 	if (-1 == _xterm_pid)
-		throw RuntimeException(TRACE_INFO, "Failed to fork %d %s",
+		throw RuntimeException(TRACE_INFO, "Failed to fork: (%d) %s",
 			errno, strerror(errno));
 
 	if (0 == _xterm_pid)
+	{
 		execl("/usr/bin/xterm", "xterm", ccn.c_str(), (char *) NULL);
+		fprintf(stderr, "%s: line %d\n", __FILE__, __LINE__);
+		fprintf(stderr, "Failed to start /usr/bin/xterm: (%d) %s\n",
+			errno, strerror(errno));
+		fprintf(stderr, "Make sure that xterm is installed!\n");
+		exit(1);
+	}
 
 	printf("Created xterm pid=%d\n", _xterm_pid);
 
