@@ -142,15 +142,3 @@ ValuePtr OutputStream::do_write_out(AtomSpace* as, bool silent,
 }
 
 // ==============================================================
-
-bool OutputStream::operator==(const Value& other) const
-{
-	// Derived classes use this, so use get_type()
-	if (get_type() != other.get_type()) return false;
-
-	if (this == &other) return true;
-
-	return LinkValue::operator==(other);
-}
-
-// ==============================================================

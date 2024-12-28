@@ -51,9 +51,6 @@ public:
 	virtual ~OutputStream();
 	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&) = 0;
 	virtual ValuePtr describe(AtomSpace*, bool) = 0;
-
-	// XXX Do we really need this?
-	virtual bool operator==(const Value&) const;
 };
 
 typedef std::shared_ptr<OutputStream> OutputStreamPtr;
