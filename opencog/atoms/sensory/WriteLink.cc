@@ -21,6 +21,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include <opencog/atoms/value/VoidValue.h>
+#include <opencog/util/exceptions.h>
+
 #include "WriteLink.h"
 #include "OutputStream.h"
 
@@ -72,7 +75,20 @@ ValuePtr WriteLink::execute(AtomSpace* as, bool silent)
 		throw RuntimeException(TRACE_INFO,
 			"Expecting an OutputStream, got %s", pap->to_string().c_str());
 
-	return ost->write_out(as, silent, _outgoing[1]);
+	// XXX FIXME. Some sensory nodes, e.g. FileSysStream, will throw
+	// exceptions when e.g. file permissions disallow some action.
+	// Long term architecture should probably be to pass these up
+	// to higher layers for processing. For now, we don't have that
+	// in place, so instead, just suppress the exception. This
+	// should change, someday.
+	try
+	{
+		return ost->write_out(as, silent, _outgoing[1]);
+	}
+	catch (const StandardException& ex)
+	{
+		return createVoidValue();
+	}
 }
 
 DEFINE_LINK_FACTORY(WriteLink, WRITE_LINK)
