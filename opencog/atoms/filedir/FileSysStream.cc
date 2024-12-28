@@ -227,7 +227,23 @@ void FileSysStream::update() const
 }
 
 // ==============================================================
-// helper
+// helpers
+static DIR* do_opendir(const std::string& path)
+{
+	DIR* dir = opendir(path.c_str());
+
+	// XXX FIXME: for now, throw an error if the location cannot
+	// be opened. Some better long-term architecture is desired.
+	if (nullptr == dir)
+	{
+		int norr = errno;
+		throw RuntimeException(TRACE_INFO,
+			"Location %s inaccessible: %s",
+			path.c_str(), strerror(norr));
+	}
+	return dir;
+}
+
 
 static ValuePtr make_stream_dirent(struct dirent* dent,
                                    const ValuePtr& locurl)
@@ -277,18 +293,7 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 	if (1 == cmdref->size())
 	{
 		const std::string& path = _cwd.substr(_pfxlen);
-		DIR* dir = opendir(path.c_str());
-
-		// XXX FIXME: for now, throw an error if the location cannot
-		// be opened. Some better long-term architecture is desired.
-		if (nullptr == dir)
-		{
-			int norr = errno;
-			throw RuntimeException(TRACE_INFO,
-				"Location %s inaccessible: %s",
-				path.c_str(), strerror(norr));
-		}
-
+		DIR* dir = do_opendir(path.c_str());
 		int fd = dirfd(dir);
 
 		ValueSeq vents;
