@@ -62,7 +62,8 @@ The `OpenLink` API is
 The `TypeNode` must indicate a valid Atomese type that can be created.
 The `SensoryNode` is just some text passed into the stream constructor.
 
-Currently supported are `TextFileStream` and `IRChatStream`
+Currently supported are `TextFileStream`, `TerminalStream` and
+`IRChatStream`.
 
 The `WriteLink` API is
 ```
@@ -110,9 +111,12 @@ TODO List
 ---------
 * The text API should probably be changed to use StringValue instead
   of ItemNode. But this breaks LG parser, for now. FIXME
+  See [Design Notes G](DesignNotes-G.md) for more.
 * The text file reader should probably throw on end-of-file, instead
   of returning empty content. This would allow intermediate processors
   to have an easier time of it.
+* An exception-handling architecture is needed.
+* Probably need a `CloseLink`.
 * The concurrent queue should be changed to finite-size buffer and
   discard old data. Goal is to avoid unbounded-size chat buffers.
 * The NICK command gets a badly-parsed response if the nick is in use.
