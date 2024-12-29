@@ -76,6 +76,25 @@ with `TerminalStream` being of type `LinkStream` which is of type
 the stream itself has to be unwrapped. So automating this unwrap makes
 Atomese decision/control expressions a bit more usable.
 
+### Design Alternative C
+This is more-or-less identical to proposal B above, with the additional
+recognition that the general for of stream compares is actually
+unification. The wiki page
+[UnifierLink](https://wiki.opencog.org/w/UnfierLink] explains
+unification. The primary issue is that the `UnifierLink` was
+designed to crawl the entire AtomSpace. That wiki page also points
+out that the `FilterLink` (with `RuleLink`) can be used to perform
+a kind of stream notification. The output is a set of groundings for the
+variables in the expressions that were unified. For `StreamEqual`
+none of that is needed. Just a yes/no answer. Thus,
+`(StreamEqual A B)` is essentially the same as
+```
+   (Not (Equal (Number 0) (SizeOf (Unifier A B))))
+```
+which is obviously more verbose. That, plus `UnifierLink` was never
+designed to work on streams, so even more work would be needed to
+get that right. Conclude: A stand-alone `StreamEqual` is the way to go.
+
 ### Conclusion
 Do both. It seems inevitable that streams will need to get configuration
 and control parameters from somewhere, so Alternative A will ultimately

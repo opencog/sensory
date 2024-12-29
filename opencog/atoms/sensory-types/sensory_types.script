@@ -34,3 +34,7 @@ OPEN_LINK <- EXECUTABLE_LINK
 
 // Calling execute() writes to output device.
 WRITE_LINK <- EXECUTABLE_LINK
+
+// General utility glue. Compare two streams, with some limited
+// amount of auto type conversion and maybe someday unification.
+STREAM_EQUAL_LINK <- EQUAL_LINK
