@@ -237,7 +237,7 @@ void TerminalStream::update() const
 	}
 
 	_value.resize(1);
-	_value[0] = createNode(ITEM_NODE, buff);
+	_value[0] = createStringValue(buff);
 }
 
 // ==============================================================
