@@ -49,7 +49,9 @@ StreamEqualLink::StreamEqualLink(const Handle& ha, const Handle& hb)
 
 void StreamEqualLink::init(void)
 {
-	// Nothing, right now.
+	if (_outgoing.size() < 2)
+		throw RuntimeException(TRACE_INFO,
+			"Compare of more than two stream items not implemented.");
 }
 
 // ---------------------------------------------------------------
@@ -88,10 +90,31 @@ bool StreamEqualLink::bevaluate(AtomSpace* as, bool silent)
 			comps.push_back(ho);
 	}
 
-	const ValuePtr& vbase = comps[0];
-	for (size_t i=1; i< comps.size(); i++)
+	ValuePtr vpa = comps[0];
+	ValuePtr vpb = comps[1];
+
+	// Sort. Nodes come first.
+	if (vpb->is_node()) vpb.swap(vpa);
+
+	// Do string compares, ignoring node type.
+	if (vpa->is_node())
 	{
-		const ValuePtr& vp = comps[i];
+		if (vpb->is_node())
+		{
+			const std::string& na(HandleCast(vpa)->get_name());
+			const std::string& nb(HandleCast(vpb)->get_name());
+			return 0 == na.compare(nb);
+		}
+		if (not vpb->is_type(STRING_VALUE))
+			return false;
+
+		StringValuePtr svp(StringValueCast(vpb));
+		if (1 < svp->size())
+			return false;
+
+		const std::string& na(HandleCast(vpa)->get_name());
+		const std::string& nb(svp->value()[0]);
+		return 0 == na.compare(nb);
 	}
 
 	return true;
