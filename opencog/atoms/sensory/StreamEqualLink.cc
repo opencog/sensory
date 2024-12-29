@@ -52,9 +52,14 @@ void StreamEqualLink::init(void)
 
 // ---------------------------------------------------------------
 
-/// When evaluated, compare the streams, while papering over any
-/// cracks that appear. The goal is to provide some easy-to-use
-/// crack-pipe conversions. I was tired when I wrote this.
+/// When evaluated, compare the first item in a stream to an Atom,
+/// of the first item in two different streams.  StringValue to
+/// Node name compares succeed, if the actual strings match; the
+/// Node type is discarded.
+///
+/// For just right now, only the first item in the stream is compared.
+/// Recursion would need to be used to perform deeper compares. This
+/// is a problem, if the stream is not line-buffered.
 bool StreamEqualLink::bevaluate(AtomSpace* as, bool silent)
 {
 	// Self-equality is trivially true. Or we could throw an
@@ -66,10 +71,17 @@ bool StreamEqualLink::bevaluate(AtomSpace* as, bool silent)
 	for (const Handle& ho: _outgoing)
 	{
 		if (ho->is_executable())
+		{
+			ValuePtr vp = ho->execute(as, silent);
+			if (vp->is_type(LINK_STREAM))
+				vp = 
 			comps.push_back(ho->execute(as, silent));
+		}
 		else
 			comps.push_back(ho);
 	}
+
+	for (const ValuePtr& vp
 
 	return true;
 }

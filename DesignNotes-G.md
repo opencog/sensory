@@ -57,13 +57,13 @@ Run-time reconfig is dangerous, for obvious reasons.
 ### Design Alternative B
 Auto type conversion during stream contents compare. That is, provide
 a `StreamEqaulLink` that is like the `EqualLink`, but unwraps the stream
-and then does some amout of automatic type conversion.
+and then does some amount of automatic type conversion.
 
 This solves two issues at once.  First, the verbose
 ```
 	(Equal input-loc (LinkSignature (Type 'LinkValue) (Item "xxx\n")))
 ```
-by the more svelte
+is replaced by the more svelte
 ```
 	(StreamEqual input-loc (Item "xxx\n"))
 ```
@@ -76,7 +76,25 @@ with `TerminalStream` being of type `LinkStream` which is of type
 the stream itself has to be unwrapped. So automating this unwrap makes
 Atomese decision/control expressions a bit more usable.
 
-### Design Alternative C
+### Buffering issues
+In this example, the terminal stream delivers one item, and one item
+only, when queried for its value. The `StreamEqual` then performs a
+compare on only that. This works great for the terminal stream, but
+what about streams that deliver multiple items per observation?
+
+This is a generic unresolved issue for the current stream design: there
+is no chunking or update or buffering policy; streams can handle
+updates in any way at all. There is no way for the stream reader to
+say "give me exactly one item from the head of the stream, and then
+discard that."
+
+If there was a way to say this, then the stream would be buffered by
+default, which would prevent sampling operations. So far, the base
+AtomSpace streams were designed to allow sampling, with buffering as an
+afterthought. It's time to get more rigorous on this topic. Alas. One
+more work item. Damn the torpedoes, full speed ahead.
+
+### Unification
 This is more-or-less identical to proposal B above, with the additional
 recognition that the general for of stream compares is actually
 unification. The wiki page

@@ -200,6 +200,7 @@ ValuePtr TerminalStream::describe(AtomSpace* as, bool silent)
 
 // This will read one line from the file stream, and return that line.
 // So, a line-oriented, buffered interface. For now.
+// This blocks, waiting for input, if there is no input.
 void TerminalStream::update() const
 {
 	if (nullptr == _fh) { _value.clear(); return; }
