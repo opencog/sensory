@@ -22,6 +22,8 @@
  */
 
 #include <opencog/util/exceptions.h>
+#include <opencog/atoms/value/LinkStreamValue.h>
+#include <opencog/atoms/value/StringValue.h>
 
 #include "StreamEqualLink.h"
 
@@ -47,7 +49,7 @@ StreamEqualLink::StreamEqualLink(const Handle& ha, const Handle& hb)
 
 void StreamEqualLink::init(void)
 {
-	// Nothing, just right now.
+	// Nothing, right now.
 }
 
 // ---------------------------------------------------------------
@@ -57,9 +59,10 @@ void StreamEqualLink::init(void)
 /// Node name compares succeed, if the actual strings match; the
 /// Node type is discarded.
 ///
-/// For just right now, only the first item in the stream is compared.
-/// Recursion would need to be used to perform deeper compares. This
-/// is a problem, if the stream is not line-buffered.
+/// Only the first item in the stream is compared. This works great
+/// for sampled streams (e.g. "is the door open, right now?") but
+/// might be inappropriate for buffered streams. Depends on the
+/// stream implementation. We're fast and loose here.
 bool StreamEqualLink::bevaluate(AtomSpace* as, bool silent)
 {
 	// Self-equality is trivially true. Or we could throw an
@@ -73,15 +76,23 @@ bool StreamEqualLink::bevaluate(AtomSpace* as, bool silent)
 		if (ho->is_executable())
 		{
 			ValuePtr vp = ho->execute(as, silent);
-			if (vp->is_type(LINK_STREAM))
-				vp = 
-			comps.push_back(ho->execute(as, silent));
+
+			// If its a stream, explicitly get only the first item
+			// in the stream. (This may cause unintended data loss
+			// in buffered streams).
+			if (vp->is_type(LINK_STREAM_VALUE))
+				vp = LinkStreamValueCast(vp)->value()[0];
+			comps.push_back(vp);
 		}
 		else
 			comps.push_back(ho);
 	}
 
-	for (const ValuePtr& vp
+	const ValuePtr& vbase = comps[0];
+	for (size_t i=1; i< comps.size(); i++)
+	{
+		const ValuePtr& vp = comps[i];
+	}
 
 	return true;
 }
