@@ -40,53 +40,31 @@ StreamEqualLink::StreamEqualLink(const HandleSeq&& oset, Type t)
 }
 
 StreamEqualLink::StreamEqualLink(const Handle& ha, const Handle& hb)
-	: UnorderedLink({ha, hb}, STREAM_EQUAL_LINK)
+	: UnorderedLink(HandleSeq({ha, hb}), STREAM_EQUAL_LINK)
 {
 	init();
 }
 
 void StreamEqualLink::init(void)
 {
-	if (2 != _outgoing.size())
-		throw SyntaxException(TRACE_INFO,
-			"Expecting exactly two arguments!");
-
-	if (not _outgoing[0]->is_executable())
-		throw SyntaxException(TRACE_INFO,
-			"Expecting the first argument to be executable!");
+	// Nothing, just right now.
 }
 
 // ---------------------------------------------------------------
 
-/// When executed, obtain the stream to write to, from the first
-/// elt in outgoing set, and the data to write from the second.
-ValuePtr StreamEqualLink::execute(AtomSpace* as, bool silent)
+/// When evaluated, compare the streams, while papering over any
+/// cracks that appear. The goal is to provide some easy-to-use
+/// crack-pipe conversions. I was tired when I wrote this.
+TruthValuePtr StreamEqualLink::evaluate(AtomSpace* as, bool silent)
 {
+	// Self-equality is trivially true. Or we could throw an
+	// exception here.
+	if (_outgoing.size() < 2)
+		return TruthValue::TRUE_TV();
+
 	ValuePtr pap = _outgoing[0]->execute(as, silent);
-	if (nullptr == pap)
-		throw RuntimeException(TRACE_INFO,
-			"Expecting an OutputStream, but have nothing from %s",
-			_outgoing[0]->to_string().c_str());
 
-	OutputStreamPtr ost(OutputStreamCast(pap));
-	if (nullptr == ost)
-		throw RuntimeException(TRACE_INFO,
-			"Expecting an OutputStream, got %s", pap->to_string().c_str());
 
-	// XXX FIXME. Some sensory nodes, e.g. FileSysStream, will throw
-	// exceptions when e.g. file permissions disallow some action.
-	// Long term architecture should probably be to pass these up
-	// to higher layers for processing. For now, we don't have that
-	// in place, so instead, just suppress the exception. This
-	// should change, someday.
-	try
-	{
-		return ost->write_out(as, silent, _outgoing[1]);
-	}
-	catch (const StandardException& ex)
-	{
-		return createVoidValue();
-	}
 }
 
 DEFINE_LINK_FACTORY(StreamEqualLink, STREAM_EQUAL_LINK)
