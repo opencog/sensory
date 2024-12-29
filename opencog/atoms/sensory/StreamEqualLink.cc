@@ -90,9 +90,11 @@ bool StreamEqualLink::bevaluate(AtomSpace* as, bool silent)
 			comps.push_back(ho);
 	}
 
-	ValuePtr vpa = comps[0];
-	ValuePtr vpb = comps[1];
+	return compare(comps[0], comps[1]);
+}
 
+bool StreamEqualLink::compare(ValuePtr vpa, ValuePtr vpb)
+{
 	// Sort. Nodes come first.
 	if (vpb->is_node()) vpb.swap(vpa);
 
@@ -135,7 +137,20 @@ bool StreamEqualLink::bevaluate(AtomSpace* as, bool silent)
 		return true;
 	}
 
-	return true;
+	// Sort. Links come first.
+	if (vpb->is_link()) vpb.swap(vpa);
+
+	if (vpa->is_link())
+	{
+		if (vpb->is_link())
+			return *vpa == *vpb;
+		if (not vpb->is_type(LINK_VALUE))
+			return false;
+		if (vpa->size() != vpb->size())
+			return false;
+	}
+
+	return false;
 }
 
 DEFINE_LINK_FACTORY(StreamEqualLink, STREAM_EQUAL_LINK)

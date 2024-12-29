@@ -40,6 +40,9 @@ class StreamEqualLink : public UnorderedLink
 private:
 	void init(void);
 
+protected:
+	bool compare(ValuePtr, ValuePtr);
+
 public:
 	StreamEqualLink(const HandleSeq&&, Type = STREAM_EQUAL_LINK);
 	StreamEqualLink(const Handle&, const Handle&);
