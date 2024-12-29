@@ -6,8 +6,8 @@ them up to a hand-crafted stimulus-response pipeline, to create simple
 agents.
 
 While going through these demos, please keep in mind the project goal.
-This is to craft a sensori-motor API that will be easy for learning
-systems to use to perceive and navigate through the "external" world.
+This is to craft a sensori-motor API that will make it easy for learning
+systems to explore, perceive and navigate through the "external" world.
 
 The hand-crafted stimulus-response pipelines are meant to show the
 general usage pattern that a learning system would learn; its a target
@@ -15,14 +15,16 @@ that the learning system can aim at.
 
 The API is meant to be an affordance for machine learning, and not for
 human programmers. If you just wanted to work with files or chat on IRC,
-you need none of this stuff. All this complicated glop is meant to allow
-simple & easier machine interaction.
+you need none of this stuff. All this stuff is complicated and
+convoluted; it is meant for simple & easy machine interaction, rather
+than application development.
 
 That is to say, all of these examples are much too complicated and
 difficult. The eventual goal is to automate the hooking up of sensors to
 motors. That automation layer is completely missing, just right now.
-So instead, the below demo a big complex mess of the guts of the system.
-If you think this is fugnuts complicated, you're right, it is.
+So instead, the list of examples below demo a big complex mess of the
+guts of the system.  If you think this is fugnuts complicated, you're
+right, it is.
 
 The [Architecture Overview](Architecture.md) provides a sketch of how
 things should work, eventually (if that day ever comes).
@@ -51,6 +53,12 @@ to navigate the "external" world.
 
 The demos show what a stimulus-response pipeline looks like, so
 that learning algos can target that general structure.
+
+Additional demos are provided in the
+[Motor Experiments](https://github.com/opencog/motor)
+repo. They are there, not here, because they skip over the
+connector-mating idea that is central to this repo. Instead of
+using connectors, those demos are just hand-wired.
 
 ### Coding hints
 Collection of coding hints.
