@@ -29,6 +29,7 @@ INSTALL (FILES
 	OpenLink.h
 	OutputStream.h
 	SensoryNode.h
+	StreamEqualLink.h
 	WriteLink.h
 	DESTINATION "include/opencog/atoms/sensory"
 )
