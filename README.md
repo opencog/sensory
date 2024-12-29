@@ -524,6 +524,19 @@ A nice, quick & easy overview of SOAR can be found here:
 Architecture](https://acs.ist.psu.edu/ist597/pst-soar%20v14.2.pdf)",
 Tony Kalus and Frank Ritter (2010)
 
+### CGW Wires
+There was a much earlier attempt at wiring with Atomese, from 2008,
+termed "Cog Graphical Wires" (CGW). It never went anywhere. Right
+idea, wrong time.  The description still sounds sexy, and mirrors
+the above. It can be found in the now-deleted directory
+[CGW Wires](https://github.com/opencog/atomspace/tree/3f58a2cdd7891da074ee48bd517c7f656ff12b14/opencog/scm/wires)
+That code was inspired by a paper:
+* ''The Art of the Propagator'', Alexey Radul; Gerald Jay Sussman,
+  MIT Technical Report MIT-CSAIL-TR-2009-002
+  http://dspace.mit.edu/handle/1721.1/44215
+
+I haven't read that paper in over a decade. Perhaps it has some gems.
+
 
 ### Status
 ***Version 0.3.0*** -- Experimental. Basic demos actually work. Overall
