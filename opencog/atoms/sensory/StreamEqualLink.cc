@@ -148,6 +148,15 @@ bool StreamEqualLink::compare(ValuePtr vpa, ValuePtr vpb)
 			return false;
 		if (vpa->size() != vpb->size())
 			return false;
+
+		const HandleSeq& oset(HandleCast(vpa)->getOutgoingSet());
+		const ValueSeq& vseq(LinkValueCast(vpb)->value());
+		for (size_t i=0; i<oset.size(); i++)
+		{
+			if (not compare(oset[i], vseq[i]))
+				return false;
+		}
+		return true;
 	}
 
 	return false;
