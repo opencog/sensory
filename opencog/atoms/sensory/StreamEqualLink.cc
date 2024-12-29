@@ -140,6 +140,8 @@ bool StreamEqualLink::compare(ValuePtr vpa, ValuePtr vpb)
 	// Sort. Links come first.
 	if (vpb->is_link()) vpb.swap(vpa);
 
+	// Do link compares. Ignore link type, if the other side
+	// is a LinkStream. Otherwise do strict link compares.
 	if (vpa->is_link())
 	{
 		if (vpb->is_link())
@@ -159,7 +161,21 @@ bool StreamEqualLink::compare(ValuePtr vpa, ValuePtr vpb)
 		return true;
 	}
 
-	return false;
+	// I don't know what's happening, if vpa isn't a link stream.
+	if (not vpa->is_type(LINK_VALUE))
+		return false;
+
+	if (vpa->size() != vpb->size())
+		return false;
+
+	const ValueSeq& vqa(LinkValueCast(vpa)->value());
+	const ValueSeq& vqb(LinkValueCast(vpb)->value());
+	for (size_t i=0; i<vqa.size(); i++)
+	{
+		if (not compare(vqa[i], vqb[i]))
+			return false;
+	}
+	return true;
 }
 
 DEFINE_LINK_FACTORY(StreamEqualLink, STREAM_EQUAL_LINK)
