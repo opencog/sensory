@@ -117,6 +117,24 @@ bool StreamEqualLink::bevaluate(AtomSpace* as, bool silent)
 		return 0 == na.compare(nb);
 	}
 
+	// Do string vector compares.
+	if (vpa->is_type(STRING_VALUE))
+	{
+		if (not vpb->is_type(STRING_VALUE))
+			return false;
+		if (vpa->size() != vpb->size())
+			return false;
+
+		const std::vector<std::string>& sva(StringValueCast(vpa)->value());
+		const std::vector<std::string>& svb(StringValueCast(vpb)->value());
+		for (size_t i=0; i<sva.size(); i++)
+		{
+			if (sva[i].compare(svb[i]))
+				return false;
+		}
+		return true;
+	}
+
 	return true;
 }
 
