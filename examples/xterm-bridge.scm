@@ -46,6 +46,11 @@
 ; return until the streams close. Thus, to keep the streams running,
 ; and have the current thread availabe for other work, it is best
 ; to execute these each in their own thread.
+;
+; Sometimes, when switching from one terminal to the other, you
+; might see the echoed text duplicated. This is a bug. It's due to
+; some weird fgets-threading-locking bug, see TerminalStream.cc
+; for details. Low priority, so not fixed.
 (define copy-b-to-a
 	(WriteLink
 		(ValueOf (Anchor "streams") (Predicate "term A"))
@@ -56,8 +61,8 @@
 		(ValueOf (Anchor "streams") (Predicate "term B"))
 		(ValueOf (Anchor "streams") (Predicate "term A"))))
 
-(call-with-new-thread (lambda () (cog-execute! copy-b-to-a))))
-(call-with-new-thread (lambda () (cog-execute! copy-a-to-b))))
+(call-with-new-thread (lambda () (cog-execute! copy-b-to-a)))
+(call-with-new-thread (lambda () (cog-execute! copy-a-to-b)))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!

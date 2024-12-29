@@ -209,7 +209,7 @@ void TerminalStream::update() const
 	char buff[BUFSZ];
 	buff[0] = 0;
 
-	// locking and blocking. There seems to be a feature/bug in some
+	// Locking and blocking. There seems to be a feature/bug in some
 	// combinations of linux kernel + glibc + xterm that prevents the
 	// `xterm-bridge.scm` demo from operating nicely, if plain old
 	// fgets() is used. I tried everything, including ioctl(TIOCPKT).
