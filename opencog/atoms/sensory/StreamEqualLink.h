@@ -48,7 +48,7 @@ public:
 	StreamEqualLink& operator=(const StreamEqualLink&) = delete;
 
 	virtual bool is_evaluatable() const { return true; }
-	virtual TruthValuePtr evaluate(AtomSpace*, bool);
+	virtual bool bevaluate(AtomSpace*, bool);
 
 	// Same as evaluation.
 	virtual bool is_executable(void) const { return true; }

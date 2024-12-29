@@ -55,16 +55,23 @@ void StreamEqualLink::init(void)
 /// When evaluated, compare the streams, while papering over any
 /// cracks that appear. The goal is to provide some easy-to-use
 /// crack-pipe conversions. I was tired when I wrote this.
-TruthValuePtr StreamEqualLink::evaluate(AtomSpace* as, bool silent)
+bool StreamEqualLink::bevaluate(AtomSpace* as, bool silent)
 {
 	// Self-equality is trivially true. Or we could throw an
 	// exception here.
 	if (_outgoing.size() < 2)
-		return TruthValue::TRUE_TV();
+		return true;
 
-	ValuePtr pap = _outgoing[0]->execute(as, silent);
+	ValueSeq comps;
+	for (const Handle& ho: _outgoing)
+	{
+		if (ho->is_executable())
+			comps.push_back(ho->execute(as, silent));
+		else
+			comps.push_back(ho);
+	}
 
-
+	return true;
 }
 
 DEFINE_LINK_FACTORY(StreamEqualLink, STREAM_EQUAL_LINK)
