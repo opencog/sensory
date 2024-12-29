@@ -23,7 +23,8 @@
 #ifndef _OPENCOG_STREAM_EQUAL_LINK_H
 #define _OPENCOG_STREAM_EQUAL_LINK_H
 
-#include <opencog/atoms/base/Link.h>
+#include <opencog/atoms/core/UnorderedLink.h>
+#include <opencog/atoms/truthvalue/TruthValue.h>
 #include <opencog/atoms/sensory-types/sensory_types.h>
 
 namespace opencog
@@ -34,7 +35,7 @@ namespace opencog
 
 /// The StreamEqualLink performs unification-equality.
 ///
-class StreamEqualLink : public Link
+class StreamEqualLink : public UnorderedLink
 {
 private:
 	void init(void);

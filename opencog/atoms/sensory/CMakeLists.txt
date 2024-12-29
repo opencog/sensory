@@ -8,6 +8,7 @@ ADD_LIBRARY (sensory SHARED
 	OpenLink.cc
 	OutputStream.cc
 	SensoryNode.cc
+	StreamEqualLink.cc
 	WriteLink.cc
 )
 

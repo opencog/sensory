@@ -539,7 +539,7 @@ I haven't read that paper in over a decade. Perhaps it has some gems.
 
 
 ### Status
-***Version 0.3.0*** -- Experimental. Basic demos actually work. Overall
+***Version 0.3.1*** -- Experimental. Basic demos actually work. Overall
 low-level parts of the architecture and implementation seem ok-ish. The
 upper-level parts have not yet been designed. The grand questions above
 remain mysterious, but are starting to clarify.
