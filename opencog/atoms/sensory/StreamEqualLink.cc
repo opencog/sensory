@@ -21,9 +21,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <opencog/util/exceptions.h>
+#include <opencog/atoms/core/TypeNode.h>
 #include <opencog/atoms/value/LinkStreamValue.h>
 #include <opencog/atoms/value/StringValue.h>
+#include <opencog/util/exceptions.h>
 
 #include "StreamEqualLink.h"
 
@@ -49,7 +50,7 @@ StreamEqualLink::StreamEqualLink(const Handle& ha, const Handle& hb)
 
 void StreamEqualLink::init(void)
 {
-	if (_outgoing.size() < 2)
+	if (_outgoing.size() > 2)
 		throw RuntimeException(TRACE_INFO,
 			"Compare of more than two stream items not implemented.");
 }
@@ -101,6 +102,14 @@ bool StreamEqualLink::compare(ValuePtr vpa, ValuePtr vpb)
 	// Do string compares, ignoring node type.
 	if (vpa->is_node())
 	{
+		// Anonymous type compare
+		if (vpa->is_type(TYPE_NODE))
+		{
+			Type wtype = TypeNodeCast(HandleCast(vpa))->get_kind();
+			return vpb->is_type(wtype);
+		}
+
+		// Node name compare; ignore node type
 		if (vpb->is_node())
 		{
 			const std::string& na(HandleCast(vpa)->get_name());
@@ -110,6 +119,7 @@ bool StreamEqualLink::compare(ValuePtr vpa, ValuePtr vpb)
 		if (not vpb->is_type(STRING_VALUE))
 			return false;
 
+		// String compare
 		StringValuePtr svp(StringValueCast(vpb));
 		if (1 < svp->size())
 			return false;
