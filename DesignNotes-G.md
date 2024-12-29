@@ -53,3 +53,36 @@ Modes could also be changed at run-time:
 		(List (Item "output-type") (Type 'StringValue)))
 ```
 Run-time reconfig is dangerous, for obvious reasons.
+
+### Design Alternative B
+Auto type conversion during stream contents compare. That is, provide
+a `StreamEqaulLink` that is like the `EqualLink`, but unwraps the stream
+and then does some amout of automatic type conversion.
+
+This solves two issues at once.  First, the verbose
+```
+	(Equal input-loc (LinkSignature (Type 'LinkValue) (Item "xxx\n")))
+```
+by the more svelte
+```
+	(StreamEqual input-loc (Item "xxx\n"))
+```
+The issue here is that `input-loc` has the form
+```
+(TerminalStream (stuff ...))
+```
+with `TerminalStream` being of type `LinkStream` which is of type
+`LinkValue`, and so before any equality compare can even be started,
+the stream itself has to be unwrapped. So automating this unwrap makes
+Atomese decision/control expressions a bit more usable.
+
+### Conclusion
+Do both. It seems inevitable that streams will need to get configuration
+and control parameters from somewhere, so Alternative A will ultimately
+predominate, I guess. But Alternative A adds complexity and code and
+makes wiring even harder than it already is. So its not the go-to
+aternative.
+
+Alternative B adds yet another Atom, as if we didn't have enough of
+these. But it's small, simple, direct, and works for everyone, not just
+terminal streams. So I guess that's the go-to, to keep things simple.
