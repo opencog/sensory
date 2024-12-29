@@ -45,7 +45,8 @@ void WriteLink::init(void)
 {
 	if (2 != _outgoing.size())
 		throw SyntaxException(TRACE_INFO,
-			"Expecting exactly two arguments!");
+			"Expecting exactly two arguments, got %s",
+				to_string().c_str());
 
 	if (not _outgoing[0]->is_executable())
 		throw SyntaxException(TRACE_INFO,
