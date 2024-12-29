@@ -41,7 +41,6 @@ private:
 
 public:
 	WriteLink(const HandleSeq&&, Type = WRITE_LINK);
-	WriteLink(const Handle&);
 
 	WriteLink(const WriteLink&) = delete;
 	WriteLink& operator=(const WriteLink&) = delete;

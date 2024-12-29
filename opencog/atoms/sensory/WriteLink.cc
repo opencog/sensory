@@ -41,12 +41,6 @@ WriteLink::WriteLink(const HandleSeq&& oset, Type t)
 	init();
 }
 
-WriteLink::WriteLink(const Handle& h)
-	: Link({h}, WRITE_LINK)
-{
-	init();
-}
-
 void WriteLink::init(void)
 {
 	if (2 != _outgoing.size())
