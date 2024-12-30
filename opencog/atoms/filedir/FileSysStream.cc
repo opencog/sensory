@@ -52,50 +52,39 @@ using namespace opencog;
 /// There are half-a-dozen commands implemented, enough to
 /// make this stream semi-usable in a pseudo "real-world" app.
 
+// Get the URL string from the sensory node.
+// In principle, `senso` should be a SensoryNode, but for the
+// crrent round of demos, we relax this and accept anything
+// that is a string. This should be reverted, someday.
+static std::string get_url_string(const Handle& senso)
+{
+	ValuePtr relax = senso;
+	if (senso->is_executable())
+		relax = senso->execute();
+
+	if (not relax->is_type(SENSORY_NODE))
+		fprintf(stderr, "Caution: using relaxed stream creation spec %s\n",
+			relax->to_string().c_str());
+
+	if (relax->is_type(LINK_VALUE))
+		relax = LinkValueCast(relax)->value()[0];
+
+	if (relax->is_type(STRING_VALUE))
+		return StringValueCast(relax)->value()[0];
+
+	if (relax->is_node())
+		return HandleCast(relax)->get_name();
+
+	throw RuntimeException(TRACE_INFO,
+		"Unable to get sring from %s\n", senso->to_string().c_str());
+}
+
 FileSysStream::FileSysStream(const Handle& sensor)
 	: OutputStream(FILE_SYS_STREAM)
 {
-	Handle senso(sensor);
-	ValuePtr relax;
-
-	// Execute now, so we can get the URL. Perhaps execution
+	// Get the URL now. Perhaps execution
 	// can be or should be defered till later?
-	if (senso->is_executable())
-	{
-		relax = senso->execute();
-		senso = HandleCast(relax);
-	}
-
-	if (senso and senso->is_type(SENSORY_NODE))
-	{
-		init(senso->get_name());
-		return;
-	}
-
-	// Above is the preferd form for opening a stream. But for
-	// the current round of demos, accept anything that can provide
-	// a string name. XXX FIXME. Tigthen this back up, at the risk
-	// of breaking the crawler demo.
-	if (relax)
-	{
-		fprintf(stderr, "Caution: using relaxed stream creation spec %s\n",
-			relax->to_string().c_str());
-		if (relax->is_type(LINK_VALUE))
-			relax = LinkValueCast(relax)->value()[0];
-		if (relax->is_type(STRING_VALUE))
-		{
-			init(StringValueCast(relax)->value()[0]);
-			return;
-		}
-		if (relax->is_node())
-		{
-			init(HandleCast(relax)->get_name());
-			return;
-		}
-	}
-
-	throw RuntimeException(TRACE_INFO,
-		"Expecting SensoryNode, got %s\n", sensor->to_string().c_str());
+	init(get_url_string(sensor));
 }
 
 FileSysStream::FileSysStream(void)
@@ -416,11 +405,8 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 			"Expecting arguments; got %s", cref->to_string().c_str());
 
 	const Handle& arg1 = cref->getOutgoingAtom(1);
-	if (not arg1->is_node())
-		throw RuntimeException(TRACE_INFO,
-			"Expecting filepath; got %s", arg1->to_string().c_str());
+	std::string fpath = get_url_string(arg1);
 
-	const std::string& fpath = arg1->get_name();
 	if (fpath.compare(0, _pfxlen, _prefix))
 		throw RuntimeException(TRACE_INFO,
 			"Expecting file URL; got %s", arg1->to_string().c_str());
