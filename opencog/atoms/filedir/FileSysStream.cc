@@ -56,17 +56,44 @@ FileSysStream::FileSysStream(const Handle& sensor)
 	: OutputStream(FILE_SYS_STREAM)
 {
 	Handle senso(sensor);
+	ValuePtr relax;
 
 	// Execute now, so we can get the URL. Perhaps execution
 	// can be or should be defered till later?
 	if (senso->is_executable())
-		senso = HandleCast(senso->execute());
+	{
+		relax = senso->execute();
+		senso = HandleCast(relax);
+	}
 
 	if (senso and senso->is_type(SENSORY_NODE))
 	{
 		init(senso->get_name());
 		return;
 	}
+
+	// Above is the preferd form for opening a stream. But for
+	// the current round of demos, accept anything that can provide
+	// a string name. XXX FIXME. Tigthen this back up, at the risk
+	// of breaking the crawler demo.
+	if (relax)
+	{
+		fprintf(stderr, "Caution: using relaxed stream creation spec %s\n",
+			relax->to_string().c_str());
+		if (relax->is_type(LINK_VALUE))
+			relax = LinkValueCast(relax)->value()[0];
+		if (relax->is_type(STRING_VALUE))
+		{
+			init(StringValueCast(relax)->value()[0]);
+			return;
+		}
+		if (relax->is_node())
+		{
+			init(HandleCast(relax)->get_name());
+			return;
+		}
+	}
+
 	throw RuntimeException(TRACE_INFO,
 		"Expecting SensoryNode, got %s\n", sensor->to_string().c_str());
 }
