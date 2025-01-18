@@ -3,13 +3,6 @@ SET(CMAKE_INSTALL_MESSAGE LAZY)
 
 PROJECT(sensory)
 
-# FILE(READ "${CMAKE_SOURCE_DIR}/opencog/sensory/version.h" _SENSORY_H_CONTENTS)
-#STRING(REGEX MATCH
-#   "#define SENSORY_VERSION_STRING \"([0-9]+[.0-9]+[.0-9]+)\""
-#        _ "${_SENSORY_H_CONTENTS}")
-# SET(SEMANTIC_VERSION ${CMAKE_MATCH_1})
-SET(SEMANTIC_VERSION "0.3.1")
-
 # ----------------------------------------------------------
 # Cogutil. Required prerequisite.
 FIND_PACKAGE(CogUtil 2.0.3 CONFIG REQUIRED)
