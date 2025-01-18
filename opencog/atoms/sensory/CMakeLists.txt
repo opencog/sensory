@@ -21,7 +21,7 @@ TARGET_LINK_LIBRARIES(sensory
 	${COGUTIL_LIBRARY}
 )
 
-INSTALL (TARGETS sensory EXPORT AtomSpaceTargets
+INSTALL (TARGETS sensory EXPORT SensoryTargets
 	DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
 )
 

@@ -1,0 +1,13 @@
+@PACKAGE_INIT@
+
+include("@CMAKE_INSTALL_PREFIX@/lib/cmake/Sensory/SensoryTargets.cmake")
+
+set(SENSORY_LIBRARIES
+	sensory
+	sensory-types
+)
+
+set(SENSORY_DATA_DIR "@CMAKE_INSTALL_PREFIX@/share/opencog")
+set(SENSORY_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/include/")
+set(SENSORY_VERSION "@SEMANTIC_VERSION@")
+set(SENSORY_FOUND 1)
