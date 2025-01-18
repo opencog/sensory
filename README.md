@@ -22,10 +22,10 @@ OpenCog has repeatedly attempted to build "embodied AI systems", by
 attaching symbolic and probabilistic AI reasoning systems to assorted
 robot platforms. These include:
 * The [Hanson Robotics](https://www.hansonrobotics.com/) Sophia robot,
-  via [ROS and Blender](https://github.com/opencog/docker/tree/master/indigo)
+  via [ROS and Blender](https://github.com/opencog/docker/tree/master/indigo).
 * [Minecraft](https://www.minecraft.net), via MineRL and Malmo, with the
-  Rational OpenCog Controlled Agent
-  [ROCCA](https://github.com/opencog/rocca)
+  Rational OpenCog Controlled Agent,
+  [ROCCA](https://github.com/opencog/rocca).
 * The Unity game engine, to create
   [pet](https://www.youtube.com/watch?v=FEmpGRLwbqE)
   [dog](https://www.youtube.com/watch?v=vZtnjKcrdZQ)
@@ -41,7 +41,7 @@ arranged by students in Ethiopia as a part of university coursework.
 All of these failed, in large part because not enough effort was
 put into understanding sensing and motion, and far too much on
 reasoning, planning and language. The ideas of sensing and movement
-seem trivial and obvious, and are managed with brute-force hackery.
+seem trivial and obvious, and are implemented with brute-force hackery.
 Not worthy of intellectual effort, in contrast to the veneration
 given to reasoning and logic.  This is a fundamental mistake.
 
