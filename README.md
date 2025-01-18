@@ -16,6 +16,36 @@ This is part of a group of inter-related research projects:
   raised below from a different perspective, perhaps simplifying the
   problem into a more tractable and practical form.
 
+Motivation
+----------
+OpenCog has repeatedly attempted to build "embodied AI systems", by
+attaching symbolic and probabilistic AI reasoning systems to assorted
+robot platforms. These include:
+* The [Hanson Robotics](https://www.hansonrobotics.com/) Sophia robot,
+  via [ROS and Blender](https://github.com/opencog/docker/tree/master/indigo)
+* [Minecraft](https://www.minecraft.net), via MineRL and Malmo, with the
+  Rational OpenCog Controlled Agent
+  [ROCCA](https://github.com/opencog/rocca)
+* The Unity game engine, to create
+  [pet](https://www.youtube.com/watch?v=FEmpGRLwbqE)
+  [dog](https://www.youtube.com/watch?v=vZtnjKcrdZQ)
+  [avatars](https://www.youtube.com/watch?v=of-BahzS8qQ)
+  that
+  [talk](https://www.youtube.com/watch?v=ii-qdubNsx0).
+
+These are the major efforts; there were half-a-dozen lesser efforts,
+including a soccer-playing robothon, held in Ethiopia. All of these
+failed, although all were educational: the robothon was explictly
+arranged by students in Ethiopia as a part of university coursework.
+
+All of these failed, in large part because not enough effort was
+put into understanding sensing and motion, and far too much on
+reasoning, planning and language. The ideas of sensing and movement
+seem trivial and obvious, and are managed with brute-force hackery.
+Not worthy of intellectual effort, in contrast to the veneration
+given to reasoning and logic.  This is a fundamental mistake.
+
+
 Philosophical Overview
 ----------------------
 The issue for any agent is being able to perceive the environment that
