@@ -38,7 +38,7 @@
 #include <opencog/atoms/value/StringValue.h>
 #include <opencog/atoms/value/ValueFactory.h>
 
-#include <opencog/atoms/sensory-types/sensory_types.h>
+#include <opencog/sensory/types/atom_types.h>
 #include "TerminalStream.h"
 
 using namespace opencog;

@@ -24,7 +24,7 @@
 #define _OPENCOG_LOOKAT_LINK_H
 
 #include <opencog/atoms/base/Link.h>
-#include <opencog/atoms/sensory-types/sensory_types.h>
+#include <opencog/sensory/types/atom_types.h>
 
 namespace opencog
 {

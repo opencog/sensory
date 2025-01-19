@@ -28,7 +28,7 @@
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/value/StringValue.h>
 
-#include <opencog/atoms/sensory-types/sensory_types.h>
+#include <opencog/sensory/types/atom_types.h>
 #include "OutputStream.h"
 
 using namespace opencog;

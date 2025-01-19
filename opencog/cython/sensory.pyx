@@ -21,4 +21,4 @@ sensory_types_init()
 regenerate_types()
 
 # Step three: declare some wrappers to make python easier to use.
-include "opencog/atoms/sensory-types/sensory_types.pyx"
+include "opencog/sensory/types/sensory_types.pyx"

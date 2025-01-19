@@ -21,8 +21,8 @@ SET(CYTHON_FLAGS "-3" "-f" "-Wextra")
 # name.
 CYTHON_ADD_MODULE_PYX(sensory
 	"sensory.pxd"
-	"../atoms/sensory-types/sensory_types.pyx"
-	"../atoms/sensory-types/sensory_types.h")
+	"../sensory/types/sensory_types.pyx"
+	"../sensory/types/atom_types.h")
 
 ADD_LIBRARY(sensory_cython SHARED
 	sensory.cpp

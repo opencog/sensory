@@ -25,7 +25,7 @@
 
 #include <opencog/atoms/core/UnorderedLink.h>
 #include <opencog/atoms/truthvalue/TruthValue.h>
-#include <opencog/atoms/sensory-types/sensory_types.h>
+#include <opencog/sensory/types/atom_types.h>
 
 namespace opencog
 {
