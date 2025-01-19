@@ -25,6 +25,7 @@
 
 #include <opencog/util/exceptions.h>
 #include <opencog/util/oc_assert.h>
+#include <opencog/atoms/base/Link.h>
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/value/StringValue.h>
 
@@ -43,6 +44,26 @@ OutputStream::OutputStream(Type t)
 OutputStream::~OutputStream()
 {
 	printf ("OutputStream dtor\n");
+}
+
+// ==============================================================
+// Provide a description utility
+
+Handle make_description(const char* name, /* plain English */
+                        const char* cmd_type, /* e.g. OpenLink */
+                        const char* stream_type) /* e.g. TerminalStream */
+{
+	Handle cmd =
+		createLink(SECTION,
+			createNode(ITEM_NODE, name),
+			createLink(CONNECTOR_SEQ,
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "command"),
+					createNode(TYPE_NODE, cmd_type)),
+				createLink(CONNECTOR,
+					createNode(SEX_NODE, "reply"),
+					createNode(TYPE_NODE, stream_type))));
+	return cmd;
 }
 
 // ==============================================================

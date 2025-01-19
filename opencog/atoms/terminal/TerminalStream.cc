@@ -160,28 +160,14 @@ void TerminalStream::do_describe(void)
 	// Describe exactly how to Open this stream.
 	// It needs no special arguments.
 	Handle open_cmd =
-		createLink(SECTION,
-			createNode(ITEM_NODE, "the open terminal command"),
-			createLink(CONNECTOR_SEQ,
-				createLink(CONNECTOR,
-					createNode(SEX_NODE, "command"),
-					createNode(TYPE_NODE, "OpenLink")),
-				createLink(CONNECTOR,
-					createNode(SEX_NODE, "reply"),
-					createNode(TYPE_NODE, "TerminalStream"))));
+		make_description("the open terminal command",
+		                 "OpenLink", "TerminalStream");
 	cmds.emplace_back(open_cmd);
 
 	// Write text
 	Handle write_cmd =
-		createLink(SECTION,
-			createNode(ITEM_NODE, "the write stuff command"),
-			createLink(CONNECTOR_SEQ,
-				createLink(CONNECTOR,
-					createNode(SEX_NODE, "command"),
-					createNode(TYPE_NODE, "WriteLink")),
-				createLink(CONNECTOR,
-					createNode(SEX_NODE, "command"),
-					createNode(TYPE_NODE, "ItemNode"))));
+		make_description("the write stuff command",
+		                 "WriteLink", "ItemNode");
 	cmds.emplace_back(write_cmd);
 
 	_global_desc = createLink(cmds, CHOICE_LINK);

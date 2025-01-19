@@ -47,6 +47,8 @@ protected:
 	virtual void prt_value(const ValuePtr&);
 	virtual ValuePtr do_write_out(AtomSpace*, bool, const Handle&);
 
+	Handle make_description(const char *, const char *, const char *);
+
 public:
 	virtual ~OutputStream();
 	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&) = 0;
