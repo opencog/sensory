@@ -50,13 +50,13 @@ OutputStream::~OutputStream()
 // Provide a description utility
 
 Handle OutputStream::make_description(
-           const char* name, /* plain English */
+           const char* informal, /* plain English */
            const char* cmd_type, /* e.g. OpenLink */
            const char* stream_type) /* e.g. TerminalStream */
 {
 	Handle cmd =
 		createLink(SECTION,
-			createNode(ITEM_NODE, name),
+			createNode(ITEM_NODE, informal),
 			createLink(CONNECTOR_SEQ,
 				createLink(CONNECTOR,
 					createNode(SEX_NODE, "command"),
