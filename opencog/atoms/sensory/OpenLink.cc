@@ -59,7 +59,7 @@ void OpenLink::init(void)
 	_kind = TypeNodeCast(_outgoing[0])->get_kind();
 
 	// If there is a second argument, then it must be either a
-	// SensoryNode, or soomething executable that returns a
+	// SensoryNode, or something executable that returns a
 	// SensoryNode.
 	if (2 <= _outgoing.size() and
 	    not _outgoing[1]->is_type(SENSORY_NODE) and
