@@ -36,9 +36,10 @@ namespace opencog
 class SensoryNode : public Node
 {
 protected:
-	SensoryNode(Type, std::string);
+	SensoryNode(Type, const std::string&&);
 public:
-	SensoryNode(std::string v) : SensoryNode(SENSORY_NODE, v) {}
+	SensoryNode(const std::string&& uri)
+		: SensoryNode(SENSORY_NODE, std::move(uri)) {}
 	virtual ~SensoryNode();
 
 	/**

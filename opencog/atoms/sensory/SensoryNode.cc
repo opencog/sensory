@@ -30,8 +30,8 @@ using namespace opencog;
 
 // ====================================================================
 
-SensoryNode::SensoryNode(Type t, std::string uri) :
-	Node(t, uri)
+SensoryNode::SensoryNode(Type t, const std::string&& uri) :
+	Node(t, std::move(uri))
 {
 	if (not nameserver().isA(t, SENSORY_NODE))
 		throw RuntimeException(TRACE_INFO, "Bad inheritance!");
