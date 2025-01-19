@@ -49,9 +49,10 @@ OutputStream::~OutputStream()
 // ==============================================================
 // Provide a description utility
 
-Handle make_description(const char* name, /* plain English */
-                        const char* cmd_type, /* e.g. OpenLink */
-                        const char* stream_type) /* e.g. TerminalStream */
+Handle OutputStream::make_description(
+           const char* name, /* plain English */
+           const char* cmd_type, /* e.g. OpenLink */
+           const char* stream_type) /* e.g. TerminalStream */
 {
 	Handle cmd =
 		createLink(SECTION,
