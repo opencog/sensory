@@ -2,15 +2,15 @@
 # --------------------------------------------------
 
 OPENCOG_GEN_CXX_ATOMTYPES(sensory_types.script
-	sensory_types.h
-	sensory_types.definitions
-	sensory_types.inheritance)
+	atom_types.h
+	atom_types.definitions
+	atom_types.inheritance)
 
 OPENCOG_GEN_SCM_ATOMTYPES(sensory_types.script sensory_types.scm)
 OPENCOG_GEN_PYTHON_ATOMTYPES(sensory_types.script sensory_types.pyx)
 
 ADD_CUSTOM_TARGET(sensory_atom_types
-	DEPENDS sensory_types.h sensory_types.scm sensory_types.pyx)
+	DEPENDS atom_types.h sensory_types.scm sensory_types.pyx)
 
 # The atom_types.h file is written to the build directory
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
@@ -32,8 +32,8 @@ INSTALL (TARGETS sensory-types
 )
 
 INSTALL (FILES
-	${CMAKE_CURRENT_BINARY_DIR}/sensory_types.h
-	DESTINATION "include/opencog/atoms/sensory"
+	${CMAKE_CURRENT_BINARY_DIR}/atom_types.h
+	DESTINATION "include/opencog/sensory/types"
 )
 
 add_guile_extension(SCM_CONFIG sensory-types "opencog-ext-path-sensory-types")

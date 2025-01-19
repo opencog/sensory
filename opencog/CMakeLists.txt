@@ -1,4 +1,5 @@
 ADD_SUBDIRECTORY (atoms)
+ADD_SUBDIRECTORY (sensory)
 
 # Python bindings
 IF (HAVE_CYTHON)
