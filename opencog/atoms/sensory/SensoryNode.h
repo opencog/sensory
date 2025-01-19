@@ -35,8 +35,10 @@ namespace opencog
 // At this time, just a holder of URL's and nothing more.
 class SensoryNode : public Node
 {
-public:
+protected:
 	SensoryNode(Type, std::string);
+public:
+	SensoryNode(std::string v) : SensoryNode(SENSORY_NODE, v) {}
 	virtual ~SensoryNode();
 
 	/**
