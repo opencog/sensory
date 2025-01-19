@@ -44,7 +44,7 @@ protected:
 	OutputStream(Type t);
 
 	virtual void do_write(const std::string&);
-	virtual void prt_value(const ValuePtr&);
+	virtual void write_one(AtomSpace*, bool, const ValuePtr&);
 	virtual ValuePtr do_write_out(AtomSpace*, bool, const Handle&);
 
 	static Handle make_description(const char *, const char *, const char *);

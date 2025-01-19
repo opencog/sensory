@@ -70,7 +70,7 @@ protected:
 	std::string _host;
 	int _port;
 
-	virtual void prt_value(const ValuePtr&);
+	virtual void write_one(AtomSpace*, bool, const ValuePtr&);
 	void run_cmd(const std::vector<std::string>&);
 
 public:

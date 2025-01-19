@@ -77,7 +77,8 @@ void OutputStream::do_write(const std::string& str)
 }
 
 // Provide a reasonable default implementation
-void OutputStream::prt_value(const ValuePtr& content)
+void OutputStream::write_one(AtomSpace* as, bool silent,
+                             const ValuePtr& content)
 {
 	if (content->is_type(STRING_VALUE))
 	{
@@ -97,18 +98,18 @@ void OutputStream::prt_value(const ValuePtr& content)
 		LinkValuePtr lvp(LinkValueCast(content));
 		const ValueSeq& vals = lvp->value();
 		for (const ValuePtr& v : vals)
-			prt_value(v);
+			write_one(as, silent, v);
 		return;
 	}
 
-	// Backwards-compat: AllowListLink and SetLink (only!?)
+	// Backwards-compat: Allow ListLink and SetLink (only!?)
 	// Why restrict? I dunno. Seems like the right thing to do.
 	Type tc = content->get_type();
 	if (LIST_LINK == tc or SET_LINK == tc)
 	{
 		const HandleSeq& oset = HandleCast(content)->getOutgoingSet();
 		for (const Handle& h : oset)
-			prt_value(h);
+			write_one(as, silent, h);
 		return;
 	}
 
@@ -133,7 +134,7 @@ ValuePtr OutputStream::do_write_out(AtomSpace* as, bool silent,
 	// If it is not a stream, then just print and return.
 	if (not content->is_type(LINK_STREAM_VALUE))
 	{
-		prt_value(content);
+		write_one(as, silent, content);
 		return content;
 	}
 
@@ -155,7 +156,7 @@ ValuePtr OutputStream::do_write_out(AtomSpace* as, bool silent,
 		for (const ValuePtr& v : vals)
 		{
 			if (v->is_type(LINK_VALUE) and 0 == v->size()) continue;
-			prt_value(v);
+			write_one(as, silent, v);
 			nprinted ++;
 		}
 		if (0 == nprinted) break;

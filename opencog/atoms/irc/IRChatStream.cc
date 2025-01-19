@@ -424,7 +424,8 @@ void IRChatStream::run_cmd(const std::vector<std::string>& cmdstrs)
 
 // ==============================================================
 /// Deal with different kinds of stream formats.
-void IRChatStream::prt_value(const ValuePtr& command_data)
+void IRChatStream::write_one(AtomSpace* as, bool silent,
+                             const ValuePtr& command_data)
 {
 	if (command_data->is_type(STRING_VALUE))
 	{
