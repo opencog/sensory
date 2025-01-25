@@ -20,7 +20,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 #include <opencog/util/exceptions.h>
 #include <opencog/util/oc_assert.h>
 #include <opencog/atoms/base/Node.h>
@@ -35,6 +34,7 @@
 
 #include <errno.h>
 #include <string.h> // for strerror()
+#include <unistd.h> // for sleep()
 
 using namespace opencog;
 
