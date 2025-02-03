@@ -96,7 +96,7 @@ more work item. Damn the torpedoes, full speed ahead.
 
 ### Unification
 This is more-or-less identical to proposal B above, with the additional
-recognition that the general for of stream compares is actually
+recognition that the general form of stream compares is actually
 unification. The wiki page
 [UnifierLink](https://wiki.opencog.org/w/UnfierLink] explains
 unification. The primary issue is that the `UnifierLink` was
