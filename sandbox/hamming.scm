@@ -21,6 +21,25 @@
 (rela "word-pair" "HEAD" "dog")
 (rela "word-pair" "HEAD" "chased")
 
+; Create a pattern to for left and right sets.
+; The left and right marginal vectors. Unordered sets, actually.
+(define lvar (Variable "$left"))
+(define rvar (Variable "$right"))
+(define marginals
+	(Query
+		(VariableList
+			(TypedVariable lvar (Type 'Item))
+			(TypedVariable rvar (Type 'Item)))
+		(Present
+			(Edge (Predicate "word-pair") (List lvar rvar)))
+		lvar rvar))
+
+; Run it
+(cog-execute! marginals)
+(format #t "The left basis is ~A\n" (cog-value marginals lvar))
+(format #t "The right basis is ~A\n" (cog-value marginals rvar))
+
+
 (define vec-foo (LinkValue
 	(Item "a") (Item "c") (Item "e") (Item "f") (Item "g")))
 
