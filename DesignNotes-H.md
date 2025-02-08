@@ -37,6 +37,34 @@ on it.
 What if the device is itself written in Atomese (such as a Query) or
 what if the device is some half-assembled network? What do we do then?
 
+The obvious answer for the Query is to place the description at a
+well-known location on the query iself. Some key, perhaps at
+`(Predicate "description")`
+
+Next: what is that description? It would be somethng like this:
+```
+(Choice
+	(Section
+		(Item "this is the left marginal")
+		(ConnectorSeq
+			(Connector
+				(Sex "command")
+				(Type 'WriteLink))
+			(Connector
+				(Sex "command")
+				(Item "left-basis"))
+			(Connector
+				(Sex "reply")
+				(LinkSignature
+					(Type 'UnisetValue)
+					(Type 'ItemNode)))))
+	... ditto for right.... )
+```
+
+This needs to be connected to the Hamming distance agent. What is the
+description of the Hamming distance agent that is compatible with the
+above?
+
 
 
 
