@@ -2,7 +2,7 @@
 ; hamming.scm
 ; Attempt to compute hamming distance between two sparse vectors.
 
-(use-modules (opencog) (opencog exec))
+(use-modules (opencog) (opencog exec) (opencog sensory))
 
 ; Low-level tool to declare a relationship R(A,B)
 ; R, A, B are strings
