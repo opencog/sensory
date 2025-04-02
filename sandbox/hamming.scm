@@ -50,3 +50,13 @@
 (cog-set-value! (Anchor "foo") (Predicate "foo-key") vec-foo)
 (cog-set-value! (Anchor "bar") (Predicate "bar-key") vec-bar)
 
+; We can get sizes of sets.
+(cog-execute!
+	(SizeOf (ValueOf (Anchor "foo") (Predicate "foo-key"))))
+
+(cog-execute!
+	(SizeOf (ValueOf (Anchor "bar") (Predicate "bar-key"))))
+
+; Define an object that can compute Hamming distance.
+
+
