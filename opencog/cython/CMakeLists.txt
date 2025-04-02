@@ -7,7 +7,7 @@
 #
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
 INCLUDE_DIRECTORIES(
-	${PYTHON_INCLUDE_DIRS}
+	${Python3_INCLUDE_DIRS}
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
 )
@@ -42,7 +42,7 @@ TARGET_LINK_LIBRARIES(sensory_cython
 	sensory-terminal
 	sensory
 	atomspace
-	${PYTHON_LIBRARIES}
+	${Python3_LIBRARIES}
 )
 
 SET_TARGET_PROPERTIES(sensory_cython PROPERTIES
