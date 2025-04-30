@@ -10,11 +10,16 @@ The experimental lab for this is "perceiving" filesystem files,
 "moving" through directories, and likewise for IRC chat streams.
 
 This is part of a group of inter-related research projects:
-* [Agents](https://github.com/opencog/agents), which aims to make use
-  of the structures developed here.
+* [Evidence](https://github.com/opencog/evidence), which makes grasping
+  attempts at defining hierarchically justified evidence evaluation.
+  The similarity of two items should be some combination of the
+  similarities of the parts they are made out of, and so on,
+  recursively. What is the evidence for that similarity?
 * [Motor](https://github.com/opencog/motor), which looks at the issues
   raised below from a different perspective, perhaps simplifying the
   problem into a more tractable and practical form.
+* [Agents](https://github.com/opencog/agents), which was originally
+  intended to make use of the above, but has gotten sidelines a bit.
 
 Motivation
 ----------
