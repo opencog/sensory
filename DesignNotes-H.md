@@ -65,11 +65,6 @@ This needs to be connected to the Hamming distance agent. What is the
 description of the Hamming distance agent that is compatible with the
 above?
 
-
-
-
-
-
 To open, earlier examples said "use Open":
 ```
    (Open (Type 'TerminalStream))
@@ -79,3 +74,12 @@ To open, earlier examples said "use Open":
       (SensoryNode "file:///tmp/demo.txt"))
 
 ```
+
+The idea above is generalized and written down in a new github repo,
+called [evidence](https://github.com/opencog/evidence). It considers not
+just some generalized vector, but a hierarchicaly assembled similarity
+measure, based on a collection of evidence, where each item of evidence
+is again composed of smaller pieces of evidence, and so on.
+
+The core problem is I don't know how to write down an Atomese
+description of such a hierarchical collection.
