@@ -46,7 +46,38 @@ etc.
 Messages can be sent to objects using `ExecutionLink` (no reply/void
 reply) while output can be obtained with `ExecutionOutputLink`.
 
+Perhaps it might be useful to have some C++ class to cache something
+suitable for all `ObjectNode`s, but this is not yet clear. Perhaps a
+list of valid messages they can receive? This is certainly desired with
+the `Describe` functionality discussed and partly implemented here.
+
+The name `ObjectNode` is consistent with traditional object-oriented
+prgramming naming conventions: `ObjectNode`s are meant to be stateful
+classes.
+
+However, since the AtomSpace is designed to be effectively stateless,
+the `OjectNode`s break the paradigm of saveability and restorability:
+they can be saved only at the superficial level; internal state is
+lost/erased when the power goes out. Worse, they are non-abelian, and
+history dependent: the state of an `ObjectNode` depends on the messages
+that have been received.
+
+For the above reasons, the `ObjectNode` should really be considered to
+be something that "lives out there", in the external world. Even if it
+is purely local, the non-recoverability of state implies "something
+happened out there, that we cannot control".
+
+More directly, the `ObjectNode` can be considered to be ***the***
+sensorimotor interface object: on the far side of the `ObjectNode` is
+"the universe" and we can send messages "out there" and "receive stuff"
+in response, but it is a deeply dividing boundary between internal and
+external.
+
 Examples are in order.
+
+### Examples -- GroundedFunctionNode
+There is no change at all to `GroundedSchemaNode`, etc. and they work
+exactly as before. The only difference is the type hierarchy.
 
 ### Example -- Cogserver Config
 The web port can be set on the cogserver by declaring
@@ -104,8 +135,23 @@ The `cog-open` scheme call acting on a StorageNode can be replaced by
    (List
       (Predicate "open")))
 ```
+The open does not happen, until the above is actually executed.
+
+
+### Problematic constructions
+It is then tempting to handle all the other `StorageNode` ops in this
+same way. Thus:
+```
+(Execution
+   (RocksStorageNode "rocks:///tmp/foobar.rdb")
+   (List
+      (Predicate "store-atom")
+      (Concept "foo")))
+```
+The problem here is that this pollutes the AtomSpace with lots of extra
+gunk. We really don't want to do this. What alternatives do we have?
 
 
 ### TODO
 * ephemeral like open
-* 
+* pi calculus https://en.wikipedia.org/wiki/%CE%A0-calculus
