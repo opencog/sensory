@@ -33,4 +33,79 @@ sending of a message out to the external world (and, in this case,
 getting an immediate reply.)  Perhaps we can use this as a model for
 generic sending of messages.
 
+### Objects are stateful
+The base class for stateful nodes will be `ObjectNode`. Thus,
+`atom_types.script` gets modified to something like this:
+```
+OBJECT_NODE <- NODE
+GROUNDED_SCHEMA_NODE <- OBJECT_NODE
+STORAGE_NODE <- OBJECT_NODE
+COG_SERVER_NODE <- OBJECT_NODE
+etc.
+```
+Messages can be sent to objects using `ExecutionLink` (no reply/void
+reply) while output can be obtained with `ExecutionOutputLink`.
 
+Examples are in order.
+
+### Example -- Cogserver Config
+The web port can be set on the cogserver by declaring
+```
+(Execution
+   (CogServer "this is a singleton instance")
+   (ListLink
+      (Predicate "web-port")
+      (Number 18001)))
+```
+The configuration does not take effect until the `ExecutionLink` is
+executed. The message is the `ListLink`, but the message name is
+`"web-port"` -- a string. Fits with common programming convention.
+
+The cogserver can be started as
+```
+(Execution
+   (CogServer "this is a singleton instance")
+   (ListLink
+      (Predicate "start")))
+```
+
+### Example -- ProxyNode config
+The current ProxyNodes are configured as follows:
+```
+ (ProxyParameters
+     (ReadThruProxy "read-thru load balancer")
+     (List
+        (RocksStorageNode "rocks:///tmp/foo.rdb")
+        (RocksStorageNode "rocks:///tmp/bar.rdb")
+        (RocksStorageNode "rocks:///tmp/fizz-buzz.rdb"))))
+```
+The current implementation has the `ReadThruProxy` reach back into it's
+incoming set, find the `ProxyParamweters` link, then descend back down.
+This happens upon the `cog-open` of the proxy.  The proposal is to
+replace this by
+```
+ (Execution
+     (ReadThruProxy "read-thru load balancer")
+     (List
+        (Predicate "mirrors")
+        (RocksStorageNode "rocks:///tmp/foo.rdb")
+        (RocksStorageNode "rocks:///tmp/bar.rdb")
+        (RocksStorageNode "rocks:///tmp/fizz-buzz.rdb"))))
+```
+
+The `(Predicate "mirrors")` is a string message name; it allows for
+other strings to be handled, in the future.
+
+### Example: open and close
+The `cog-open` scheme call acting on a StorageNode can be replaced by
+```
+(Execution
+   (RocksStorageNode "rocks:///tmp/foobar.rdb")
+   (List
+      (Predicate "open")))
+```
+
+
+### TODO
+* ephemeral like open
+* 
