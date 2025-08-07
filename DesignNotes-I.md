@@ -232,6 +232,45 @@ maybe this can be fetched from a `StateLink` ?! This takes some hit to
 performance, but ... still ...!? Right now API matters more than
 performance.
 
+### Example -- sensorimotor
+The `SetValue` proposal above seems ideal. Its clean, its simple, it's
+compatible with old code. It's in conflict with the current sensorimotor
+design.  Can this be resolved?
+
+The current `OpenLink` documentation says
+```
+   (OpenLink
+      (TypeNode 'FoobarStream) ; e.g. TextFileStream or IRChatStream
+      (SensoryNode "url://of/some/sort")) ; e.g file:// or irc://
+```
+and if we adapt this for `StorageNode` it would be
+```
+   (OpenLink
+      (TypeNode 'RocksStorageNode)
+      (SensoryNode "rocks:///tmp/foobar.rdb"))
+```
+This has the interesting advantage of reifying the `StorageNode`, which
+is not otherwise possible. So maybe we want to keep the current `Open`
+design.
+
+The claim is that `Open` returns a stream but in this exanple, we kind
+of want to return the object itself.
+
+The current `Write` documentation states:
+```
+ (WriteLink
+    (TextStream)   ; iterator to write to.
+    (StringValue)) ; strings to write
+```
+but we really want to send messages... so how can we fix this? Or do we
+nead to? The conception here is very low-level: and I/O stream. We could
+maybe re-interpret the sending of messages as a write, to a stram, of
+the message type, followed by the data. Six of one, half-dozen of the
+other. Hard to say what is best from either the usability or the
+performance side of things.
+
+Answer: punt. The agent work has not yet really begun. Nothing will get
+clear until the agent work gets underway.
 
 ### TODO
 * pi calculus https://en.wikipedia.org/wiki/%CE%A0-calculus
