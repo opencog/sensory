@@ -36,6 +36,17 @@ design choices governing the system.
 * [Notes Part F](DesignNotes-F.md) -- Recursion, decision making.
   How to perform recursive walks of observable networks.
   (Christmas 2024)
+* [Notes Part G](DesignNotes-G.md) -- Flow Tyope convversions.
+  The `FilterLink` can be used to alter stream flows, but its awkward.
+  (February 2025)
+* [Notes Part H](DesignNotes-H.md) -- Vector Similarity.
+  Initial thinking on evidence-gathering and how this can be handled
+  by an agent. (April 2025)
+* [Notes Part I](DesignNotes-I.md) -- Sending Messages.
+  This arcs back to older issues: old, existing parts of the AtomSpace
+  look like objects, and, much like OO object-oriented objects, we
+  want to send them messages. This seems to solve some old problems
+  while also making contact with current work. (August 2025)
 
 Current Implementation
 ----------------------
