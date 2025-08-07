@@ -137,6 +137,8 @@ The `cog-open` scheme call acting on a StorageNode can be replaced by
 ```
 The open does not happen, until the above is actually executed.
 
+Note that we already have an `OpenLink` in this repo. Should it be kept?
+Should it be retired in favor of the above?
 
 ### Problematic constructions
 It is then tempting to handle all the other `StorageNode` ops in this
@@ -151,6 +153,24 @@ same way. Thus:
 The problem here is that this pollutes the AtomSpace with lots of extra
 gunk. We really don't want to do this. What alternatives do we have?
 
+#### Alternative `send-message!`
+Currently, there is a `set-value!` function that does KVP access. So:
+```
+(set-value! (SomeAtom) (Predicate "some-key") (FloatValue 1 2 3))
+```
+and we could make object messages by KVP-like:
+```
+(send-message! (RocksStorage "...") (Predicate "store-atom")
+     (SomeNode "store me now"))
+```
+
+#### Alternative `set-value!`
+There is a strong argument to be made to just use `set-value!` directly,
+instead of creating a custom `send-message!`. This means that
+`ObjectNode`s respond in a special way, when the keys are known message
+types. It also means that a whole lot of existing infrastructure can be
+recycled, including `SetValueLink` and can retire some others, including
+`StoreValueOfLink` and `FetchValueOfLink`.
 
 ### TODO
 * ephemeral like open
