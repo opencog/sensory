@@ -151,7 +151,8 @@ same way. Thus:
       (Concept "foo")))
 ```
 The problem here is that this pollutes the AtomSpace with lots of extra
-gunk. We really don't want to do this. What alternatives do we have?
+gunk. We really don't want to do this. We want ephemeral behavior. What
+alternatives do we have?
 
 #### Alternative `send-message!`
 Currently, there is a `set-value!` function that does KVP access. So:
@@ -161,7 +162,7 @@ Currently, there is a `set-value!` function that does KVP access. So:
 and we could make object messages by KVP-like:
 ```
 (send-message! (RocksStorage "...") (Predicate "store-atom")
-     (SomeNode "store me now"))
+     (SomeNode "something needing to be stored"))
 ```
 
 #### Alternative `set-value!`
@@ -172,6 +173,65 @@ types. It also means that a whole lot of existing infrastructure can be
 recycled, including `SetValueLink` and can retire some others, including
 `StoreValueOfLink` and `FetchValueOfLink`.
 
+So, the ephemeral version is then
+```
+(set-value!
+   (RocksStorageNode "rocks:///tmp/foobar.rdb")
+   (Predicate "store-atom")
+   (Concept "foo"))
+```
+while the static version is
+```
+(Execution
+   (RocksStorageNode "rocks:///tmp/foobar.rdb")
+   (List
+      (Predicate "store-atom")
+      (Concept "foo")))
+```
+The above could be more compact, if we wrote
+```
+(SetValueOf
+   (RocksStorageNode "rocks:///tmp/foobar.rdb")
+   (Predicate "store-atom")
+   (Concept "foo"))
+```
+This drops the verbose excess of the `ListLink` ... which we've wanted
+to exterminate for decades, but it remains like a wart, unresolved.
+
+It is plausible to have both forms supported.
+
+#### Multiple arguments ?
+Emulating `StoreValueOfLink` with `set-value!` is problematic, since it
+seems to need more arguments. Thus, currently, we have
+```
+(StoreValueOfLink
+   (SomeAtom)
+   (PredicateNode "some key")
+   (StorageNode "some://url"))
+```
+which is to be replaced by
+```
+(SetValueLink
+   (StorageNode "some://url")
+   (Predicate "store-value-of")
+   (SomeAtom)
+   (PredicateNode "some key"))
+```
+This breaks the strict 3-ary for, of `SetValueLink` but I guess thats
+OK? The same breakage is needed for `set-value!`
+
+#### Alternative `execute!`
+Historically, `execute!` only takes one argument. Here, it seems that a
+multi-argument version of `execute!` could be interpreted to be
+`set-value!` and culd work identically, in such a case.
+
+#### Implementation
+It would be nice to turn `store-atom` into a trivial wrapper around the
+above API. The biggest problem is the implicit open `StorageNode`. But
+maybe this can be fetched from a `StateLink` ?! This takes some hit to
+performance, but ... still ...!? Right now API matters more than
+performance.
+
+
 ### TODO
-* ephemeral like open
 * pi calculus https://en.wikipedia.org/wiki/%CE%A0-calculus
