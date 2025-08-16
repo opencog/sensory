@@ -1,8 +1,8 @@
 Objects and Streams
 -------------------
 The previous entry [Design Nodes I](./DesignNotes-I.md) describes a
-polymorphic object interface into Atomese, leveraging the C++
-`setValue()` and `getValue()` methods to perform dynamic dispatch
+"parametric polymorphism" object interface into Atomese, leveraging the
+C++ `setValue()` and `getValue()` methods to perform dynamic dispatch
 of messages. The idea there is that any Node deriving from `ObejctNode`
 will support some collection of messages that can be sent to it, and
 then behave appropriately to those messages. This seems like the

@@ -11,6 +11,14 @@ Parts:
 See the [examples](examples) directory for actual demos that should
 actually work.
 
+Status
+------
+*** Version 0.2.0 *** -- The "Version Zero" implementation works and
+has been used in a number of places. It is flawed and is being
+re-designed (to use a parametric polymorphism OO API). The new API is
+under construction.
+
+
 Diary
 -----
 A table of contents of the design diary. Many of these are early and
@@ -50,6 +58,15 @@ design choices governing the system.
 
 Current Implementation
 ----------------------
+The code base is being ported to a new API. Under construction.
+
+Version Zero Implementation
+---------------------------
+Version zero of the sensory API is problematic: it confuses the role
+of streams and objects. This implementation got to be fairly large,
+before the failure, and a fix for it, became apparent.  It is being
+kept here as a reference for the port to the Version One API.
+
 Documentation for the implementation internals. Lowlevel stuff. See the
 [examples](examples) directory for demos on how this stuff should be
 *used*. By contrast, the below explains how it *works*, which most

@@ -1,5 +1,5 @@
 /*
- * opencog/sensory/types/sensory_types_init.cc
+ * opencog/sensory-v0/types/sensory_types_init.cc
  *
  * Copyright (C) 2014,2020 Linas Vepstas
  * All Rights Reserved
@@ -20,9 +20,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "opencog/sensory/types/atom_types.definitions"
+#include "opencog/sensory-v0/types/atom_types.definitions"
 
-#define INHERITANCE_FILE "opencog/sensory/types/atom_types.inheritance"
-#define INITNAME sensory_types_init
+#define INHERITANCE_FILE "opencog/sensory-v0/types/atom_types.inheritance"
+#define INITNAME sensory_v0_types_init
 
 #include <opencog/atoms/atom_types/atom_types.cc>
