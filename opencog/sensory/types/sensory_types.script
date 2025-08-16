@@ -20,11 +20,10 @@ I_R_CHAT_STREAM <- TEXT_STREAM
 // SensoryNodes hold URL's/URI's to some given I/O device.
 // They do not perform the I/O directly.
 //
-// What's the right base type for all sensory nodes?
-// LexicalNode, cause there's a collection of them.
-// TagNode cause base AtomSpace already calls them "data streams".
-// BondNode cause they are connector-like?
-SENSORY_NODE <- TAG_NODE
+// Currently, the correct base type for sensory nodes seems to be
+// ObjectNode. That's mostly because we want to treat sensory systems
+// as interfaces having some collection of method calls on them.
+SENSORY_NODE <- OBJECT_NODE
 
 // Calling execute() provides description of stream.
 LOOKAT_LINK <- EXECUTABLE_LINK
