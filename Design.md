@@ -70,8 +70,9 @@ The `OpenLink` API is
 		(TypeNode 'FoobarStream) ; e.g. TextFileStream or IRChatStream
 		(SensoryNode "url://of/some/sort")) ; e.g file:// or irc://
 ```
-The `TypeNode` must indicate a valid Atomese type that can be created.
-The `SensoryNode` is just some text passed into the stream constructor.
+The `TypeNode` must indicate a valid Atomese ValyeStream type.
+The `SensoryNode` is some configuration text passed into the stream
+constructor.
 
 Currently supported are `TextFileStream`, `TerminalStream` and
 `IRChatStream`.
