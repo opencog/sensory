@@ -27,4 +27,18 @@ The `TypeNode` must indicate a valid Atomese Stream type.
 The `SensoryNode` is some configuration text passed into the stream
 constructor.
 
-The object API for the above would be quite different
+Here, the stream happens to also act like an object. This is not so bad,
+except that the Streams need to be sent messages, i.e. must act like
+objects in a more literal sense. This is solved by mandating that the
+Stream have a C++ `::write_out()` method, which acts as the OO message
+dispatcher. Ouch. This seems awefully muddled.
+
+The object API for the above would be quite different. Instead of a
+`TextFileStream` and a `IRCChatStream`, there would be a `TextFileNode`
+and an `IRCChatNode`. The `IRCChatNode::getValue()` method would then
+take a `(Predicate "*-open-*")` message, and return a `StringStream`
+or whatever.
+
+There does not seem to be any easy way to migrate from the one to the
+other interfaces, and so it looks like a total rewrite will be
+neccessary. Ugh.
