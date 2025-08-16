@@ -24,6 +24,7 @@
 #include <string>
 
 #include <opencog/atomspace/AtomSpace.h>
+#include <opencog/atoms/value/StringValue.h>
 #include "SensoryNode.h"
 
 using namespace opencog;
@@ -41,7 +42,19 @@ SensoryNode::~SensoryNode()
 {
 }
 
-std::string SensoryNode::monitor(void)
+ValuePtr SensoryNode::getValue(const Handle& key) const
+{
+	if (not key->is_type(PREDICATE_NODE))
+		return Atom::getValue(key);
+
+	// Dispatch
+	if (0 == key->get_name().compare("*-monitor-*"))
+		return createStringValue(monitor());
+
+	return Atom::getValue(key);
+}
+
+std::string SensoryNode::monitor(void) const
 {
 	return "This SensoryNode does not implement a monitor.";
 }
