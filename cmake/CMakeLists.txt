@@ -1,18 +1,27 @@
 
 # CMake boilerplate that allows users to do
-#    find_package(Sensory REQUIRED 0.3.1)
+#    find_package(Sensory REQUIRED 0.4.0)
 # and have it work.
 
-SET(SEMANTIC_VERSION 0.3.1)
+SET(SEMANTIC_VERSION 0.4.0)
 
 export(EXPORT SensoryV0Targets
 	FILE "${CMAKE_CURRENT_BINARY_DIR}/Sensory/SensoryV0Targets.cmake"
+)
+
+export(EXPORT SensoryTargets
+	FILE "${CMAKE_CURRENT_BINARY_DIR}/Sensory/SensoryTargets.cmake"
 )
 
 set(ConfigPackageLocation lib/cmake/Sensory)
 
 install(EXPORT SensoryV0Targets
 	FILE SensoryV0Targets.cmake
+	DESTINATION ${ConfigPackageLocation}
+)
+
+install(EXPORT SensoryTargets
+	FILE SensoryTargets.cmake
 	DESTINATION ${ConfigPackageLocation}
 )
 

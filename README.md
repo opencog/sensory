@@ -577,7 +577,7 @@ I haven't read that paper in over a decade. Perhaps it has some gems.
 ***Version 0.4.0*** -- Experimental. Initial design will now be called
 "Version Zero".  Basic demos for Version Zero all work. The overall
 low-level architecture seemed ok-ish, but flaws have become apparent,
-and so a "Version One" is being designed.
+and so a "Version Half" is being designed.
 
 The upper-level abstractions remain opaque and have not yet been designed.
 The grand questions above remain mysterious, but are starting to clarify.
