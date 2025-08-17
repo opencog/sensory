@@ -44,10 +44,23 @@ protected:
 	 */
 	virtual std::string monitor(void) const;
 
+	/**
+	 * Default API that sensory nodes must provide. Similar to
+	 * the current StorageNode API.
+	 */
+	virtual void open(const ValuePtr&) = 0;
+	virtual void close(const ValuePtr&) = 0;
+	virtual void write(const ValuePtr&) = 0;
+	virtual void barrier(AtomSpace* = nullptr);
+
+	virtual bool connected(void) const = 0;
+	virtual ValuePtr read(void) const = 0;
+
 public:
-	SensoryNode(const std::string&& uri)
-		: SensoryNode(SENSORY_NODE, std::move(uri)) {}
 	virtual ~SensoryNode();
+
+	virtual void setValue(const Handle& key, const ValuePtr& value);
+	virtual ValuePtr getValue(const Handle& key) const;
 };
 
 NODE_PTR_DECL(SensoryNode)
