@@ -14,11 +14,11 @@ from opencog.utilities import add_node, add_link
 
 # Step one: force the C++ shared lib ctor to run and report
 # the new Atom type to the atomspace nameserver.
-sensory_types_init()
+sensory_v0_types_init()
 
 # Step two: Ask python to rebuild the list of Atom Types that it knows
 # about.  This adds new attributes to the python .types class.
 regenerate_types()
 
 # Step three: declare some wrappers to make python easier to use.
-include "opencog/sensory/types/sensory_types.pyx"
+include "opencog/sensory-v0/types/sensory_types.pyx"
