@@ -574,12 +574,15 @@ I haven't read that paper in over a decade. Perhaps it has some gems.
 
 
 ### Status
-***Version 0.3.1*** -- Experimental. Basic demos actually work. Overall
-low-level parts of the architecture and implementation seem ok-ish. The
-upper-level parts have not yet been designed. The grand questions above
-remain mysterious, but are starting to clarify.
+***Version 0.4.0*** -- Experimental. Initial design will now be called
+"Version Zero".  Basic demos for Version Zero all work. The overall
+low-level architecture seemed ok-ish, but flaws have become apparent,
+and so a "Version One" is being designed.
 
-Provides:
+The upper-level abstractions remain opaque and have not yet been designed.
+The grand questions above remain mysterious, but are starting to clarify.
+
+Version Zero provides:
 * Basic interactive terminal I/O stream.
 * Basic File I/O stream.
 * Prototype Filesystem navigation stream.
@@ -591,7 +594,8 @@ how it is to work, when it gets farther along. The
 [Design Diary](Design.md) documents the thought process used to obtain
 code that actually works and does what it needs to do.
 
-See the [examples](examples) directory for working examples.
+See the [examples-v0](examples-v0) directory for working Version Zero
+examples.
 
 The [AtomSpace Bridge](https://github.com/opencog/atomspace-bridge)
 provides an API between the AtomSpace and SQL. It almost conforms to
@@ -636,9 +640,11 @@ Details of the design in this git repo are explored in several places:
 
 * [Architecture](Architecture.md) -- Architecture overview.
 * [Design Overview](Design.md) -- Current design & TODO List.
-* [IRChatStream](opencog/atoms/irc/README.md) -- IRC chat design.
-* [TextFileStream](opencog/atoms/filedir/README.md) -- Directory navigation design.
-* [TerminalStream](opencog/atoms/terminal/README.md) -- Interactive terminal design.
+
+Some Version Zero explainers:
+* [IRChatStream V0](opencog/atoms/irc-v0/README.md) -- IRC chat design.
+* [TextFileStream V0](opencog/atoms/filedir-v0/README.md) -- Directory navigation design.
+* [TerminalStream V0](opencog/atoms/terminal-v0/README.md) -- Interactive terminal design.
 
 ### Build and Install
 This git repo follows the same directory structure and coding
@@ -655,8 +661,10 @@ sudo make install
 ```
 
 ### Examples
-See the [examples](examples) directory. The simplest example is for
-pinging text between two xterms. Other examples include opening,
+Only Version Zero currently has examples.
+
+See the [examples-v0](examples-v0) directory. The simplest example is
+for pinging text between two xterms. Other examples include opening,
 reading & writing a single text file, navigating the file system,
 and a basic IRC echobot.
 
