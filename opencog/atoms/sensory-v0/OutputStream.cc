@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/OutputStream.cc
+ * opencog/atoms/sensory-v0/OutputStream.cc
  *
  * Copyright (C) 2020 Linas Vepstas
  * All Rights Reserved
@@ -29,7 +29,7 @@
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/value/StringValue.h>
 
-#include <opencog/sensory/types/atom_types.h>
+#include <opencog/sensory-v0/types/atom_types.h>
 #include "OutputStream.h"
 
 using namespace opencog;

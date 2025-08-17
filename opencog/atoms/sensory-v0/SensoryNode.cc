@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/SensoryNode.cc
+ * opencog/atoms/sensory-v0/SensoryNode.cc
  *
  * Copyright (c) 2008-2010 OpenCog Foundation
  * Copyright (c) 2009,2013,2020,2022 Linas Vepstas

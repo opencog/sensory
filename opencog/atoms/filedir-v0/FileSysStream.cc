@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/FileSysStream.cc
+ * opencog/atoms/sensory-v0/FileSysStream.cc
  *
  * Copyright (C) 2020 Linas Vepstas
  * All Rights Reserved
@@ -37,7 +37,7 @@
 #include <opencog/atoms/value/StringValue.h>
 #include <opencog/atoms/value/ValueFactory.h>
 
-#include <opencog/sensory/types/atom_types.h>
+#include <opencog/sensory-v0/types/atom_types.h>
 #include "FileSysStream.h"
 
 using namespace opencog;

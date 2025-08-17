@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/WriteLink.cc
+ * opencog/atoms/sensory-v0/WriteLink.cc
  *
  * Copyright (C) 2022 Linas Vepstas
  *

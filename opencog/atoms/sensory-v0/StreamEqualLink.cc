@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/StreamEqualLink.cc
+ * opencog/atoms/sensory-v0/StreamEqualLink.cc
  *
  * Copyright (C) 2022, 2024 Linas Vepstas
  *
