@@ -4,7 +4,7 @@
 ; Demo of writing Atoms and Values to a text file. This includes
 ; streaming to a file.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog exec) (opencog sensory-v0))
 
 ; --------------------------------------------------------
 ; Basic demo: Open a file for writing, and place some text into it.

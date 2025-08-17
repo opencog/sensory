@@ -11,7 +11,7 @@
 ;
 (use-modules (ice-9 threads))
 (use-modules (srfi srfi-1))
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog exec) (opencog sensory-v0))
 
 ; Open connection to an IRC server, and attach the stream to an Atom.
 ; This allows it to be located, when needed. If the Atom is "well

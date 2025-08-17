@@ -21,7 +21,7 @@
 ; Atomese code, but some weirdness with xterm and pseudo-terminal
 ; /dev/pts pipes. Not worth debugging, since this is not a critical
 ; component. So, just FYI. See `fgets_unlocked` in the source for more.
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog exec) (opencog sensory-v0))
 
 ; --------------------------------------------------------
 ; Create a pair of xterms; place them where they can be found.

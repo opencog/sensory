@@ -1,6 +1,10 @@
-Examples and Demos
-------------------
-The examples and demos here show how to use the sensori-motor system.
+Version Zero Examples and Demos
+-------------------------------
+The examples and demos here show how to use the Version Zero sensori-motor
+system. They work, but were created before a design flaw was identified
+and patched. They are here for reference, during the porting process to
+version one,
+
 The first set of examples show the basic API, while the second set wires
 them up to a hand-crafted stimulus-response pipeline, to create simple
 agents.

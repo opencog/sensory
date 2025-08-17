@@ -4,7 +4,7 @@
 ; A collection of minor examples showing various maybe-useful recipes.
 ;
 (use-modules (srfi srfi-1))
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog exec) (opencog sensory-v0))
 
 ; -------------------------------------------------------
 ; A tutorial on Atomese pipelines.

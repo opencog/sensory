@@ -4,7 +4,7 @@
 ; Demo of the basic IRC interface. The API offers a simple way to
 ; connect to IRC and exchange messages.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog exec) (opencog sensory-v0))
 
 ; --------------------------------------------------------
 ; Basic demo: Open a connection to an IRC node. The connection

@@ -19,7 +19,7 @@
 ; Review the `xterm-bridge.scm` demo next. It builds a pipeline
 ; connecting two xterms.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog exec) (opencog sensory-v0))
 
 ; --------------------------------------------------------
 ; Create an xterm for direct I/O. Executing the OpenLink will return

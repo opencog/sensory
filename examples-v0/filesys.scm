@@ -27,7 +27,7 @@
 ;
 ; Anyway, that's the general plan. The details remain obscure.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog exec) (opencog sensory-v0))
 (use-modules (srfi srfi-1))
 
 ; -----------------------------------------------------------

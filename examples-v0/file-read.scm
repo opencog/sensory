@@ -4,7 +4,7 @@
 ; Demo opening a file and streaming the contents into a processing
 ; pipeline.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog exec) (opencog sensory-v0))
 
 ; Before running this demo, copy `demo.txt` to the /tmp directory.
 ; This is a text file, it will be read and processed in this demo.
