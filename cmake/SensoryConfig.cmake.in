@@ -1,7 +1,7 @@
 @PACKAGE_INIT@
 
 include("@CMAKE_INSTALL_PREFIX@/lib/cmake/Sensory/SensoryV0Targets.cmake")
-# include("@CMAKE_INSTALL_PREFIX@/lib/cmake/Sensory/SensoryTargets.cmake")
+include("@CMAKE_INSTALL_PREFIX@/lib/cmake/Sensory/SensoryTargets.cmake")
 
 set(SENSORY_V0_LIBRARIES
 	sensory-v0
