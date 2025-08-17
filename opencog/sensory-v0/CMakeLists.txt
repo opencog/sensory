@@ -1,6 +1,6 @@
 ADD_SUBDIRECTORY (types)
 
-add_guile_extension(SCM_CONFIG sensory-v0 "opencog-ext-path-sensory-v0")
+add_guile_extension(SCM_V0_CONFIG sensory-v0 "opencog-ext-path-sensory-v0")
 
 add_guile_module(FILES
    sensory-v0.scm
