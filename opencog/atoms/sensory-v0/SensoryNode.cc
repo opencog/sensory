@@ -49,7 +49,7 @@ std::string SensoryNode::monitor(void)
 
 // ====================================================================
 
-void opencog_sensory_init(void)
+void opencog_sensory_v0_init(void)
 {
    // Force shared lib ctors to run
 };

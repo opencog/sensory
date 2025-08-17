@@ -55,7 +55,7 @@ NODE_PTR_DECL(SensoryNode)
 } // namespace opencog
 
 extern "C" {
-void opencog_sensory_init(void);
+void opencog_sensory_v0_init(void);
 };
 
 #endif // _OPENCOG_SENSORY_NODE_H
