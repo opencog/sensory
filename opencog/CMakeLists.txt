@@ -2,12 +2,12 @@
 # This declaration must happen before subdirectory traversal.
 DECLARE_GUILE_CONFIG_TARGET(SCM_CONFIG "opencog sensory-v0-config" "SENSORY_TEST")
 
-ADD_SUBDIRECTORY (atoms)
+ADD_SUBDIRECTORY (atoms-v0)
 ADD_SUBDIRECTORY (sensory-v0)
 
 # Python bindings
 IF (HAVE_CYTHON)
-   ADD_SUBDIRECTORY (cython)
+   ADD_SUBDIRECTORY (cython-v0)
 ENDIF (HAVE_CYTHON)
 
 # -----------------------------

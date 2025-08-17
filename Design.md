@@ -11,14 +11,6 @@ Parts:
 See the [examples](examples) directory for actual demos that should
 actually work.
 
-Status
-------
-*** Version 0.2.0 *** -- The "Version Zero" implementation works and
-has been used in a number of places. It is flawed and is being
-re-designed (to use a parametric polymorphism OO API). The new API is
-under construction.
-
-
 Diary
 -----
 A table of contents of the design diary. Many of these are early and

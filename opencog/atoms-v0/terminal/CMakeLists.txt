@@ -3,26 +3,25 @@
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
 
-ADD_LIBRARY (sensory-irc SHARED
-	IRC.cc
-	IRChatStream.cc
+ADD_LIBRARY (sensory-v0-terminal SHARED
+	TerminalStream.cc
 )
 
 # Without this, parallel make will race and crap up the generated files.
-ADD_DEPENDENCIES(sensory-irc sensory_atom_types)
+ADD_DEPENDENCIES(sensory-v0-terminal sensory_v0_atom_types)
 
-TARGET_LINK_LIBRARIES(sensory-irc
-	sensory
-	sensory-types
+TARGET_LINK_LIBRARIES(sensory-v0-terminal
+	sensory-v0
+	sensory-v0-types
 	${ATOMSPACE_LIBRARIES}
 	${COGUTIL_LIBRARY}
 )
 
-INSTALL (TARGETS sensory-irc EXPORT AtomSpaceTargets
+INSTALL (TARGETS sensory-v0-terminal EXPORT AtomSpaceTargets
 	DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
 )
 
 INSTALL (FILES
-	IRChatStream.h
-	DESTINATION "include/opencog/atoms/sensory"
+	TerminalStream.h
+	DESTINATION "include/opencog/atoms/sensory-v0"
 )

@@ -5,14 +5,14 @@
 
 SET(SEMANTIC_VERSION 0.3.1)
 
-export(EXPORT SensoryTargets
-	FILE "${CMAKE_CURRENT_BINARY_DIR}/Sensory/SensoryTargets.cmake"
+export(EXPORT SensoryV0Targets
+	FILE "${CMAKE_CURRENT_BINARY_DIR}/Sensory/SensoryV0Targets.cmake"
 )
 
 set(ConfigPackageLocation lib/cmake/Sensory)
 
-install(EXPORT SensoryTargets
-	FILE SensoryTargets.cmake
+install(EXPORT SensoryV0Targets
+	FILE SensoryV0Targets.cmake
 	DESTINATION ${ConfigPackageLocation}
 )
 
