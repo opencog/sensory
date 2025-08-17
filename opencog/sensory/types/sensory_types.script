@@ -1,0 +1,7 @@
+//
+// Script for automatic "sensory atom type" generation. This defines
+// a collection of types suitable for defining sensory interfaces
+// to the external world.
+//
+// The base type for all sensory objects is ObjectNode.
+SENSORY_NODE <- OBJECT_NODE
