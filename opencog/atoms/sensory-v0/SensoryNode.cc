@@ -42,19 +42,7 @@ SensoryNode::~SensoryNode()
 {
 }
 
-ValuePtr SensoryNode::getValue(const Handle& key) const
-{
-	if (not key->is_type(PREDICATE_NODE))
-		return Atom::getValue(key);
-
-	// Dispatch
-	if (0 == key->get_name().compare("*-monitor-*"))
-		return createStringValue(monitor());
-
-	return Atom::getValue(key);
-}
-
-std::string SensoryNode::monitor(void) const
+std::string SensoryNode::monitor(void)
 {
 	return "This SensoryNode does not implement a monitor.";
 }

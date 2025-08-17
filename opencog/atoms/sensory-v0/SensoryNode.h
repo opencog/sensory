@@ -38,16 +38,15 @@ class SensoryNode : public Node
 protected:
 	SensoryNode(Type, const std::string&&);
 
-	/**
-	 * Return debug diagnostics and/or performance monitoring stats.
-	 */
-	virtual std::string monitor(void) const;
 public:
 	SensoryNode(const std::string&& uri)
 		: SensoryNode(SENSORY_NODE, std::move(uri)) {}
 	virtual ~SensoryNode();
 
-	virtual ValuePtr getValue(const Handle& key) const;
+	/**
+	 * Return debug diagnostics and/or performance monitoring stats.
+	 */
+	virtual std::string monitor(void);
 };
 
 NODE_PTR_DECL(SensoryNode)
