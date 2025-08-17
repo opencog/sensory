@@ -1,0 +1,5 @@
+
+ADD_SUBDIRECTORY (filedir-v0)
+ADD_SUBDIRECTORY (irc-v0)
+ADD_SUBDIRECTORY (sensory-v0)
+ADD_SUBDIRECTORY (terminal-v0)
