@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/WriteLink.h
+ * opencog/atoms/sensory-v0/WriteLink.h
  *
  * Copyright (C) 2018 Linas Vepstas
  * All Rights Reserved
@@ -24,7 +24,7 @@
 #define _OPENCOG_WRITE_LINK_H
 
 #include <opencog/atoms/base/Link.h>
-#include <opencog/sensory/types/atom_types.h>
+#include <opencog/sensory-v0/types/atom_types.h>
 
 namespace opencog
 {

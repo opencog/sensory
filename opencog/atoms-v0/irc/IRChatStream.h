@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/IRChatStream.h
+ * opencog/atoms/sensory-v0/IRChatStream.h
  *
  * Copyright (C) 2024 Linas Vepstas
  * All Rights Reserved
@@ -25,7 +25,7 @@
 
 #include <thread>
 #include <opencog/util/concurrent_queue.h>
-#include <opencog/atoms/sensory/OutputStream.h>
+#include <opencog/atoms/sensory-v0/OutputStream.h>
 
 class IRC;
 struct irc_reply_data;

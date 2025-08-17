@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/TerminalStream.h
+ * opencog/atoms/sensory-v0/TerminalStream.h
  *
  * Copyright (C) 2024 Linas Vepstas
  * All Rights Reserved
@@ -24,7 +24,7 @@
 #define _OPENCOG_TERMINAL_STREAM_H
 
 #include <stdio.h>
-#include <opencog/atoms/sensory/OutputStream.h>
+#include <opencog/atoms/sensory-v0/OutputStream.h>
 
 namespace opencog
 {

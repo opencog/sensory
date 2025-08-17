@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/OutputStream.h
+ * opencog/atoms/sensory-v0/OutputStream.h
  *
  * Copyright (C) 2024 Linas Vepstas
  * All Rights Reserved

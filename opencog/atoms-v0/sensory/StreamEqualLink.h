@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/StreamEqualLink.h
+ * opencog/atoms/sensory-v0/StreamEqualLink.h
  *
  * Copyright (C) 2018, 2024 Linas Vepstas
  * All Rights Reserved
@@ -25,7 +25,7 @@
 
 #include <opencog/atoms/core/UnorderedLink.h>
 #include <opencog/atoms/truthvalue/TruthValue.h>
-#include <opencog/sensory/types/atom_types.h>
+#include <opencog/sensory-v0/types/atom_types.h>
 
 namespace opencog
 {

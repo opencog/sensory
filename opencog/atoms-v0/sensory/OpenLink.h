@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/OpenLink.h
+ * opencog/atoms/sensory-v0/OpenLink.h
  *
  * Copyright (C) 2018 Linas Vepstas
  * All Rights Reserved
@@ -24,7 +24,7 @@
 #define _OPENCOG_OPEN_LINK_H
 
 #include <opencog/atoms/base/Link.h>
-#include <opencog/sensory/types/atom_types.h>
+#include <opencog/sensory-v0/types/atom_types.h>
 
 namespace opencog
 {

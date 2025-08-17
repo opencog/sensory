@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/SensoryNode.h
+ * opencog/atoms/sensory-v0/SensoryNode.h
  *
  * Copyright (C) 2015,2020,2022,2024 Linas Vepstas
  * All Rights Reserved
@@ -24,7 +24,7 @@
 #define _OPENCOG_SENSORY_NODE_H
 
 #include <opencog/atoms/base/Node.h>
-#include <opencog/sensory/types/atom_types.h>
+#include <opencog/sensory-v0/types/atom_types.h>
 
 namespace opencog
 {
