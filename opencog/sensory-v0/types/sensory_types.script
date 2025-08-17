@@ -1,0 +1,41 @@
+//
+// Script for automatic "sensory atom type" generation. This defines
+// a collection of types suitable for defining sensory interfaces
+// to the external world.
+//
+// Stream that can be written to.
+OUTPUT_STREAM <- LINK_STREAM_VALUE
+
+// File system stream
+FILE_SYS_STREAM <- OUTPUT_STREAM
+
+// Stream of text
+TEXT_STREAM <- OUTPUT_STREAM
+TEXT_FILE_STREAM <- TEXT_STREAM
+TERMINAL_STREAM <- TEXT_STREAM
+
+// IRC chatbot API
+I_R_CHAT_STREAM <- TEXT_STREAM
+
+// SensoryNodes hold URL's/URI's to some given I/O device.
+// They do not perform the I/O directly.
+//
+//
+// What's the right base type for all sensory nodes?
+// LexicalNode, cause there's a collection of them.
+// TagNode cause base AtomSpace already calls them "data streams".
+// BondNode cause they are connector-like?
+SENSORY_NODE <- TAG_NODE
+
+// Calling execute() provides description of stream.
+LOOKAT_LINK <- EXECUTABLE_LINK
+
+// Calling execute() creates a new stream of the given type.
+OPEN_LINK <- EXECUTABLE_LINK
+
+// Calling execute() writes to output device.
+WRITE_LINK <- EXECUTABLE_LINK
+
+// General utility glue. Compare two streams, with some limited
+// amount of auto type conversion and maybe someday unification.
+STREAM_EQUAL_LINK <- EQUAL_LINK
