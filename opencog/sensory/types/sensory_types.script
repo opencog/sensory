@@ -5,3 +5,9 @@
 //
 // The base type for all sensory objects is ObjectNode.
 SENSORY_NODE <- OBJECT_NODE
+
+// Read text file, one line at a time. Write (append) to text file.
+TEXT_FILE_NODE <- SENSORY_NODE
+
+// Navigate file system
+FILE_SYS_NODE <- SENSORY_NODE
