@@ -27,4 +27,4 @@
 	(string-append opencog-ext-path-sensory-v0 "libsensory-v0-terminal")
 	"opencog_sensory_v0_terminal_init")
 
-(include-from-path "opencog/sensory-v0/sensory-v0-types.scm")
+(include-from-path "opencog/sensory-v0/sensory_types.scm")
