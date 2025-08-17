@@ -510,7 +510,7 @@ DEFINE_VALUE_FACTORY(I_R_CHAT_STREAM, createIRChatStream, Handle)
 
 // ====================================================================
 
-void opencog_sensory_irc_init(void)
+void opencog_sensory_v0_irc_init(void)
 {
 	// Force shared lib ctors to run
 };

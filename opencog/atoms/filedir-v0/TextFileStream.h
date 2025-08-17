@@ -72,7 +72,7 @@ static inline std::shared_ptr<TextFileStream> createTextFileStream(Type&&... arg
 } // namespace opencog
 
 extern "C" {
-void opencog_sensory_filedir_init(void);
+void opencog_sensory_v0_filedir_init(void);
 };
 
 #endif // _OPENCOG_TEXT_FILE_STREAM_H

@@ -95,7 +95,7 @@ static inline std::shared_ptr<IRChatStream> createIRChatStream(Type&&... args) {
 } // namespace opencog
 
 extern "C" {
-void opencog_sensory_irc_init(void);
+void opencog_sensory_v0_irc_init(void);
 };
 
 #endif // _OPENCOG_I_R_CHAT_STREAM_H

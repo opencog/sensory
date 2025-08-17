@@ -77,7 +77,7 @@ static inline std::shared_ptr<TerminalStream> createTerminalStream(Type&&... arg
 } // namespace opencog
 
 extern "C" {
-void opencog_sensory_terminal_init(void);
+void opencog_sensory_v0_terminal_init(void);
 };
 
 #endif // _OPENCOG_TERMINAL_STREAM_H

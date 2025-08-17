@@ -254,7 +254,7 @@ DEFINE_VALUE_FACTORY(TERMINAL_STREAM, createTerminalStream, ValueSeq)
 
 // ====================================================================
 
-void opencog_sensory_terminal_init(void)
+void opencog_sensory_v0_terminal_init(void)
 {
    // Force shared lib ctors to run
 };

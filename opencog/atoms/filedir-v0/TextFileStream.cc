@@ -178,7 +178,7 @@ DEFINE_VALUE_FACTORY(TEXT_FILE_STREAM, createTextFileStream, Handle)
 
 // ====================================================================
 
-void opencog_sensory_filedir_init(void)
+void opencog_sensory_v0_filedir_init(void)
 {
    // Force shared lib ctors to run
 };
