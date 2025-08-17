@@ -8,6 +8,7 @@
 
 ; Before running this demo, copy `demo.txt` to the /tmp directory.
 ; This is a text file, it will be read and processed in this demo.
+(copy-file "demo.txt" "/tmp/demo.txt")
 
 ; --------------------------------------------------------
 ; Basic demo: Open a file for reading, at a fixed absolute location
