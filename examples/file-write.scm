@@ -57,17 +57,22 @@
 ; Demo: Combine the reader and the writer to perform a file copy.
 ; Just as in the `file-read.scm` demo, the demo file should be copied
 ; to the temp directory, first: `cp demo.txt /tmp`
+(copy-file "demo.txt" "/tmp/demo.txt")
 
-; Instead of using the custom scheme API `cog-set-value`, use the
-; generic cog-execute! instead, and the SetValueLink to wire things
-; into place.
+; The writer was previously configured (just a few lines up above)
+; to obtain text from (Concept "source") (Predicate "key"). Here,
+; we replace that text with a file reader stream. Thus, when the
+; writer is executed, it will suck text out of this stream, and
+; write it to the output file.
 (cog-execute!
 	(SetValue
 		(Concept "source") (Predicate "key")
-		(Open (Type 'TextFileStream) (Sensory "file:///tmp/demo.txt"))))
+		(ValueOf
+			(TextFile "file:///tmp/demo.txt")
+			(Predicate "*-read-*"))))
 
-; Running the writer will enter an infinite loop, pulling one line
-; at a time from the input file, and writing it to the output file.
+; Running the writer will enter a loop (infinite loop), pulling one
+; line at a time from the input file, and writing it to the output file.
 ; The loop exits when end-of-file is reached.
 (cog-execute! writer)
 
@@ -78,12 +83,14 @@
 ; were no changes: `cat /tmp/foobar.txt`
 (cog-execute! writer)
 
-; Get a fresh handle to the input stream. Each call
-; to SetValue will create a new file handle.
+; Get a fresh input stream. Each execution of SetValue will create
+; a new stream.
 (cog-execute!
 	(SetValue
 		(Concept "source") (Predicate "key")
-		(Open (Type 'TextFileStream) (Sensory "file:///tmp/demo.txt"))))
+		(ValueOf
+			(TextFile "file:///tmp/demo.txt")
+			(Predicate "*-read-*"))))
 
 ; And now write again:
 (cog-execute! writer)
