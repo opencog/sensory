@@ -35,8 +35,8 @@
 
 using namespace opencog;
 
-TextFileNode::TextFileNode(Type t, const std::string&& str) :
-	SensoryNode(t, std::move(str)),
+TextFileNode::TextFileNode(Type t, const std::string&& url) :
+	TextWriterNode(t, std::move(url)),
 	_fh(nullptr),
 	_fresh(true)
 {
@@ -44,8 +44,8 @@ TextFileNode::TextFileNode(Type t, const std::string&& str) :
 		"Bad TextFileNode constructor!");
 }
 
-TextFileNode::TextFileNode(const std::string&& str) :
-	SensoryNode(TEXT_FILE_NODE, std::move(str)),
+TextFileNode::TextFileNode(const std::string&& url) :
+	TextWriterNode(TEXT_FILE_NODE, std::move(url)),
 	_fh(nullptr),
 	_fresh(true)
 {
@@ -104,11 +104,6 @@ void TextFileNode::close(const ValuePtr&)
 {
 }
 
-void TextFileNode::write(const ValuePtr& stuf)
-{
-printf("ola write %s\n", stuf->to_string().c_str());
-}
-
 bool TextFileNode::connected(void) const
 {
 	return true;
@@ -132,18 +127,12 @@ ValuePtr TextFileNode::describe(AtomSpace* as, bool silent)
 
 void TextFileNode::do_write(const std::string& str)
 {
-	fprintf(_fh, "%s", str.c_str());
-}
-
-// Write stuff to a file.
-ValuePtr TextFileNode::write_out(AtomSpace* as, bool silent,
-                                   const Handle& cref)
-{
 	if (nullptr == _fh)
 		throw RuntimeException(TRACE_INFO,
-			"Text stream not open: URI \"%s\"\n", _name.c_str());
+			"TextFile not open: URI \"%s\"\n", _name.c_str());
 
-	return createStringValue("");
+printf("duuuude do write it %s\n", str.c_str());
+	fprintf(_fh, "%s", str.c_str());
 }
 
 // ==============================================================
