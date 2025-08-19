@@ -48,16 +48,6 @@ TextFileNode::TextFileNode(const std::string&& str)
 	init();
 }
 
-TextFileNode::TextFileNode(const Handle& senso)
-	: SensoryNode(TEXT_FILE_NODE)
-{
-	if (SENSORY_NODE != senso->get_type())
-		throw RuntimeException(TRACE_INFO,
-			"Expecting SensoryNode, got %s\n", senso->to_string().c_str());
-
-	init(senso->get_name());
-}
-
 TextFileNode::~TextFileNode()
 {
 	if (_fh)
@@ -83,12 +73,14 @@ void TextFileNode::init()
 {
 	_fresh = true;
 	_fh = nullptr;
-	if (0 != _url.compare(0, 8, "file:///"))
+	const std::string& url = get_name();
+
+	if (0 != url.compare(0, 8, "file:///"))
 		throw RuntimeException(TRACE_INFO,
-			"Unsupported URL \"%s\"\n", _url.c_str());
+			"Unsupported URL \"%s\"\n", url.c_str());
 
 	// Ignore the first 7 chars "file://"
-	const char* fpath = _url.substr(7).c_str();
+	const char* fpath = url.substr(7).c_str();
 	_fh = fopen(fpath, "a+");
 
 	if (nullptr == _fh)
@@ -136,41 +128,6 @@ ValuePtr TextFileNode::describe(AtomSpace* as, bool silent)
 }
 
 // ==============================================================
-
-// This will read one line from the file stream, and return that line.
-// So, a line-oriented, buffered interface. For now.
-void TextFileNode::update() const
-{
-	if (nullptr == _fh) { _value.clear(); return; }
-
-	// The very first call after opening a file will typically
-	// be a bogus update, so as to give the caller something,
-	// anything. There will be trouble down the line, when
-	// actually reading. So first time through, return the URL
-	if (_fresh)
-	{
-		_fresh = false;
-		_value.resize(1);
-		_value[0] = createNode(ITEM_NODE, _uri);
-		return;
-	}
-
-#define BUFSZ 4080
-	char buff[BUFSZ];
-	char* rd = fgets(buff, BUFSZ, _fh);
-	if (nullptr == rd)
-	{
-		fclose(_fh);
-		_fh = nullptr;
-		_value.clear();
-		return;
-	}
-
-	_value.resize(1);
-	_value[0] = createNode(ITEM_NODE, buff);
-}
-
-// ==============================================================
 // Write stuff to a file.
 
 void TextFileNode::do_write(const std::string& str)
@@ -184,9 +141,9 @@ ValuePtr TextFileNode::write_out(AtomSpace* as, bool silent,
 {
 	if (nullptr == _fh)
 		throw RuntimeException(TRACE_INFO,
-			"Text stream not open: URI \"%s\"\n", _uri.c_str());
+			"Text stream not open: URI \"%s\"\n", _name.c_str());
 
-	return do_write(as, silent, cref);
+	return createStringValue("");
 }
 
 // ==============================================================

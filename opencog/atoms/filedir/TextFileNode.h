@@ -41,9 +41,7 @@ class TextFileNode
 	: public SensoryNode
 {
 protected:
-	TextFileNode(Type t, const std::string&&);
 	void init(void);
-	virtual void update() const;
 
 	mutable FILE* _fh;
 	mutable bool _fresh;
@@ -56,8 +54,8 @@ protected:
 	virtual ValuePtr read(void) const;
 
 public:
-	TextFileNode(const Handle&);
 	TextFileNode(const std::string&&);
+	TextFileNode(Type t, const std::string&&);
 	virtual ~TextFileNode();
 
 	virtual ValuePtr describe(AtomSpace*, bool);
@@ -66,14 +64,8 @@ public:
 	static Handle factory(const Handle&);
 };
 
-typedef std::shared_ptr<TextFileNode> TextFileNodePtr;
-static inline TextFileNodePtr TextFileNodeCast(ValuePtr& a)
-	{ return std::dynamic_pointer_cast<TextFileNode>(a); }
-
-template<typename ... Type>
-static inline std::shared_ptr<TextFileNode> createTextFileNode(Type&&... args) {
-   return std::make_shared<TextFileNode>(std::forward<Type>(args)...);
-}
+NODE_PTR_DECL(TextFileNode)
+#define createTextFileNode CREATE_DECL(TextFileNode)
 
 /** @}*/
 } // namespace opencog
