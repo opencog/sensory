@@ -107,8 +107,9 @@ txt-stream
 ; restart at the beginning.
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
-		(Open (Type 'TextFileStream)
-			(Sensory "file:///tmp/demo.txt"))))
+		(ValueOf
+			(TextFile "file:///tmp/demo.txt")
+			(Predicate "*-read-*"))))
 
 ; Run the rule, once.
 (cog-execute! rule-applier)
@@ -130,8 +131,9 @@ txt-stream
 ; As above: rewind the stream to the beginning:
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
-		(Open (Type 'TextFileStream)
-			(Sensory "file:///tmp/demo.txt"))))
+		(ValueOf
+			(TextFile "file:///tmp/demo.txt")
+			(Predicate "*-read-*"))))
 
 ; Gentle reminder of how to fetch this:
 (define txt-stream-gen
