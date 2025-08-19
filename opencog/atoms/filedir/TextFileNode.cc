@@ -30,6 +30,7 @@
 #include <opencog/atoms/value/ValueFactory.h>
 
 #include <opencog/sensory/types/atom_types.h>
+#include <opencog/atoms/filedir/TextFileReader.h>
 #include "TextFileNode.h"
 
 using namespace opencog;
@@ -96,10 +97,10 @@ void TextFileNode::init()
 			url.c_str(), ers);
 	}
 }
+
 void TextFileNode::open(const ValuePtr&)
 {
 }
-
 
 void TextFileNode::close(const ValuePtr&)
 {
@@ -116,7 +117,7 @@ bool TextFileNode::connected(void) const
 
 ValuePtr TextFileNode::read(void) const
 {
-	return createStringValue("foo");
+	return createTextFileReader("foo");
 }
 
 // ==============================================================
