@@ -55,7 +55,7 @@ TextFileNode::~TextFileNode()
 		fclose (_fh);
 }
 
-/// Attempt to open the URL for reading and writing.
+/// Attempt to open the URL for writing.
 /// The URL format is described in
 /// https://en.wikipedia.org/wiki/File_URI_scheme
 /// and we adhere to that.
@@ -69,6 +69,11 @@ TextFileNode::~TextFileNode()
 /// Possible extensions:
 /// file:mode//...
 /// where mode is one of the modes described in `man 3 fopen`
+///
+/// Other possible extensions: this could also take configurable
+/// parameters, via the (Predicate "*-some-paramter-*) message.
+/// Such parameters could control flushing, appending vs clobbering,
+/// and so on. XXX TODO.
 
 void TextFileNode::open(const ValuePtr& ignored)
 {

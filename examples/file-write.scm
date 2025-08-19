@@ -8,39 +8,24 @@
 
 ; --------------------------------------------------------
 ; Basic demo: Open a file for writing, and place some text into it.
-; Unlike the reader ...
-; xxxxxxxxxxx
-; Open the file for writing; create it if it does not exist.
-; Position cursor at the end of the file (for appending).
-; The returned stream should be thought of as a cursor into the file.
+; Unlike the File reader, which returns a stream that can be read from,
+; the writer is implemented by the object itself. Reader streams are
+; opened automatically when the stream is created. Writers must be
+; explicitly opened before writing.
+;
+; Upon opening, the file is created, if it does not exist.
+; The cursor is positioned at the end of the file (for appending).
 (cog-set-value! (TextFile "file:///tmp/foobar.txt")
 	(Predicate "*-open-*") (VoidValue))
 
 ; Perform `ls -la /tmp/foo*` and you should see a file of zero length.
 
+; Write some text to the file.
+(cog-set-value! (TextFile "file:///tmp/foobar.txt")
+	(Predicate "*-write-*") (StringValue "Hello there!\n"))
 
 (cog-set-value! (TextFile "file:///tmp/foobar.txt")
-	(Predicate "*-write-*") (StringValue "ooo"))
-
-; Create a WriteLink
-(define writer
-	(WriteLink
-		(ValueOf (Concept "file anchor") (Predicate "output place"))
-		(Concept "stuff to write to the file\n")))
-
-; Creating above does not write anything to the file.
-; Verify this with another `ls -la /tmp/foo*`
-
-; Write stuff to the file.
-(cog-execute! writer)
-
-; Verify that it was written: `cat /tmp/foobar.txt`
-(cog-execute! writer)
-
-; Do it a few more times.
-(cog-execute! writer)
-(cog-execute! writer)
-(cog-execute! writer)
+	(Predicate "*-write-*") (StringValue "How are you?\n"))
 
 ; --------------------------------------------------------
 ; Demo: Perform indirect streaming. The text to write will be placed as
@@ -49,15 +34,16 @@
 (cog-set-value!
 	(Concept "source") (Predicate "key")
 	(StringValue
-		"some text\n"
-		"without a newline"
+		"Some text\n"
+		"Without a newline "
 		"after it\n"
 		"Goodbye!\n"))
 
-; Redefine the writer.
+; Define a writer, that, when executed, will write to the file.
 (define writer
-	(WriteLink
-		(ValueOf (Concept "file anchor") (Predicate "output place"))
+	(SetValue
+		(TextFile "file:///tmp/foobar.txt")
+		(Predicate "*-write-*")
 		(ValueOf (Concept "source") (Predicate "key"))))
 
 ; Write it out.
