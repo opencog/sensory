@@ -48,13 +48,6 @@ TextWriterNode::~TextWriterNode()
 
 // ==============================================================
 
-// Provide an unreasonable default implementation
-void TextWriterNode::do_write(const std::string& str)
-{
-	throw RuntimeException(TRACE_INFO,
-		"Not implemented! What are you doing?");
-}
-
 // Provide a reasonable default implementation
 void TextWriterNode::write_one(const ValuePtr& content)
 {
@@ -96,12 +89,12 @@ void TextWriterNode::write_one(const ValuePtr& content)
 }
 
 // Provide a reasonable default implementation.
-ValuePtr TextWriterNode::do_write_out(const Handle& cref)
+void TextWriterNode::write(const ValuePtr& cref)
 {
 	ValuePtr content = cref;
-	if (cref->is_executable())
+	if (cref->is_atom() and HandleCast(cref)->is_executable())
 	{
-		content = cref->execute(as, silent);
+		content = HandleCast(cref)->execute();
 		if (nullptr == content)
 			throw RuntimeException(TRACE_INFO,
 				"Expecting something to write from %s\n",

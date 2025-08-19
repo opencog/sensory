@@ -47,16 +47,20 @@ namespace opencog
 class TextWriterNode
 	: public SensoryNode
 {
+private:
+	virtual void write_one(const ValuePtr&);
+
 protected:
 	TextWriterNode(Type t);
 
-	virtual void do_write(const std::string&);
-	virtual void write_one(AtomSpace*, bool, const ValuePtr&);
-	virtual ValuePtr do_write_out(AtomSpace*, bool, const Handle&);
+	// Derviced classes to implement this.
+	virtual void do_write(const std::string&) = 0;
+
+	// The "main" write routine, assecpt anything.
+	virtual void write(const ValuePtr&);
 
 public:
 	virtual ~TextWriterNode();
-	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&) = 0;
 };
 
 NODE_PTR_DECL(TextWriterNode)
