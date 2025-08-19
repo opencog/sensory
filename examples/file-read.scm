@@ -33,32 +33,33 @@ txt-stream
 ; Eventually, this will return an empty stream. This denotes end-of-file.
 
 ; --------------------------------------------------------
-; Demo: Perform indirect streaming. The file-stream will be placed
+; Demo: Perform indirect streaming. The text-stream will be placed
 ; as a Value on some Atom, where it can be accessed and processed.
 ;
-; Open the file, get the stream, and place it somewhere.
+; Open the file again, placing the text stream at "some place".
 (cog-set-value! (Concept "foo") (Predicate "some place")
-	(cog-execute!
-		(Open (Type 'TextFileStream)
-			(Sensory "file:///tmp/demo.txt"))))
+	(cog-value
+		(TextFile "file:///tmp/demo.txt")
+		(Predicate "*-read-*")))
 
-; A better, all-Atomese version of the above. Note that the SetValueLink
-; will execute the TextFileNode, grab whatever it gets from that exec,
-; and then places it at the indicated location.
+; A better, all-Atomese version of the above. When the SetValueLink
+; is executed, it will attach the freshly opened reader stream at
+; "some place".
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
-		(Open (Type 'TextFileStream)
-			(Sensory "file:///tmp/demo.txt"))))
+		(ValueOf
+			(TextFile "file:///tmp/demo.txt")
+			(Predicate "*-read-*"))))
 
-; Define an executable node that will feed the stream of text.
-; The ValueOf Atom is a kind of promise about the future: when
-; it is executed, it will return the Value, whatever it is, at
-; that time (at the time when the executiion is done).
+; The freshly-opened stream can be accessed by just fetching
+; it from "some place", the location it is anchored at.
 (define txt-stream-gen
 	(ValueOf (Concept "foo") (Predicate "some place")))
 
-; Access the file contents. Each time this is executed, it gets the
-; next line in the file.
+; Like all Atomese, the ValueOf is just a declaration: it doesn't
+; "do anything"; it just "sits there", passively. To actually access
+; the text stream, it needs to be executed. Each execution advances
+; the stream pointer, getting the next line in the file.
 (cog-execute! txt-stream-gen)
 (cog-execute! txt-stream-gen)
 (cog-execute! txt-stream-gen)
