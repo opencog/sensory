@@ -37,8 +37,7 @@ using namespace opencog;
 
 TextFileNode::TextFileNode(Type t, const std::string&& url) :
 	TextWriterNode(t, std::move(url)),
-	_fh(nullptr),
-	_fresh(true)
+	_fh(nullptr)
 {
 	OC_ASSERT(nameserver().isA(_type, TEXT_FILE_NODE),
 		"Bad TextFileNode constructor!");
@@ -46,8 +45,7 @@ TextFileNode::TextFileNode(Type t, const std::string&& url) :
 
 TextFileNode::TextFileNode(const std::string&& url) :
 	TextWriterNode(TEXT_FILE_NODE, std::move(url)),
-	_fh(nullptr),
-	_fresh(true)
+	_fh(nullptr)
 {
 }
 
@@ -74,7 +72,6 @@ TextFileNode::~TextFileNode()
 
 void TextFileNode::open(const ValuePtr& ignored)
 {
-	_fresh = true;
 	_fh = nullptr;
 	const std::string& url = get_name();
 
@@ -102,11 +99,14 @@ void TextFileNode::open(const ValuePtr& ignored)
 
 void TextFileNode::close(const ValuePtr&)
 {
+	if (_fh)
+		fclose (_fh);
+	_fh = nullptr;
 }
 
 bool TextFileNode::connected(void) const
 {
-	return true;
+	return (nullptr != _fh);
 }
 
 ValuePtr TextFileNode::read(void) const
@@ -131,8 +131,12 @@ void TextFileNode::do_write(const std::string& str)
 		throw RuntimeException(TRACE_INFO,
 			"TextFile not open: URI \"%s\"\n", _name.c_str());
 
-printf("duuuude do write it %s\n", str.c_str());
 	fprintf(_fh, "%s", str.c_str());
+
+	// flush, for now. This helps make the demos less confusing.
+	// Future implementations could (should?) make this a configurable
+	// parameter (using some (Predicate "*-config-*) style message.
+	fflush(_fh);
 }
 
 // ==============================================================

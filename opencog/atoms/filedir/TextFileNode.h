@@ -41,8 +41,7 @@ class TextFileNode
 	: public TextWriterNode
 {
 protected:
-	mutable FILE* _fh;
-	mutable bool _fresh;
+	FILE* _fh;
 	virtual void do_write(const std::string&);
 
 	virtual void open(const ValuePtr&);
