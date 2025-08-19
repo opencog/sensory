@@ -41,8 +41,6 @@ class TextFileNode
 	: public SensoryNode
 {
 protected:
-	void init(void);
-
 	mutable FILE* _fh;
 	mutable bool _fresh;
 	virtual void do_write(const std::string&);

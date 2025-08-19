@@ -35,18 +35,20 @@
 
 using namespace opencog;
 
-TextFileNode::TextFileNode(Type t, const std::string&& str)
-	: SensoryNode(t, std::move(str))
+TextFileNode::TextFileNode(Type t, const std::string&& str) :
+	SensoryNode(t, std::move(str)),
+	_fh(nullptr),
+	_fresh(true)
 {
 	OC_ASSERT(nameserver().isA(_type, TEXT_FILE_NODE),
 		"Bad TextFileNode constructor!");
-	init();
 }
 
-TextFileNode::TextFileNode(const std::string&& str)
-	: SensoryNode(TEXT_FILE_NODE, std::move(str))
+TextFileNode::TextFileNode(const std::string&& str) :
+	SensoryNode(TEXT_FILE_NODE, std::move(str)),
+	_fh(nullptr),
+	_fresh(true)
 {
-	init();
 }
 
 TextFileNode::~TextFileNode()
@@ -70,7 +72,7 @@ TextFileNode::~TextFileNode()
 /// file:mode//...
 /// where mode is one of the modes described in `man 3 fopen`
 
-void TextFileNode::init()
+void TextFileNode::open(const ValuePtr& ignored)
 {
 	_fresh = true;
 	_fh = nullptr;
@@ -96,10 +98,6 @@ void TextFileNode::init()
 			"Unable to open URL \"%s\"\nError was \"%s\"\n",
 			url.c_str(), ers);
 	}
-}
-
-void TextFileNode::open(const ValuePtr&)
-{
 }
 
 void TextFileNode::close(const ValuePtr&)
