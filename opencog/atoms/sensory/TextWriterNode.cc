@@ -27,6 +27,7 @@
 #include <opencog/util/oc_assert.h>
 #include <opencog/atoms/base/Link.h>
 #include <opencog/atoms/base/Node.h>
+#include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atoms/value/StringValue.h>
 
 #include <opencog/sensory/types/atom_types.h>
@@ -34,8 +35,8 @@
 
 using namespace opencog;
 
-TextWriterNode::TextWriterNode(Type t)
-	: SensoryNode(t)
+TextWriterNode::TextWriterNode(Type t, const std::string&& url)
+	: SensoryNode(t, std::move(url))
 {
 	OC_ASSERT(nameserver().isA(_type, SENSORY_NODE),
 		"Bad TextWriterNode constructor!");
@@ -105,7 +106,7 @@ void TextWriterNode::write(const ValuePtr& cref)
 	if (not content->is_type(LINK_STREAM_VALUE))
 	{
 		write_one(content);
-		return content;
+		return;
 	}
 
 	// If it is a stream, enter infinite loop, until it is exhausted.
@@ -131,7 +132,6 @@ void TextWriterNode::write(const ValuePtr& cref)
 		}
 		if (0 == nprinted) break;
 	}
-	return content;
 }
 
 // ==============================================================

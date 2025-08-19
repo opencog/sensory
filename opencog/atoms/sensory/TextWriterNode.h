@@ -51,7 +51,7 @@ private:
 	virtual void write_one(const ValuePtr&);
 
 protected:
-	TextWriterNode(Type t);
+	TextWriterNode(Type t, const std::string&&);
 
 	// Derviced classes to implement this.
 	virtual void do_write(const std::string&) = 0;
