@@ -105,7 +105,9 @@
 (cog-execute!
 	(SetValue
 		(Concept "source") (Predicate "raw file input key")
-		(Open (Type 'TextFileStream) (Sensory "file:///tmp/demo.txt"))))
+		(ValueOf
+			(TextFile "file:///tmp/demo.txt")
+			(Predicate "*-read-*"))))
 
 ; Define a rule that will take each line of input text, and
 ; process it in some way. In this case, it will just make
@@ -158,7 +160,9 @@
 (cog-execute!
 	(SetValue
 		(Concept "source") (Predicate "raw file input key")
-		(Open (Type 'TextFileStream) (Sensory "file:///tmp/demo.txt"))))
+		(ValueOf
+			(TextFile "file:///tmp/demo.txt")
+			(Predicate "*-read-*"))))
 
 ; Now, the writer will run again.
 (cog-execute! writer)
