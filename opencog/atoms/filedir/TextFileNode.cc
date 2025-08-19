@@ -115,7 +115,7 @@ bool TextFileNode::connected(void) const
 
 ValuePtr TextFileNode::read(void) const
 {
-	return createTextFileReader("foo");
+	return createTextFileReader(get_name());
 }
 
 // ==============================================================

@@ -12,11 +12,10 @@
 
 ; --------------------------------------------------------
 ; Basic demo: Open a file for reading, at a fixed absolute location
-; in the filesystem. Executing the OpenLink will return a stream
-; value that will deliver text strings, one line at a time.
-
-(cog-set-value! (TextFile "file:///tmp/demo.txt")
-	(Predicate "*-open-*") (VoidValue))
+; in the filesystem. Sending the (Predicate "*-read-*") message to
+; the (TextFile "file:///tmp/demo.txt") object will return a text
+; stream reader. Each examination of the stream will return a line
+; from the file, in sequential order.
 
 (define txt-stream
 	(cog-value
