@@ -104,8 +104,9 @@ void TextFileNode::close(const ValuePtr&)
 {
 }
 
-void TextFileNode::write(const ValuePtr&)
+void TextFileNode::write(const ValuePtr& stuf)
 {
+printf("ola write %s\n", stuf->to_string().c_str());
 }
 
 bool TextFileNode::connected(void) const

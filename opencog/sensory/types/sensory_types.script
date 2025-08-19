@@ -3,7 +3,9 @@
 // a collection of types suitable for defining sensory interfaces
 // to the external world.
 
-// Text reader stream
+// Text reader stream. This is a StreamValue, intended to stream
+// out text, in the fashion of futures/promises/streams in other
+// programming languages.
 TEXT_READER <- LINK_STREAM_VALUE
 TEXT_FILE_READER <- TEXT_READER
 
@@ -11,8 +13,11 @@ TEXT_FILE_READER <- TEXT_READER
 // The base type for all sensory objects is ObjectNode.
 SENSORY_NODE <- OBJECT_NODE
 
+// Handy utility for implementing some common tools for writing.
+TEXT_WRITER_NODE <- SENSORY_NODE
+
 // Read text file, one line at a time. Write (append) to text file.
-TEXT_FILE_NODE <- SENSORY_NODE
+TEXT_FILE_NODE <- TEXT_WRITER_NODE
 
 // Navigate file system
 FILE_SYS_NODE <- SENSORY_NODE
