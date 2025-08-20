@@ -22,20 +22,24 @@
 (use-modules (opencog) (opencog exec) (opencog sensory))
 
 ; --------------------------------------------------------
-; Create an xterm for direct I/O. Executing the OpenLink will return
-; a stream value that deliver text strings typed into the xterm window,
-; and can print text to that window. Be sure that xterm is installed,
-; else this won't work!
-(cog-set-value! (TerminalNode "foo") (Predicate "*-open-*) (VoidValue))
+; Create an xterm for direct I/O. Sending the TerminalNode object the
+; *-open-* message will create an xterm window. After this, text can be
+; read from the terminal, and sent to the terminal.
+;
+; Be sure that xterm is installed, else this won't work!
+(cog-set-value! (TerminalNode "foo") (Predicate "*-open-*") (VoidValue))
 
-; Repeated references to the stream will return single lines from
-; the xterm window. These will hang, unless/until something is typed
-; into the terminal. The interface is line-oriented, you have to hit
-; enter at the end-of line.
-term-stream
-term-stream
-term-stream
-term-stream
+; Sending the *-read-* message to the object will read a single line of
+; text from the xterm window. Each call will block (appear to hang),
+; until something is typed into the terminal, followed by a carriage
+; return. The interface is line-oriented, you have to hit enter to
+; unblock and sent the text.
+(define reader (ValueOf (TerminalNode "foo") (Predicate "*-read-*")))
+(cog-execute! reader)
+(cog-execute! reader)
+(cog-execute! reader)
+(cog-execute! reader)
+(cog-execute! reader)
 
 ; Typing a ctrl-D into the terminal will close it, returning an empty
 ; stream. (aka "end of file")
