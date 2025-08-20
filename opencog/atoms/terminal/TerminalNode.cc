@@ -139,6 +139,16 @@ void TerminalNode::open(const ValuePtr& ignore)
 	_fh = fopen(my_ptsname, "a+");
 }
 
+void TerminalNode::close(const ValuePtr& ignore)
+{
+	halt();
+}
+
+bool TerminalNode::connected(void) const
+{
+	return (nullptr != _fh);
+}
+
 // ==============================================================
 
 // This will read one line from the file stream, and return that line.
