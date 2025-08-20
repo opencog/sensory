@@ -1,7 +1,7 @@
 /*
- * opencog/atoms/sensory-v0/TerminalStream.cc
+ * opencog/atoms/sensory/TerminalNode.cc
  *
- * Copyright (C) 2020 Linas Vepstas
+ * Copyright (C) 2024, 2025 Linas Vepstas
  * All Rights Reserved
  *
  * This program is free software; you can redistribute it and/or modify
@@ -36,43 +36,32 @@
 #include <opencog/atoms/base/Link.h>
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/value/StringValue.h>
-#include <opencog/atoms/value/ValueFactory.h>
+#include <opencog/atoms/value/VoidValue.h>
 
-#include <opencog/sensory-v0/types/atom_types.h>
-#include "TerminalStream.h"
+#include <opencog/sensory/types/atom_types.h>
+#include "TerminalNode.h"
 
 using namespace opencog;
 
 // Terminal I/O using posix_openpt(), ptsname(), grantpt(), and unlockpt()
 // ttyname() pts(4), pty(7)
 
-TerminalStream::TerminalStream(Type t, const std::string& str)
-	: OutputStream(t)
+TerminalNode::TerminalNode(Type t, std::string&& str) :
+	TextWriterNode(t, std::move(str)),
+	_fh(nullptr),
+	_xterm_pid(0)
 {
 	OC_ASSERT(nameserver().isA(_type, TERMINAL_STREAM),
-		"Bad TerminalStream constructor!");
-	init();
+		"Bad TerminalNode constructor!");
 }
 
-TerminalStream::TerminalStream(void)
-	: OutputStream(TERMINAL_STREAM)
-{
-	init();
-}
-
-TerminalStream::TerminalStream(const ValueSeq& seq)
-	: OutputStream(TERMINAL_STREAM) // seq
-{
-	init();
-}
-
-TerminalStream::~TerminalStream()
+TerminalNode::~TerminalNode()
 {
 	// Runs only if GC runs. This is a problem.
 	halt();
 }
 
-void TerminalStream::halt(void) const
+void TerminalNode::halt(void) const
 {
 	if (_fh)
 		fclose (_fh);
@@ -85,10 +74,8 @@ void TerminalStream::halt(void) const
 	_value.clear();
 }
 
-void TerminalStream::init(void)
+void TerminalNode::open(const ValuePtr& ignore)
 {
-	do_describe();
-
 	_fh = nullptr;
 
 	int fd = posix_openpt(O_RDWR|O_NOCTTY);
@@ -149,47 +136,12 @@ void TerminalStream::init(void)
 
 // ==============================================================
 
-Handle _global_desc = Handle::UNDEFINED;
-
-void TerminalStream::do_describe(void)
-{
-	if (_global_desc) return;
-
-	HandleSeq cmds;
-
-	// Describe exactly how to Open this stream.
-	// It needs no special arguments.
-	Handle open_cmd =
-		make_description("the open terminal command",
-		                 "OpenLink", "TerminalStream");
-	cmds.emplace_back(open_cmd);
-
-	// Write text
-	Handle write_cmd =
-		make_description("the write stuff command",
-		                 "WriteLink", "ItemNode");
-	cmds.emplace_back(write_cmd);
-
-	_global_desc = createLink(cmds, CHOICE_LINK);
-}
-
-// This is totally bogus because it is unused.
-// This should be class static member
-ValuePtr TerminalStream::describe(AtomSpace* as, bool silent)
-{
-	if (_description) return as->add_atom(_description);
-	_description = as->add_atom(_global_desc);
-	return _description;
-}
-
-// ==============================================================
-
 // This will read one line from the file stream, and return that line.
 // So, a line-oriented, buffered interface. For now.
 // This blocks, waiting for input, if there is no input.
-void TerminalStream::update() const
+ValuePtr TerminalNode::read(void)
 {
-	if (nullptr == _fh) { _value.clear(); return; }
+	if (nullptr == _fh) return;
 
 #define BUFSZ 4080
 	char buff[BUFSZ];
@@ -219,17 +171,16 @@ void TerminalStream::update() const
 	if (nullptr == rd)
 	{
 		halt();
-		return;
+		return createVoidValue();
 	}
 
-	_value.resize(1);
-	_value[0] = createStringValue(buff);
+	return createStringValue(buff);
 }
 
 // ==============================================================
 // Write stuff to a file.
 
-void TerminalStream::do_write(const std::string& str)
+void TerminalNode::do_write(const std::string& str)
 {
 	if (nullptr == _fh)
 		throw RuntimeException(TRACE_INFO,
@@ -239,22 +190,14 @@ void TerminalStream::do_write(const std::string& str)
 	fflush(_fh);
 }
 
-// Write stuff to a file.
-ValuePtr TerminalStream::write_out(AtomSpace* as, bool silent,
-                                   const Handle& cref)
-{
-	return do_write_out(as, silent, cref);
-}
-
 // ==============================================================
 
 // Adds factory when library is loaded.
-DEFINE_VALUE_FACTORY(TERMINAL_STREAM, createTerminalStream)
-DEFINE_VALUE_FACTORY(TERMINAL_STREAM, createTerminalStream, ValueSeq)
+DEFINE_NODE_FACTORY(TerminalNode, TERMINAL_NODE);
 
 // ====================================================================
 
-void opencog_sensory_v0_terminal_init(void)
+void opencog_sensory_terminal_init(void)
 {
    // Force shared lib ctors to run
 };
