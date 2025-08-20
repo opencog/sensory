@@ -27,7 +27,8 @@
 ; read from the terminal, and sent to the terminal.
 ;
 ; Be sure that xterm is installed, else this won't work!
-(cog-set-value! (TerminalNode "foo") (Predicate "*-open-*") (VoidValue))
+(define xterm (TerminalNode "foo"))
+(cog-set-value! xterm (Predicate "*-open-*") (VoidValue))
 
 ; Sending the *-read-* message to the object will read a single line of
 ; text from the xterm window. Each call will block (appear to hang),
@@ -44,28 +45,19 @@
 ; Typing a ctrl-D into the terminal will close it, returning an empty
 ; stream. (aka "end of file")
 
-; A WriteLink consists of two parts: where to write, and what
-; to write. Since the write cursor is a Value, not an Atom, we
-; cannot specify it directly. Thus, we place it at an anchor
-; point. (Neither the name "xterm anchor", nor the key "output place"
-; matter. They can be anything, and any atom can be used in their
-; place, including Links.)
-(cog-set-value!
-	(Concept "xterm anchor") (Predicate "output place") term-stream)
+; The reader above works differently from the TextFileNode. Because
+; text files are static, it is safe to have multiple file readers
+; running at the same time, and therefore it makes sense to return a
+; TextReader stream, and have the stream do the read automatically.
+;
+; Here, by contrast, each read consumes a line from the xterm, and
+; thus, we can't actually have multiple concurrent readers. Thus, the
+; API provides a read function that must be called explicitly, to get
+; each line.
 
-; Create a WriteLink
-(define writer
-	(WriteLink
-		(ValueOf (Concept "xterm anchor") (Predicate "output place"))
-		(Concept "stuff to write to the terminal\n")))
-
-; Write stuff to the terminal.
-(cog-execute! writer)
-
-; Do it a few more times.
-(cog-execute! writer)
-(cog-execute! writer)
-(cog-execute! writer)
+; Writing proceeds in a manner similar to the TextFileNode.
+(cog-set-value! xterm (Predicate "*-write-*")
+	(StringValue "Hello there!\n"))
 
 ; --------------------------------------------------------
 ; Demo: Perform indirect streaming. The text to write will be placed as
@@ -74,28 +66,20 @@
 (cog-set-value!
 	(Concept "source") (Predicate "key")
 	(StringValue
-		"some text\n"
-		"without a newline"
+		"Some text\n"
+		"Without a newline "
 		"after it\n"
 		"Goodbye!\n"))
 
-; Redefine the writer.
+; Define the writer.
 (define writer
-	(WriteLink
-		(ValueOf (Concept "xterm anchor") (Predicate "output place"))
+	(SetValue xterm (Predicate "*-write-*")
 		(ValueOf (Concept "source") (Predicate "key"))))
 
 ; Write it out.
 (cog-execute! writer)
 (cog-execute! writer)
 (cog-execute! writer)
-
-; --------------------------------------------------------
-; Look at available commands. For now, nothing to be done with these,
-; that comes in a later demo. Note that there are only two Sections,
-; and each Section has a minimal number of Connectors.
-
-(cog-execute! (Lookat (Type 'TerminalStream)))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
