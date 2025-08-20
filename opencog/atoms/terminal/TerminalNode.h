@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory-v0/TerminalStream.h
+ * opencog/atoms/sensory/TerminalNode.h
  *
  * Copyright (C) 2024 Linas Vepstas
  * All Rights Reserved
@@ -20,11 +20,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_TERMINAL_STREAM_H
-#define _OPENCOG_TERMINAL_STREAM_H
+#ifndef _OPENCOG_TERMINAL_NODE_H
+#define _OPENCOG_TERMINAL_NODE_H
 
 #include <stdio.h>
-#include <opencog/atoms/sensory-v0/OutputStream.h>
+#include <opencog/atoms/sensory/TextWriterNode.h>
 
 namespace opencog
 {
@@ -34,44 +34,38 @@ namespace opencog
  */
 
 /**
- * TerminalStreams provide a text stream connected to an instance of an
- * xterm. Due to the general weirdness of attaching terminals to running
- * processes, this is what it is because the alternative is to build a
- * telnet sserver, and I don't want to do that.
+ * TerminalNodes provide a text I/O via an instance of an xterm.
+ * Due to the general weirdness of attaching terminals to running
+ * processes, the implementation is kind of whack, because the
+ * cleaner alternative is to build a telnet sserver, and I don't
+ * want to do that. Not today.
  */
-class TerminalStream
-	: public OutputStream
+class TerminalNode
+	: public TextWriterNode
 {
 protected:
-	TerminalStream(Type t, const std::string&);
+	TerminalNode(Type t, std::string&&);
 	void init(void);
 	void halt(void) const;
-	virtual void update() const;
-
-	Handle _description;
-	void do_describe(void);
 
 	mutable FILE* _fh;
 	mutable pid_t _xterm_pid;
 	virtual void do_write(const std::string&);
 
-public:
-	TerminalStream(void);
-	TerminalStream(const ValueSeq&);
-	virtual ~TerminalStream();
+	virtual void open(const ValuePtr&);
+	virtual void close(const ValuePtr&);
+	// virtual void write(const ValuePtr&); inherited from TextWriterNode
+	virtual bool connected(void) const;
+	virtual ValuePtr read(void) const;
 
-	virtual ValuePtr describe(AtomSpace*, bool);
-	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&);
+public:
+	TerminalNode(void);
+	TerminalNode(const ValueSeq&);
+	virtual ~TerminalNode();
 };
 
-typedef std::shared_ptr<TerminalStream> TerminalStreamPtr;
-static inline TerminalStreamPtr TerminalStreamCast(ValuePtr& a)
-	{ return std::dynamic_pointer_cast<TerminalStream>(a); }
-
-template<typename ... Type>
-static inline std::shared_ptr<TerminalStream> createTerminalStream(Type&&... args) {
-   return std::make_shared<TerminalStream>(std::forward<Type>(args)...);
-}
+NODE_PTR_DECL(TerminalNode)
+#define createTerminalNode CREATE_DECL(TerminalNode)
 
 /** @}*/
 } // namespace opencog
@@ -80,4 +74,4 @@ extern "C" {
 void opencog_sensory_v0_terminal_init(void);
 };
 
-#endif // _OPENCOG_TERMINAL_STREAM_H
+#endif // _OPENCOG_TERMINAL_NODE_H
