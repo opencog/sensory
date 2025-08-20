@@ -89,9 +89,10 @@ void TextWriterNode::write_one(const ValuePtr& content)
 	// and the writer mindlessly copied from the reader, to us. Now,
 	// the pipeline before the writer should have checked for end-of-file
 	// and should never have sent us this bogus value. But they didn't,
-	// and we received it. And we know what it means: no-op. So do
-	// nothing.
-	if (content->is_type(VOID_VALUE)) return;
+	// and we received it. Throw a silent exception. This will avoid
+	// spew, but it will break out of infinite loops.
+	if (content->is_type(VOID_VALUE))
+		throw SilentException();
 
 	throw RuntimeException(TRACE_INFO,
 		"Expecting strings, got %s\n", content->to_string().c_str());
