@@ -22,9 +22,9 @@
 ;;(load-extension
 ;;	(string-append opencog-ext-path-sensory "libsensory-irc")
 ;;	"opencog_sensory_irc_init")
-;;
-;;(load-extension
-;;	(string-append opencog-ext-path-sensory "libsensory-terminal")
-;;	"opencog_sensory_terminal_init")
+
+(load-extension
+	(string-append opencog-ext-path-sensory "libsensory-terminal")
+	"opencog_sensory_terminal_init")
 
 (include-from-path "opencog/sensory/sensory_types.scm")
