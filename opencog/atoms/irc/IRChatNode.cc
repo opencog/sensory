@@ -25,9 +25,8 @@
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atoms/value/StringValue.h>
-#include <opencog/atoms/value/ValueFactory.h>
 
-#include <opencog/sensory-v0/types/atom_types.h>
+#include <opencog/sensory/types/atom_types.h>
 #include "IRChatNode.h"
 
 #include "IRC.h"
@@ -38,28 +37,18 @@
 
 using namespace opencog;
 
-IRChatNode::IRChatNode(Type t, const std::string& str)
-	: OutputNode(t)
+IRChatNode::IRChatNode(Type t, const std::string&& str) :
+	TextWriterNode(t, std::move(str)),
+	_conn(nullptr)
 {
-	OC_ASSERT(nameserver().isA(_type, I_R_CHAT_STREAM),
+	OC_ASSERT(nameserver().isA(_type, I_R_CHAT_NODE),
 		"Bad IRChatNode constructor!");
-	init(str);
 }
 
-IRChatNode::IRChatNode(const std::string& str)
-	: OutputNode(I_R_CHAT_STREAM)
+IRChatNode::IRChatNode(const std::string&& str) :
+	TextWriterNode(I_R_CHAT_NODE, std::move(str)),
+	_conn(nullptr)
 {
-	init(str);
-}
-
-IRChatNode::IRChatNode(const Handle& senso)
-	: OutputNode(I_R_CHAT_STREAM)
-{
-	if (SENSORY_NODE != senso->get_type())
-		throw RuntimeException(TRACE_INFO,
-			"Expecting SensoryNode, got %s\n", senso->to_string().c_str());
-
-	init(senso->get_name());
 }
 
 IRChatNode::~IRChatNode()
@@ -90,45 +79,53 @@ IRChatNode::~IRChatNode()
 ///
 /// See also: https://ircv3.net/irc/index.html
 ///
-void IRChatNode::init(const std::string& url)
+void IRChatNode::open(const ValuePtr& vurl)
 {
+	if (not vurl->is_type(STRING_VALUE) and
+	    not vurl->is_type(vurl->is_type(NODE)))
+		throw RuntimeException(TRACE_INFO,
+			"Expecting StrongValue or Node; got \"%s\"\n",
+			vurl->to_string().c_str());
+
+	if (vurl->is_type(STRING_VALUE))
+		_uri = StringValueCast(vurl)->value()[0];
+	if (vurl->is_type(NODE))
+		_uri = NodeCast(HandleCast(vurl))->get_name();
+
 	_conn = nullptr;
 	_cancel = false;
 
-	if (0 != url.compare(0, 6, "irc://"))
+	if (0 != _uri.compare(0, 6, "irc://"))
 		throw RuntimeException(TRACE_INFO,
-			"Unsupported URL \"%s\"\n", url.c_str());
-
-	// Make a copy, for debugging purposes.
-	_uri = url;
+			"Unsupported URL \"%s\"\n", _uri.c_str());
 
 	// Ignore the first 6 chars "irc://"
 	size_t base = 6;
-	size_t nck = url.find('@', base);
+	size_t nck = _uri.find('@', base);
 
 	if (std::string::npos == nck)
 		throw RuntimeException(TRACE_INFO,
 			"Invalid IRC URL \"%s\" expecting irc://nick@host[:port]\n",
-			url.c_str());
-	_nick = url.substr(base, nck-base);
+			_uri.c_str());
+	_nick = _uri.substr(base, nck-base);
 
 	// There may or may not be a port number.
-	size_t sls = url.find('/', nck);
-	size_t col = url.find(':', nck);
+	size_t sls = _uri.find('/', nck);
+	size_t col = _uri.find(':', nck);
 
 	_port = 6667;
 	nck ++;
 	if (std::string::npos == col)
 	{
 		if (std::string::npos == sls)
-			_host = url.substr(nck);
+			_host = _uri.substr(nck);
 		else
-			_host = url.substr(nck, sls-nck);
+			_host = _uri.substr(nck, sls-nck);
 	}
 	else
 	{
-		_host = url.substr(nck, col-nck);
-		_port = atoi(url.substr(col+1, sls-col-1).c_str());
+		_host = _uri.substr(nck, col-nck);
+		_port = atoi(_uri.substr(col+1, sls-col-1).c_str());
 	}
 
 	_conn = new IRC;
@@ -180,14 +177,6 @@ void IRChatNode::init(const std::string& url)
 
 	// Run I/O loop in it's own thread.
 	_loop = new std::thread(&IRChatNode::looper, this);
-}
-
-// ==================================================================
-
-ValuePtr IRChatNode::describe(AtomSpace* as, bool silent)
-{
-	throw RuntimeException(TRACE_INFO, "Not implemeneted");
-	return Handle::UNDEFINED;
 }
 
 // ==================================================================

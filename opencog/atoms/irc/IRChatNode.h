@@ -61,8 +61,6 @@ private:
 	int got_misc(const char*, irc_reply_data*);
 
 protected:
-	IRChatNode(Type t, const std::string&&);
-
 	std::string _uri;
 	std::string _nick;
 	std::string _host;
