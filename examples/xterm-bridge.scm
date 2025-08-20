@@ -25,7 +25,7 @@
 (use-modules (opencog) (opencog exec) (opencog sensory))
 
 ; --------------------------------------------------------
-; Create a pair of xterms; place them where they can be found.
+; Create a pair of xterms; open them for reading and writing.
 
 (define axterm (TerminalNode "term A"))
 (define bxterm (TerminalNode "term B"))
@@ -33,7 +33,49 @@
 (cog-set-value! axterm (Predicate "*-open-*") (VoidValue))
 (cog-set-value! bxterm (Predicate "*-open-*") (VoidValue))
 
-; Create two copiers. The
+; Create two copiers. Executing each of these once will copy exactly
+; one message frome one terminal to the other.
+
+(define copy-one-b-to-a
+	(SetValue axterm (Predicate "*-write-*")
+		(ValueOf bxterm (Predicate "*-read-*"))))
+
+(define copy-one-a-to-b
+	(SetValue bxterm (Predicate "*-write-*")
+		(ValueOf axterm (Predicate "*-read-*"))))
+
+; --------------------------------------------------------
+; The current xterm reader API is NOT streaming, it is line-at-a-time.
+; Thus, to get an endlessly running system, a pair of infinite loops
+; need to be constructed, with each loop copying on ine direction.
+; There are three ways to build such loops:
+; 1) Write them in scheme
+; 2) Write them in Atomese
+; 3) Use an Atomese shim that converts line-at-a-time interfaces to
+;    streams.
+; All three approaches will be illustrated.
+;
+; --------------------------------------------------------
+; Option 1) scheme loops: this works, but violates the principle that
+; everythig should be done in Atomese. The goal, as always, is to write
+; all dataflows in Atomese, as graphs, and not in scheme/python/etc.
+
+(define (b-to-a-loop) (cog-execute! copy-one-b-to-a) (b-to-a-loop))
+(define (a-to-b-loop) (cog-execute! copy-one-a-to-b) (a-to-b-loop))
+
+; Because we want to run both loops at the same time, they each need to
+; go into thier own threads.
+(call-with-new-thread b-to-a-loop)
+(call-with-new-thread a-to-b-loop)
+
+; That's it! Try it! Anything typee in one terminal will now be echoed
+; in the other. The threads will run foerver. To stop things, you have
+; to close the terminals:
+(cog-set-value! axterm (Predicate "*-close-*") (VoidValue))
+(cog-set-value! bxterm (Predicate "*-close-*") (VoidValue))
+
+; --------------------------------------------------------
+; Option 2) Same as Option 1) but in pure Atomese.
 
 ; Executing each of these once will create
 ; a pipe that will flow text from one terminal to the other, for
@@ -50,14 +92,6 @@
 ; might see the echoed text duplicated. This is a bug. It's due to
 ; some weird fgets-threading-locking bug, see TerminalStream.cc
 ; for details. Low priority, so not fixed.
-(define copy-b-to-a
-	(SetValue axterm (Predicate "*-write-*")
-		(ValueOf bxterm (Predicate "*-read-*"))))
-
-(define copy-a-to-b
-	(SetValue bxterm (Predicate "*-write-*")
-		(ValueOf axterm (Predicate "*-read-*"))))
-
 (call-with-new-thread (lambda () (cog-execute! copy-b-to-a)))
 (call-with-new-thread (lambda () (cog-execute! copy-a-to-b)))
 
