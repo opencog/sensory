@@ -9,7 +9,9 @@
 TEXT_READER <- LINK_STREAM_VALUE
 TEXT_FILE_READER <- TEXT_READER
 
-//
+// ---------------------------------------------
+// Values above, Atoms below.
+
 // The base type for all sensory objects is ObjectNode.
 SENSORY_NODE <- OBJECT_NODE
 
@@ -18,6 +20,9 @@ TEXT_WRITER_NODE <- SENSORY_NODE
 
 // Read text file, one line at a time. Write (append) to text file.
 TEXT_FILE_NODE <- TEXT_WRITER_NODE
+
+// Read an write to an xterm
+TERMINAL_NODE <- TEXT_WRITER_NODE
 
 // Navigate file system
 FILE_SYS_NODE <- SENSORY_NODE
