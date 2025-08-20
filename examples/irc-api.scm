@@ -11,32 +11,22 @@
 ; is given by a URL of the form
 ; irc://nick[:pass]@host[:port]
 ;
-(cog-set-value!
-	(IRChatNode "blondie") (Predicate "*-open-*")
+(define chatnode (IRChatNode "blondie"))
+(cog-set-value! chatnode (Predicate "*-open-*")
 	(StringValue "irc://blondie@irc.libera.chat:6667"))
 
 ; Repeated references to the stream will return single lines from
 ; the file.
-(cog-value  (IRChatNode "blondie") (Predicate "*-read-*"))
-
-; Place the stream at a "well-known location". This will allow
-; pure-Atomese access to the stream, thus allowing it to be
-; written to.
-(cog-set-value!
-	(Anchor "IRC Bot") (Predicate "tester") irc-stream)
+(cog-value  chatnode (Predicate "*-read-*"))
 
 ; Join an IRC channel
-(cog-execute!
-	(WriteLink
-		(ValueOf (Anchor "IRC Bot") (Predicate "tester"))
-		(List (Concept "JOIN") (Concept "#opencog"))))
+(cog-set-value! chatnode (Predicate "*-write-*")
+	(List (Concept "JOIN") (Concept "#opencog")))
 
 ; Say something on that channel
-(cog-execute!
-	(WriteLink
-		(ValueOf (Anchor "IRC Bot") (Predicate "tester"))
-		(List (Concept "PRIVMSG") (Concept "#opencog")
-			(Concept "Here's a bunch of words I want to say"))))
+(cog-set-value! chatnode (Predicate "*-write-*")
+	(List (Concept "PRIVMSG") (Concept "#opencog")
+		(Concept "Here's a bunch of words I want to say")))
 
 ; ------------------------------------------------------------
 ; The above explicitly provides IRC commands and text as Atoms.
@@ -44,8 +34,8 @@
 ; For this purpose, create a WriteLink that, when executed, will
 ; copy from the input stream to the IRC stream.
 (define writer
-	(WriteLink
-		(ValueOf (Anchor "IRC Bot") (Predicate "tester"))
+	(SetValue
+		chatnode (Predicate "*-write-*")
 		(ValueOf (Anchor "Stuff to say") (Predicate "say key"))))
 
 ; From this point on, commands are streamed by placing them
@@ -70,33 +60,33 @@
 (cog-execute! writer)
 
 ; ------------------------------------------------------------
-; Low-level access. Not recommended; provided for debugging.
-; Debug log is being written to /tmp/irc-dbg.log
-
-(define bot (ValueOf (Anchor "IRC Bot") (Predicate "tester")))
-
-; Low-level command: join a channel
-(cog-execute! (Write bot (List (Concept "JOIN #opencog"))))
 
 ; Low-level command: change a nick.
-(cog-execute! (Write bot (List (Concept "NICK dorkbot"))))
+(cog-set-value! chatnode (Predicate "*-write-*")
+	(List (Concept "NICK dorkbot")))
 
 ; Low-level command: list all channels w/ channel info
-(cog-execute! (Write bot (List (Concept "LIST"))))
+(cog-set-value! chatnode (Predicate "*-write-*")
+	(List (Concept "LIST")))
 
 ; Low-level command: list details about one channel
-(cog-execute! (Write bot (List (Concept "LIST #opencog"))))
+(cog-set-value! chatnode (Predicate "*-write-*")
+	(List (Concept "LIST #opencog")))
 
 ; Low-level command: all channels w/nicks in the channel
-(cog-execute! (Write bot (List (Concept "NAMES"))))
+(cog-set-value! chatnode (Predicate "*-write-*")
+	(List (Concept "NAMES")))
 
 ; Low-level command: nicks of users in a channel
-(cog-execute! (Write bot (List (Concept "NAMES #opencog"))))
+(cog-set-value! chatnode (Predicate "*-write-*")
+	(List (Concept "NAMES #opencog")))
 
 ; Low-level command: set channel topic.
-(cog-execute! (Write bot (List (Concept "TOPIC #opencog Who's an operator now"))))
+(cog-set-value! chatnode (Predicate "*-write-*")
+	(List (Concept "TOPIC #opencog Who's an operator now")))
 
-(cog-execute! (Write bot (List (Concept "HELP"))))
+(cog-set-value! chatnode (Predicate "*-write-*")
+	(List (Concept "HELP")))
 
 ; HELP is one of the IRC server commands.
 
