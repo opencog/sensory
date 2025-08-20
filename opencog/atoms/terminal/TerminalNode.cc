@@ -199,7 +199,7 @@ void TerminalNode::do_write(const std::string& str)
 {
 	if (nullptr == _fh)
 		throw RuntimeException(TRACE_INFO,
-			"Text stream not open\n");
+			"Can't write to xterm `%s`: It's not open\n", get_name().c_str());
 
 	fprintf(_fh, "%s", str.c_str());
 	fflush(_fh);
