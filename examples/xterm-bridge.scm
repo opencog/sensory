@@ -81,5 +81,29 @@
 ; --------------------------------------------------------
 ; Option 2) Same as Option 1) but in pure Atomese.
 
+; Define two infinite loops, via tail recursion. The PureExecLink
+; executes everything that it wraps in the given AtomSpace. We do
+; all the work in *this* Atomspace; this must be given explicitly,
+; as otherwise it runs "purely" in a temporary scratch space.
+(Define
+	(DefinedProcedure "b-to-a-tail")
+	(PureExec (cog-atomspace) copy-one-b-to-a (DefinedProcedure "b-to-a-tail")))
+
+(Define
+	(DefinedProcedure "a-to-b-tail")
+	(PureExec (cog-atomspace) copy-one-a-to-b (DefinedProcedure "a-to-b-tail")))
+
+; If you mess with the above, you will discover that redefines are not
+; allowed. To work around that, extract the defintion, like so:
+;    (cog-extract-recursive! (DefinedProcedure "b-to-a-tail"))
+
+; One infinite loop at a time can be run like so:
+;    (cog-execute! (DefinedProcedure "b-to-a-tail"))
+; but we want to run both at once. Do this by running them in two
+; threads
+(cog-execute! (ExecuteThreaded
+	(DefinedProcedure "b-to-a-tail")
+	(DefinedProcedure "a-to-b-tail")))
+
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
