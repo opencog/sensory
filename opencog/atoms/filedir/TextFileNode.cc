@@ -120,14 +120,6 @@ ValuePtr TextFileNode::read(void) const
 }
 
 // ==============================================================
-
-ValuePtr TextFileNode::describe(AtomSpace* as, bool silent)
-{
-	throw RuntimeException(TRACE_INFO, "Not implemeneted");
-	return Handle::UNDEFINED;
-}
-
-// ==============================================================
 // Write stuff to a file.
 
 void TextFileNode::do_write(const std::string& str)

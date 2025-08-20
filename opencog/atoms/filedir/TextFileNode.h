@@ -55,8 +55,6 @@ public:
 	TextFileNode(Type t, const std::string&&);
 	virtual ~TextFileNode();
 
-	virtual ValuePtr describe(AtomSpace*, bool);
-
 	static Handle factory(const Handle&);
 };
 
