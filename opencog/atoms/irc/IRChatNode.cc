@@ -25,6 +25,7 @@
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atoms/value/StringValue.h>
+#include <opencog/atoms/value/VoidValue.h>
 
 #include <opencog/sensory/types/atom_types.h>
 #include "IRChatNode.h"
@@ -332,12 +333,13 @@ int IRChatNode::got_kick(const char* params, irc_reply_data* ird)
 
 // This will read one line from the file stream, and return that line.
 // So, a line-oriented, buffered interface. For now.
-void IRChatNode::update() const
+ValuePtr IRChatNode::read(void) const
 {
-	if (nullptr == _conn) { _value.clear(); return; }
+	if (nullptr == _conn) return createVoidValue();
 
 	// XXX When is it ever closed ???
-	if (is_closed() and 0 == concurrent_queue<ValuePtr>::size()) return;
+	if (is_closed() and 0 == concurrent_queue<ValuePtr>::size())
+		return createVoidValue();
 
 	// Read one at a time. (???)
 	// This will hang, until there's something to read.
@@ -345,14 +347,13 @@ void IRChatNode::update() const
 	{
 		ValuePtr val;
 		const_cast<IRChatNode*>(this) -> pop(val);
-		_value.resize(1);
-		_value[0] = val;
-		return;
+		return val;
 	}
 	catch (typename concurrent_queue<ValuePtr>::Canceled& e)
 	{}
 
 	// If we are here, the queue closed up. Should never happen...
+	throw RuntimeException(TRACE_INFO, "Unexpected close");
 }
 
 // ==============================================================
@@ -413,8 +414,7 @@ void IRChatNode::run_cmd(const std::vector<std::string>& cmdstrs)
 
 // ==============================================================
 /// Deal with different kinds of stream formats.
-void IRChatNode::write_one(AtomSpace* as, bool silent,
-                             const ValuePtr& command_data)
+void IRChatNode::write_one(const ValuePtr& command_data)
 {
 	if (command_data->is_type(STRING_VALUE))
 	{
@@ -480,21 +480,16 @@ void IRChatNode::write_one(AtomSpace* as, bool silent,
 		"Unsupported data %s\n", command_data->to_string().c_str());
 }
 
-// Write stuff to a file.
-ValuePtr IRChatNode::write_out(AtomSpace* as, bool silent,
-                                 const Handle& cref)
+void IRChatNode::do_write(const std::string& ignore)
 {
-	if (nullptr == _conn)
-		throw RuntimeException(TRACE_INFO,
-			"IRC stream not open: URI \"%s\"\n", _uri.c_str());
-
-	return do_write_out(as, silent, cref);
+	throw RuntimeException(TRACE_INFO,
+		"What the heck %s\n", ignore.c_str());
 }
 
 // ==============================================================
 
 // Adds factory when library is loaded.
-DEFINE_NODE_FACTORY(IRChatlNode, I_R_CHAT_NODE);
+DEFINE_NODE_FACTORY(IRChatNode, I_R_CHAT_NODE);
 
 // ====================================================================
 

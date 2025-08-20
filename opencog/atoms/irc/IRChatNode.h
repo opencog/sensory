@@ -67,6 +67,7 @@ protected:
 	int _port;
 
 	virtual void write_one(const ValuePtr&);
+	virtual void do_write(const std::string&);
 	void run_cmd(const std::vector<std::string>&);
 
 	virtual void open(const ValuePtr&);

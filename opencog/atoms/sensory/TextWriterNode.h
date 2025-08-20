@@ -47,16 +47,18 @@ namespace opencog
 class TextWriterNode
 	: public SensoryNode
 {
-private:
-	virtual void write_one(const ValuePtr&);
-
 protected:
 	TextWriterNode(Type t, const std::string&&);
 
-	// Derviced classes to implement this.
+	// Derived classes to implement this.
 	virtual void do_write(const std::string&) = 0;
 
-	// The "main" write routine, assecpt anything.
+	// Derived classes might implement this.
+	virtual void write_one(const ValuePtr&);
+
+	// The "main" write routine, accepts anything.
+	// Derived classes probably should NOT override this;
+	// if they are, the are probably doing something wrong.
 	virtual void write(const ValuePtr&);
 
 public:
