@@ -6,3 +6,4 @@ ADD_SUBDIRECTORY (terminal-v0)
 
 ADD_SUBDIRECTORY (sensory)
 ADD_SUBDIRECTORY (filedir)
+ADD_SUBDIRECTORY (terminal)

@@ -44,8 +44,6 @@ class TerminalNode
 	: public TextWriterNode
 {
 protected:
-	TerminalNode(Type t, std::string&&);
-	void init(void);
 	void halt(void) const;
 
 	mutable FILE* _fh;
@@ -59,9 +57,11 @@ protected:
 	virtual ValuePtr read(void) const;
 
 public:
-	TerminalNode(void);
-	TerminalNode(const ValueSeq&);
+	TerminalNode(const std::string&&);
+	TerminalNode(Type t, const std::string&&);
 	virtual ~TerminalNode();
+
+	static Handle factory(const Handle&);
 };
 
 NODE_PTR_DECL(TerminalNode)
@@ -71,7 +71,7 @@ NODE_PTR_DECL(TerminalNode)
 } // namespace opencog
 
 extern "C" {
-void opencog_sensory_v0_terminal_init(void);
+void opencog_sensory_terminal_init(void);
 };
 
 #endif // _OPENCOG_TERMINAL_NODE_H

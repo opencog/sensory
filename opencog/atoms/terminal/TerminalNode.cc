@@ -46,12 +46,19 @@ using namespace opencog;
 // Terminal I/O using posix_openpt(), ptsname(), grantpt(), and unlockpt()
 // ttyname() pts(4), pty(7)
 
-TerminalNode::TerminalNode(Type t, std::string&& str) :
+TerminalNode::TerminalNode(const std::string&& str) :
+	TextWriterNode(TERMINAL_NODE, std::move(str)),
+	_fh(nullptr),
+	_xterm_pid(0)
+{
+}
+
+TerminalNode::TerminalNode(Type t, const std::string&& str) :
 	TextWriterNode(t, std::move(str)),
 	_fh(nullptr),
 	_xterm_pid(0)
 {
-	OC_ASSERT(nameserver().isA(_type, TERMINAL_STREAM),
+	OC_ASSERT(nameserver().isA(_type, TERMINAL_NODE),
 		"Bad TerminalNode constructor!");
 }
 
@@ -70,13 +77,11 @@ void TerminalNode::halt(void) const
 	if (_xterm_pid)
 		kill (_xterm_pid, SIGKILL);
 	_xterm_pid= 0;
-
-	_value.clear();
 }
 
 void TerminalNode::open(const ValuePtr& ignore)
 {
-	_fh = nullptr;
+	if (_fh) return;
 
 	int fd = posix_openpt(O_RDWR|O_NOCTTY);
 	if (0 > fd)
@@ -129,7 +134,7 @@ void TerminalNode::open(const ValuePtr& ignore)
 	// created by open_pt() above, and open another, as a slave.
 	// And I guess this works because fd was opened with O_NOCTTY
 	// The alternative is `_fh = fdopen(fd, "a+")` but this flakes.
-	close(fd);
+	::close(fd);
 
 	_fh = fopen(my_ptsname, "a+");
 }
@@ -139,9 +144,9 @@ void TerminalNode::open(const ValuePtr& ignore)
 // This will read one line from the file stream, and return that line.
 // So, a line-oriented, buffered interface. For now.
 // This blocks, waiting for input, if there is no input.
-ValuePtr TerminalNode::read(void)
+ValuePtr TerminalNode::read(void) const
 {
-	if (nullptr == _fh) return;
+	if (nullptr == _fh) return createVoidValue();
 
 #define BUFSZ 4080
 	char buff[BUFSZ];
