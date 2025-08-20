@@ -180,6 +180,16 @@ void IRChatNode::open(const ValuePtr& vurl)
 	_loop = new std::thread(&IRChatNode::looper, this);
 }
 
+void IRChatNode::close(const ValuePtr& ignore)
+{
+	printf("Called IRChatNode::close\n");
+}
+
+bool IRChatNode::connected(void) const
+{
+	return (nullptr != _conn);
+}
+
 // ==================================================================
 
 // Infinite loop.

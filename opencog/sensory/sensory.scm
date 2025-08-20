@@ -19,9 +19,9 @@
 	(string-append opencog-ext-path-sensory "libsensory-filedir")
 	"opencog_sensory_filedir_init")
 
-;;(load-extension
-;;	(string-append opencog-ext-path-sensory "libsensory-irc")
-;;	"opencog_sensory_irc_init")
+(load-extension
+	(string-append opencog-ext-path-sensory "libsensory-irc")
+	"opencog_sensory_irc_init")
 
 (load-extension
 	(string-append opencog-ext-path-sensory "libsensory-terminal")
