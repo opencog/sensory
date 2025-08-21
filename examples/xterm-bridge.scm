@@ -84,7 +84,8 @@
 ; Define two infinite loops, via tail recursion. The PureExecLink
 ; executes everything that it wraps in the given AtomSpace. We do
 ; all the work in *this* Atomspace; this must be given explicitly,
-; as otherwise it runs "purely" in a temporary scratch space.
+; as otherwise the excecution is done "purely", in a temporary
+; scratch AtomSpace.
 (Define
 	(DefinedProcedure "b-to-a-tail")
 	(PureExec (cog-atomspace) copy-one-b-to-a (DefinedProcedure "b-to-a-tail")))
@@ -104,6 +105,15 @@
 (cog-execute! (ExecuteThreaded
 	(DefinedProcedure "b-to-a-tail")
 	(DefinedProcedure "a-to-b-tail")))
+
+; That's it! Try it! Anything typee in one terminal will now be echoed
+; in the other, just as before. Closing the terminals will also end
+; the threads they are running in.
+(cog-set-value! axterm (Predicate "*-close-*") (VoidValue))
+(cog-set-value! bxterm (Predicate "*-close-*") (VoidValue))
+
+; --------------------------------------------------------
+; Option 3)
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
