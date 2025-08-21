@@ -25,6 +25,7 @@
 #define _OPENCOG_READ_STREAM_H
 
 #include <stdio.h>
+#include <opencog/atoms/sensory/SensoryNode.h>
 #include <opencog/atoms/value/LinkStreamValue.h>
 
 namespace opencog
@@ -45,6 +46,7 @@ class ReadStream
 	: public LinkStreamValue
 {
 protected:
+	SensoryNodePtr _snp;
 	virtual void update() const;
 
 public:

@@ -36,6 +36,8 @@ namespace opencog
 // Also, holder of URL's.
 class SensoryNode : public Node
 {
+	friend class ReadStream;
+
 protected:
 	SensoryNode(Type, const std::string&&);
 

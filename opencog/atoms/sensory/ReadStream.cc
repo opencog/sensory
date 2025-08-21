@@ -37,6 +37,8 @@ ReadStream::ReadStream(const Handle& senso)
 	if (SENSORY_NODE != senso->get_type())
 		throw RuntimeException(TRACE_INFO,
 			"Expecting SensoryNode, got %s\n", senso->to_string().c_str());
+
+	_snp = SensoryNodeCast(senso);
 }
 
 ReadStream::~ReadStream()
@@ -48,9 +50,15 @@ ReadStream::~ReadStream()
 // This will read one item at a time from the object, and return
 // that item.
 // So, still, a line-oriented, buffered interface. For now.
+//
+// This accesses the SensoryNode private methods directly; the
+// alternative would be to call the public getValue() method, but
+// that does nothing except add overhead.
 void ReadStream::update() const
 {
+	if (not _snp->connected()) return;
 
+	_value.emplace_back(_snp->read());
 }
 
 // ==============================================================
