@@ -10,8 +10,8 @@ READ_STREAM <- LINK_STREAM_VALUE
 // Text reader stream. This is a StreamValue, intended to stream
 // out text, in the fashion of futures/promises/streams in other
 // programming languages.
-TEXT_READER <- LINK_STREAM_VALUE
-TEXT_FILE_READER <- TEXT_READER
+TEXT_READER_STREAM <- LINK_STREAM_VALUE
+TEXT_FILE_READER_STREAM <- TEXT_READER_STREAM "TextFileReader"
 
 // ---------------------------------------------
 // Values above, Atoms below.

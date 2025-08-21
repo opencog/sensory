@@ -37,19 +37,19 @@ using namespace opencog;
 TextFileReader::TextFileReader(Type t, const std::string& str)
 	: LinkStreamValue(t)
 {
-	OC_ASSERT(nameserver().isA(_type, TEXT_FILE_READER),
+	OC_ASSERT(nameserver().isA(_type, TEXT_FILE_READER_STREAM),
 		"Bad TextFileReader constructor!");
 	init(str);
 }
 
 TextFileReader::TextFileReader(const std::string& str)
-	: LinkStreamValue(TEXT_FILE_READER)
+	: LinkStreamValue(TEXT_FILE_READER_STREAM)
 {
 	init(str);
 }
 
 TextFileReader::TextFileReader(const Handle& senso)
-	: LinkStreamValue(TEXT_FILE_READER)
+	: LinkStreamValue(TEXT_FILE_READER_STREAM)
 {
 	if (SENSORY_NODE != senso->get_type())
 		throw RuntimeException(TRACE_INFO,
@@ -146,7 +146,7 @@ void TextFileReader::update() const
 // ==============================================================
 
 // Adds factory when library is loaded.
-DEFINE_VALUE_FACTORY(TEXT_FILE_READER, createTextFileReader, std::string)
-DEFINE_VALUE_FACTORY(TEXT_FILE_READER, createTextFileReader, Handle)
+DEFINE_VALUE_FACTORY(TEXT_FILE_READER_STREAM, createTextFileReader, std::string)
+DEFINE_VALUE_FACTORY(TEXT_FILE_READER_STREAM, createTextFileReader, Handle)
 
 // ====================================================================

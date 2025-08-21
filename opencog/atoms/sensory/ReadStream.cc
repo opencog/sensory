@@ -58,7 +58,9 @@ void ReadStream::update() const
 {
 	if (not _snp->connected()) return;
 
-	_value.emplace_back(_snp->read());
+	// _value.emplace_back(_snp->read());
+	_value.resize(1);
+	_value[0] = _snp->read();
 }
 
 // ==============================================================
