@@ -113,9 +113,27 @@
 (cog-set-value! bxterm (Predicate "*-close-*") (VoidValue))
 
 ; --------------------------------------------------------
-; Option 3)
+; Option 3) Convert the line-by-line reader to a stream, and then
+; let the implicit infinite loops in the stream do all the work.
+; This is not hard, but we'll take the long road and explain this in
+; detail.
 
-(define ardr (ReadStream axterm))
+; Wrap the terminal with a reader stream.  Each read from the stream
+; will cause a *-read-* message to the sent to the terminal object.
+; The ReadStream value is generic: it will work with *any* Sensory
+; object (since all SensoryNode objects support *-read-* messages).
+(define areader (ReadStream axterm))
+
+; Try it. Each reference returns one line from the xterm. If there's
+; nothing to return, the reference will hang, until you type something
+; at the xterm, and hit enter.
+areader
+areader
+areader
+areader
+areader
+
+
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
