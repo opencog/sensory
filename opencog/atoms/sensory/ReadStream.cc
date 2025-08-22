@@ -34,7 +34,7 @@ using namespace opencog;
 ReadStream::ReadStream(const Handle& senso)
 	: LinkStreamValue(READ_STREAM)
 {
-	if (SENSORY_NODE != senso->get_type())
+	if (not senso->is_type(SENSORY_NODE))
 		throw RuntimeException(TRACE_INFO,
 			"Expecting SensoryNode, got %s\n", senso->to_string().c_str());
 

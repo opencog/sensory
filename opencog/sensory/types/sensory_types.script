@@ -5,13 +5,13 @@
 
 // Wrap objects with one-at-a-time *-read-* methods, giving them
 // a stream API.
-READ_STREAM <- LINK_STREAM_VALUE
+READ_STREAM <- LINK_STREAM_VALUE,HANDLE_ARG
 
 // Text reader stream. This is a StreamValue, intended to stream
 // out text, in the fashion of futures/promises/streams in other
 // programming languages.
 TEXT_READER_STREAM <- LINK_STREAM_VALUE
-TEXT_FILE_READER_STREAM <- TEXT_READER_STREAM "TextFileReader"
+TEXT_FILE_READER_STREAM <- TEXT_READER_STREAM,HANDLE_ARG,STRING_ARG "TextFileReader"
 
 // ---------------------------------------------
 // Values above, Atoms below.
