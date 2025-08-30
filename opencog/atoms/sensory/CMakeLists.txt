@@ -7,6 +7,7 @@ ADD_LIBRARY (sensory SHARED
 	ReadStream.cc
 	SensoryNode.cc
 	StreamNode.cc
+	TextStreamNode.cc
 )
 
 # Without this, parallel make will race and crap up the generated files.
@@ -26,5 +27,6 @@ INSTALL (FILES
 	ReadStream.h
 	SensoryNode.h
 	StreamNode.h
+	TextStreamNode.h
 	DESTINATION "include/opencog/atoms/sensory"
 )

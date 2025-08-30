@@ -81,7 +81,7 @@ void StreamNode::write_one(const ValuePtr& content)
 	if (content->is_type(VOID_VALUE))
 		throw SilentException();
 
-	// Everything else falls through/
+	// Everything else falls through.
 	do_write(content);
 }
 
