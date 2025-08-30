@@ -71,12 +71,13 @@ TextFileNode::~TextFileNode()
 /// where mode is one of the modes described in `man 3 fopen`
 ///
 /// Other possible extensions: this could also take configurable
-/// parameters, via the (Predicate "*-some-paramter-*) message.
+/// parameters, via the (Predicate "*-some-parameter-*) message.
 /// Such parameters could control flushing, appending vs clobbering,
 /// and so on. XXX TODO.
 
-void TextFileNode::open(const ValuePtr& ignored)
+void TextFileNode::open(const ValuePtr& eofv)
 {
+	_eof_value = eofv;
 	_fh = nullptr;
 	const std::string& url = get_name();
 
@@ -119,7 +120,7 @@ bool TextFileNode::connected(void) const
 ValuePtr TextFileNode::read(void) const
 {
 	// Not open. Can't do anything.
-	if (nullptr == _fh) return createVoidValue();
+	if (nullptr == _fh) return _eof_value;
 
 #define BUFSZ 4080
 	char buff[BUFSZ];
@@ -130,7 +131,7 @@ ValuePtr TextFileNode::read(void) const
 	{
 		fclose(_fh);
 		_fh = nullptr;
-		return createVoidValue();
+		return _eof_value;
 	}
 
 	return createStringValue(buff);

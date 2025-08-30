@@ -42,6 +42,7 @@ class TextFileNode
 {
 protected:
 	mutable FILE* _fh;
+	ValuePtr _eof_value;
 	virtual void do_write(const std::string&);
 
 	virtual void open(const ValuePtr&);

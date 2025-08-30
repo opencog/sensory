@@ -13,6 +13,22 @@
 ; --------------------------------------------------------
 ; Basic demo: Open a file for reading, at a fixed absolute location
 ; in the filesystem. Sending the (Predicate "*-read-*") message to
+; the (TextFile "file:///tmp/demo.txt") object will cause one line
+; to be read from the file, and returned as a StringValue.
+
+(cog-execute!
+	(SetValue
+		(TextFile "file:///tmp/demo.txt")
+		(Predicate "*-open-*")
+		(Node "void")))
+
+(cog-value
+	(TextFile "file:///tmp/demo.txt")
+	(Predicate "*-read-*"))
+
+; --------------------------------------------------------
+; Basic demo: Open a file for reading, at a fixed absolute location
+; in the filesystem. Sending the (Predicate "*-read-*") message to
 ; the (TextFile "file:///tmp/demo.txt") object will return a text
 ; stream reader. Each examination of the stream will return a line
 ; from the file, in sequential order.
