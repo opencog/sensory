@@ -94,4 +94,15 @@ which copies exactly one value, and a convoluted tail call:
 ```
 So the actual copying is easy, and the user needs no help hooking
 up pipelines as complicated as desired. The tail call is ugly.
-It's valid, but its ugly.
+It's valid, but its ugly. What are the alternatives?
+```
+(LooperLink (cog-atomspace) copy-one-b-to-a)
+```
+which runs the loop until an exception is thrown. Just use
+`ExecuteThreaded` to put it in it's own thread. Like `PureExec`
+it discards the execution results. Well, or it could queue them
+up, and is you don't want them, wrap with, uhh, `DevNullLink`
+which passses execution to the wrapped links and discards the
+return values. But that's confusing if the return is a `QueueValue`
+which is not closed, and can thus grow and grow... Does it need to
+actively discard? Maybe...
