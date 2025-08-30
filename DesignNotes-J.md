@@ -194,4 +194,12 @@ Which is better, `LineStreamLink` or `StreamNode`? My gut instinct is
 that `StreamNode` fits the current paradigm better, and is more
 flexible. In particular, it can pass-through the method messages.
 
-In fact, `StreamNode` could replace `TextWriterNode` ...
+In fact, `StreamNode` could replace `TextWriterNode` ... The only
+reason that `TextWriterNode` is called that is because it unwraps
+strings. It doesn't have to do that final unwrap... The final unwrap
+to c++ `std::string` UTF-8 strings would then be `TextStreamNode`.
+
+The `TextFileReader` stream is no longer needed ... it does what
+`ReadStreamValue` does...
+
+OK, I think we're done here. Let implement this and see how it goes.
