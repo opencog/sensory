@@ -128,6 +128,8 @@ ValuePtr SensoryNode::getValue(const Handle& key) const
 		dispatch_hash("*-connected?-*");
 	static constexpr uint32_t p_read =
 		dispatch_hash("*-read-*");
+	static constexpr uint32_t p_stream =
+		dispatch_hash("*-stream-*");
 	static constexpr uint32_t p_monitor =
 		dispatch_hash("*-monitor-*");
 
@@ -137,6 +139,9 @@ ValuePtr SensoryNode::getValue(const Handle& key) const
 		case p_read:
 			COLL("*-read-*");
 			return read();
+		case p_stream:
+			COLL("*-stream-*");
+			return stream();
 		case p_connected_p:
 			COLL("*-connected?-*");
 			return createBoolValue(connected());

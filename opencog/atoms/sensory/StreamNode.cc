@@ -31,6 +31,7 @@
 #include <opencog/atoms/value/StringValue.h>
 
 #include <opencog/sensory/types/atom_types.h>
+#include "ReadStream.h"
 #include "StreamNode.h"
 
 using namespace opencog;
@@ -45,6 +46,14 @@ StreamNode::StreamNode(Type t, const std::string&& url)
 StreamNode::~StreamNode()
 {
 	printf ("StreamNode dtor\n");
+}
+
+// ==============================================================
+
+// Wrap ourselves in a streamer.
+ValuePtr StreamNode::stream(void) const
+{
+	return createReadStream(get_handle());
 }
 
 // ==============================================================
