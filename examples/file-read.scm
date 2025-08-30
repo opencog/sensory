@@ -44,12 +44,13 @@
 ; Each examination of the stream will return a line from the file,
 ; in sequential order.
 
-(define txt-stream (ReadStream file-node))
-
-; Lets rewind to the begining.
+; But first, lets rewind to the begining.
 (cog-execute!
 	(SetValue file-node (Predicate "*-open-*")
 		(ConceptNode "Another EOF marker")))
+
+; Wrap the TextFileNode with the stream reader.
+(define txt-stream (ReadStream file-node))
 
 ; Repeated references to the stream will return single lines from
 ; the file.
@@ -60,6 +61,15 @@ txt-stream
 txt-stream
 
 ; Eventually, this will return the EOF marker.
+
+; --------------------------------------------------------
+; The section above wraps the TextFileNode with a ReadStreamValue
+; "by hand"; we do it ourselves. But Values cannot be stored in the
+; Atomspace, and so we need a say of doing that in pure Atomese.
+; The StreamNode (and its specialization, TextStreamNode) provide this
+; function.
+
+
 
 ; --------------------------------------------------------
 ; Demo: Perform indirect streaming. The text-stream will be placed
