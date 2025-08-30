@@ -44,7 +44,7 @@
 ; Each examination of the stream will return a line from the file,
 ; in sequential order.
 
-; But first, lets rewind to the begining.
+; But first, let's rewind to the begining.
 (cog-execute!
 	(SetValue file-node (Predicate "*-open-*")
 		(ConceptNode "Another EOF marker")))
@@ -64,34 +64,35 @@ txt-stream
 
 ; --------------------------------------------------------
 ; The section above wraps the TextFileNode with a ReadStreamValue
-; "by hand"; we do it ourselves. But Values cannot be stored in the
-; Atomspace, and so we need a say of doing that in pure Atomese.
-; The StreamNode (and its specialization, TextStreamNode) provide this
-; function.
+; "by hand"; by creating the Value in scheme. But Values cannot be
+; stored in the Atomspace, and it would be better to be able to get
+; that stream directly. This is done with the *-stream-* message.
 
+; Again, let's rewind to the begining.
+(cog-execute!
+	(SetValue file-node (Predicate "*-open-*")
+		(ItemNode "EOF can be anyting")))
 
+(define txt-stream
+	(cog-execute! (ValueOf file-node (Predicate "*-stream-*"))))
+
+; Repeated references to the stream will return single lines from
+; the file.
+txt-stream
+txt-stream
+txt-stream
 
 ; --------------------------------------------------------
 ; Demo: Perform indirect streaming. The text-stream will be placed
 ; as a Value on some Atom, where it can be accessed and processed.
 ;
-; Open the file again, placing the text stream at "some place".
-(cog-set-value! (Concept "foo") (Predicate "some place")
-	(cog-value
-		(TextFile "file:///tmp/demo.txt")
-		(Predicate "*-read-*")))
-
-; A better, all-Atomese version of the above. When the SetValueLink
-; is executed, it will attach the freshly opened reader stream at
-; "some place".
+; Anchor the text stream at "some place", where it can be found.
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
-		(ValueOf
-			(TextFile "file:///tmp/demo.txt")
-			(Predicate "*-read-*"))))
+		(ValueOf file-node (Predicate "*-stream-*"))))
 
-; The freshly-opened stream can be accessed by just fetching
-; it from "some place", the location it is anchored at.
+; The stream can be accessed by just fetching it from "some place",
+; the location it is anchored at.
 (define txt-stream-gen
 	(ValueOf (Concept "foo") (Predicate "some place")))
 
@@ -142,13 +143,11 @@ txt-stream
 				(Item "====\n")))
 		txt-stream-gen))
 
-; The previous demo ran the input file to end-of-file; we need to
+; The previous demo ran the input file to end-of-file;
 ; restart at the beginning.
 (cog-execute!
-	(SetValue (Concept "foo") (Predicate "some place")
-		(ValueOf
-			(TextFile "file:///tmp/demo.txt")
-			(Predicate "*-read-*"))))
+	(SetValue file-node (Predicate "*-open-*")
+		(ItemNode "EOF can be anyting")))
 
 ; Run the rule, once.
 (cog-execute! rule-applier)
