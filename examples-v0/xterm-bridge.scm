@@ -40,11 +40,11 @@
 ; a pipe that will flow text from one terminal to the other, for
 ; as long as the terminals are running. The flow is done by an
 ; infinite loop in the C++ method OutputStream::do_write_out().
-; Ths method, when given a stream to read, will keep pulling data
+; This method, when given a stream to read, will keep pulling data
 ; from that stream until the stream closes. Since the inf loop runs
 ; in the current thread, calling cog-execute! on these will not
 ; return until the streams close. Thus, to keep the streams running,
-; and have the current thread availabe for other work, it is best
+; and have the current thread available for other work, it is best
 ; to execute these each in their own thread.
 ;
 ; Sometimes, when switching from one terminal to the other, you
