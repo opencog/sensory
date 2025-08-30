@@ -140,4 +140,58 @@ just appears to flow, as long as there's input data to be had.
 
 Somehow, I want to take the copy-one-at-a-time expression, and turn
 it into a stream. Declaratively so: Not by wrapping it in an explicit
-`Looper` or `DefinedProcedure` but instead, a.. uhhh....
+`Looper` or `DefinedProcedure` but instead, in a... `StreamLink`
+
+So `LineStreamLink` will wrap any `ObjectNode` (`SensoryNode`) that
+presents a one-at-a-time `*-read-*`. The `LineStreamLink::execute()`
+method returns a `ReadStream` value encapsulating that object.
+Why execute? Because, as a Link, it cannot derive from `ObjectNode`
+itself, and present the ObjectNode API.
+
+An alternative is to have a `StreamNode`, and configure it to wrap
+the line-at-a-time object, by saying:
+```
+   (SetValue
+       (StreamNode "wrapper to xterm")
+       (Predicate "*-param-*")
+       (TerminalNode "term A"))
+```
+
+The `ReadStreamValue` is `StreamValue`, behaving like a true stream,
+so that each reference will return a new line.
+
+From here on, we copy the mechanics of the existing file-write demo.
+First, tell the writer where it will be pulling data from, like so:
+```
+(define writer
+   (SetValue
+      (TextFile "file:///tmp/foobar.txt")
+      (Predicate "*-write-*")
+      (ValueOf (Concept "source") (Predicate "key"))))
+```
+Then attach the reader to there:
+```
+(cog-execute!
+   (SetValue
+      (Concept "source") (Predicate "key")
+      (LineStreamLink (TerminalNode "term A"))))
+```
+or
+```
+(cog-execute!
+   (SetValue
+      (Concept "source") (Predicate "key")
+      (ValueOf
+         (StreamNode "wrapper to xterm")
+         (Predicate "*-read-*"))))
+```
+This time, the infinite loop is in `TextWriterNode`, which will suck
+from it's input, until drained. That is, we already have the needed inf
+loop, it's in the `TextWriterNode`, and is a port of the code in v0
+`OutputStream`. So hurrah! we are done!
+
+Which is better, `LineStreamLink` or `StreamNode`? My gut instinct is
+that `StreamNode` fits the current paradigm better, and is more
+flexible. In particular, it can pass-through the method messages.
+
+In fact, `StreamNode` could replace `TextWriterNode` ...
