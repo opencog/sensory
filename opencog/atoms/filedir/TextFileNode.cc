@@ -27,6 +27,7 @@
 #include <opencog/util/oc_assert.h>
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/value/StringValue.h>
+#include <opencog/atoms/value/VoidValue.h>
 #include <opencog/atoms/value/ValueFactory.h>
 
 #include <opencog/sensory/types/atom_types.h>
@@ -113,10 +114,26 @@ bool TextFileNode::connected(void) const
 	return (nullptr != _fh);
 }
 
+// This will read one line from the text file, and return that line.
+// This is a line-oriented, buffered interface.
 ValuePtr TextFileNode::read(void) const
 {
-	// return createTextFileReader(get_name());
-return nullptr;
+	// Not open. Can't do anything.
+	if (nullptr == _fh) return createVoidValue();
+
+#define BUFSZ 4080
+	char buff[BUFSZ];
+	char* rd = fgets(buff, BUFSZ, _fh);
+
+	// Hit file EOF. Close automatically.
+	if (nullptr == rd)
+	{
+		fclose(_fh);
+		_fh = nullptr;
+		return createVoidValue();
+	}
+
+	return createStringValue(buff);
 }
 
 // ==============================================================

@@ -41,7 +41,7 @@ class TextFileNode
 	: public TextStreamNode
 {
 protected:
-	FILE* _fh;
+	mutable FILE* _fh;
 	virtual void do_write(const std::string&);
 
 	virtual void open(const ValuePtr&);
