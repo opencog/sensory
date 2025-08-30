@@ -40,7 +40,7 @@ robot platforms. These include:
 
 These are the major efforts; there were half-a-dozen lesser efforts,
 including a soccer-playing robothon, held in Ethiopia. All of these
-failed, although all were educational: the robothon was explictly
+failed, although all were educational: the robothon was explicitly
 arranged by students in Ethiopia as a part of university coursework.
 
 All of these failed, in large part because not enough effort was

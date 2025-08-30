@@ -14,9 +14,9 @@ appropriate interface for anything that
    (e.g. a sensor into the external world.)
 
 This design notion is different that what is implemented in version 0,
-and the question arises: how should the interfaces in version 0 be
-modified to match this new OO message-passing design?  Lets review the
-version-0 API. It's this:
+and the question arises: how should the interfaces in v0 be modified to
+match this new OO message-passing design?  Lets review the v0 API. It's
+this:
 
 ```
    (OpenLink
@@ -40,9 +40,58 @@ take a `(Predicate "*-open-*")` message, and return a `StringStream`
 or whatever.
 
 There does not seem to be any easy way to migrate from the one to the
-other interfaces, and so it looks like a total rewrite will be
-necessary. Ugh.
+other, and so it looks like a total rewrite will be necessary. Ugh.
 
-Update: Total re-write begun. Both OpenLink and WriteLink are gone.
-See the next entry [Design Nodes K](./DesignNotes-K.md) for a new set
-of issues.
+August 2025 update: Total re-write begun. Both `OpenLink` and
+`WriteLink` are gone. The `OpenLink` seems un-needed, because the
+`(Predicate "*-open-*)` message does the trick. Its more generic.
+
+The `WriteLink` is gone, but raises a new problem. The v0 `WriteLink`
+had a built-in infinite loop that would suck a stream dry, pushing it
+out somwhere. The current default object api doesn't expose the notion
+of pulling from a stream. But having this kind of auto-run info loop
+driver feels like a good idea.  How should it be implemented?
+
+Well, lets re-examine the v0 implementation. It worked like this:
+ * All streams capable of being written to inherit from OutputStream.
+   OutputStream ha a method ::write_out() that has the infinite loop.
+ * WriteLink wraps two Atoms. execute! on the first returns an
+   OutputStream. ::write_out()  is called, passing the second:
+```
+WriteLink::execute() {
+    OutStreamPtr osp = _outgoing[0]->execute();
+    osp->write_out(_outgoing[1]);
+}
+
+OutputStream::write_out(Handle from)
+{
+    source = from->execute();
+    while (true) {
+       val = source->value();
+       write_one(val)
+    }
+}
+```
+
+The object version of this has to be similar, I guess: a Link that
+takes two ObjectNodes, calling `*-read-*` on one, to get a Value,
+then giving that to the other via `*-write-*`. So, pulls from one,
+pushes to the other.
+
+What should this be called? `PullerPusherLink` or uhh, `MotorLink`.
+Sounds sexy. Is this needed? The current `xterm-bridge.scm` already
+does this in pure Atomese:  It defines one-shot copiers:
+```
+(define copy-one-b-to-a
+   (SetValue axterm (Predicate "*-write-*")
+      (ValueOf bxterm (Predicate "*-read-*"))))
+```
+which copies exactly one value, and a convoluted tail call:
+```
+(Define
+   (DefinedProcedure "b-to-a-tail")
+   (PureExec copy-one-b-to-a (DefinedProcedure "b-to-a-tail")))
+```
+So the actual copying is easy, and the user needs no help hooking
+up pipelines as complicated as desired. The tail call is ugly.
+It's valid, but its ugly.
