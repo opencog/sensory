@@ -86,23 +86,58 @@ does this in pure Atomese:  It defines one-shot copiers:
    (SetValue axterm (Predicate "*-write-*")
       (ValueOf bxterm (Predicate "*-read-*"))))
 ```
-which copies exactly one value, and a convoluted tail call:
+which copies exactly one value, and a complicated-looking tail call:
 ```
 (Define
    (DefinedProcedure "b-to-a-tail")
    (PureExec copy-one-b-to-a (DefinedProcedure "b-to-a-tail")))
 ```
-So the actual copying is easy, and the user needs no help hooking
-up pipelines as complicated as desired. The tail call is ugly.
-It's valid, but its ugly. What are the alternatives?
+So the actual copying is easy, and there seems to be enough
+infrastructure in place to specify arbitrarily-complicated processing
+pipelines.
+
+What's missing is a sense of forced flow. Streams should "flow",
+whereas tail-call looks like a force pump. Is there a way to "flow
+naturally"?
+
+The initial knee-jerk reaction is that the tail call is ugly. It's
+valid, it works, it has OK performance. The tail call de-facto
+expands into a C++ loop, under the covers; that's implemented in
+`DefinedProcedureNode::execute()` and runs at more-or-less "native"
+speed.
+
+So it's ugly. What are the alternatives? Well, this:
 ```
-(LooperLink (cog-atomspace) copy-one-b-to-a)
+   (LooperLink (cog-atomspace) copy-one-b-to-a)
 ```
-which runs the loop until an exception is thrown. Just use
-`ExecuteThreaded` to put it in it's own thread. Like `PureExec`
-it discards the execution results. Well, or it could queue them
-up, and is you don't want them, wrap with, uhh, `DevNullLink`
-which passses execution to the wrapped links and discards the
-return values. But that's confusing if the return is a `QueueValue`
-which is not closed, and can thus grow and grow... Does it need to
-actively discard? Maybe...
+which runs the loop until an exception is thrown. But is this better?
+Its more modular: it wraps the entire loop, begining to end. Whereas
+DefinedProceedure A could call B could call C which calls A, maybe.
+If it calls A, then it recurses, and that forms athe loop, and it runs.
+The executation path is not bounded, it can be splattered throught the
+AtomSpace. It might not be clear that some given execution path results
+in recursion.
+
+XXX There muight be a bug in the implementation of `DefinedProceedure`
+It's not obvious that a call A->B->C->A works "as expected".
+
+So a `LooperLink` gives bounded loop execution. Is it worth implementing
+right now? There's no obvious pressing need for it, so no.
+
+Some details: `Looper` would run be default in the current thread; it
+can be wrapped with `ExecuteThreaded` to put it in it's own thread.
+Like `PureExec`, it seems it would need to discard execution results.
+Well, that, or it could queue them up, and if the results are unwanted,
+then, uh, lets see: wrap with, uhh, `DevNullLink` which would pass
+execution to the wrapped links and discard the return values. Easy to
+say, but that's confusing if the return is a `QueueValue` which is not
+yet closed, and can thus grow and grow... Managing that is unclear.
+
+At any rate, both the `Looper` and the `DefinedProcedure` are visible
+pumps, visibly doing step-at-a-time processing. The v0 `OutputStream`
+really was a stream: the loop was hidden in such a way that the stream
+just appears to flow, as long as there's input data to be had.
+
+Somehow, I want to take the copy-one-at-a-time expression, and turn
+it into a stream. Declaratively so: Not by wrapping it in an explicit
+`Looper` or `DefinedProcedure` but instead, a.. uhhh....
