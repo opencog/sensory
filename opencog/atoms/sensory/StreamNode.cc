@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/TextWriterNode.cc
+ * opencog/atoms/sensory/StreamNode.cc
  *
  * Copyright (C) 2024, 2025 Linas Vepstas
  * All Rights Reserved
@@ -31,40 +31,27 @@
 #include <opencog/atoms/value/StringValue.h>
 
 #include <opencog/sensory/types/atom_types.h>
-#include "TextWriterNode.h"
+#include "StreamNode.h"
 
 using namespace opencog;
 
-TextWriterNode::TextWriterNode(Type t, const std::string&& url)
+StreamNode::StreamNode(Type t, const std::string&& url)
 	: SensoryNode(t, std::move(url))
 {
 	OC_ASSERT(nameserver().isA(_type, SENSORY_NODE),
-		"Bad TextWriterNode constructor!");
+		"Bad StreamNode constructor!");
 }
 
-TextWriterNode::~TextWriterNode()
+StreamNode::~StreamNode()
 {
-	printf ("TextWriterNode dtor\n");
+	printf ("StreamNode dtor\n");
 }
 
 // ==============================================================
 
 // Provide a reasonable default implementation
-void TextWriterNode::write_one(const ValuePtr& content)
+void StreamNode::write_one(const ValuePtr& content)
 {
-	if (content->is_type(STRING_VALUE))
-	{
-		StringValuePtr svp(StringValueCast(content));
-		const std::vector<std::string>& strs = svp->value();
-		for (const std::string& str : strs)
-			do_write(str);
-		return;
-	}
-	if (content->is_type(NODE))
-	{
-		do_write(HandleCast(content)->get_name());
-		return;
-	}
 	if (content->is_type(LINK_VALUE))
 	{
 		LinkValuePtr lvp(LinkValueCast(content));
@@ -94,12 +81,12 @@ void TextWriterNode::write_one(const ValuePtr& content)
 	if (content->is_type(VOID_VALUE))
 		throw SilentException();
 
-	throw RuntimeException(TRACE_INFO,
-		"Expecting strings, got %s\n", content->to_string().c_str());
+	// Everything else falls through/
+	do_write(content);
 }
 
 // Provide a reasonable default implementation.
-void TextWriterNode::write(const ValuePtr& cref)
+void StreamNode::write(const ValuePtr& cref)
 {
 	ValuePtr content = cref;
 	if (cref->is_atom() and HandleCast(cref)->is_executable())

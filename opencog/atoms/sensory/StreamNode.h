@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/TextWriterNode.h
+ * opencog/atoms/sensory/StreamNode.h
  *
  * Copyright (C) 2024 Linas Vepstas
  * All Rights Reserved
@@ -20,8 +20,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_TEXT_WRITER_NODE_H
-#define _OPENCOG_TEXT_WRITER_NODE_H
+#ifndef _OPENCOG_STREAM_NODE_H
+#define _OPENCOG_STREAM_NODE_H
 
 #include <opencog/atoms/sensory/SensoryNode.h>
 
@@ -33,27 +33,26 @@ namespace opencog
  */
 
 /**
- * TextWriterNodeNode provides a virtual base class for objects that will
- * be writing (utf8 or ascii) text. It consists of some utility methods
- * that unpack, unwrap an assortment of Atoms, Values and Streams that
- * might occur that have text flowing on them.
- *
- * Basically, it is a conversion shim that allows a loose assortment of
- * almost anything to be streamed in, converting it into c++ strings
- * that are easy to handle to the actual writer.
+ * StreamNode provides a virtual base class for managing line-oriented
+ * objects and presenting a streaming interface for them. In particular,
+ * it enables the construction of streams that will run indefinitely
+ * i.e. looping for as long as an input stream remains open.
  *
  * This API is experimental.
+ * See DesignNotes-J.md for detailed design considerations.
  */
-class TextWriterNode
+class StreamNode
 	: public SensoryNode
 {
 protected:
-	TextWriterNode(Type t, const std::string&&);
+	StreamNode(Type t, const std::string&&);
 
 	// Derived classes to implement this.
-	virtual void do_write(const std::string&) = 0;
+	virtual void do_write(const ValuePtr&) = 0;
 
-	// Derived classes might implement this.
+	// Write out just one item. Provides a reasonable default;
+   // Derived classes might wish to provide an alternative
+	// implementation,
 	virtual void write_one(const ValuePtr&);
 
 	// The "main" write routine, accepts anything.
@@ -62,12 +61,12 @@ protected:
 	virtual void write(const ValuePtr&);
 
 public:
-	virtual ~TextWriterNode();
+	virtual ~StreamNode();
 };
 
-NODE_PTR_DECL(TextWriterNode)
+NODE_PTR_DECL(StreamNode)
 
 /** @}*/
 } // namespace opencog
 
-#endif // _OPENCOG_TEXT_WRITER_NODE_H
+#endif // _OPENCOG_STREAM_NODE_H
