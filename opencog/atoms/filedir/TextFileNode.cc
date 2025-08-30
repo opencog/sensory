@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/TextFileNode.cc
+ * opencog/atoms/filedir/TextFileNode.cc
  *
  * Copyright (C) 2020 Linas Vepstas
  * All Rights Reserved
@@ -30,13 +30,12 @@
 #include <opencog/atoms/value/ValueFactory.h>
 
 #include <opencog/sensory/types/atom_types.h>
-#include <opencog/atoms/filedir/TextFileReader.h>
 #include "TextFileNode.h"
 
 using namespace opencog;
 
 TextFileNode::TextFileNode(Type t, const std::string&& url) :
-	TextWriterNode(t, std::move(url)),
+	TextStreamNode(t, std::move(url)),
 	_fh(nullptr)
 {
 	OC_ASSERT(nameserver().isA(_type, TEXT_FILE_NODE),
@@ -44,7 +43,7 @@ TextFileNode::TextFileNode(Type t, const std::string&& url) :
 }
 
 TextFileNode::TextFileNode(const std::string&& url) :
-	TextWriterNode(TEXT_FILE_NODE, std::move(url)),
+	TextStreamNode(TEXT_FILE_NODE, std::move(url)),
 	_fh(nullptr)
 {
 }
@@ -116,7 +115,8 @@ bool TextFileNode::connected(void) const
 
 ValuePtr TextFileNode::read(void) const
 {
-	return createTextFileReader(get_name());
+	// return createTextFileReader(get_name());
+return nullptr;
 }
 
 // ==============================================================

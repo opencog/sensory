@@ -24,7 +24,7 @@
 #define _OPENCOG_TEXT_FILE_NODE_H
 
 #include <stdio.h>
-#include <opencog/atoms/sensory/TextWriterNode.h>
+#include <opencog/atoms/sensory/TextStreamNode.h>
 
 namespace opencog
 {
@@ -38,7 +38,7 @@ namespace opencog
  * and, more generally, from unix socket sources. This is experimental.
  */
 class TextFileNode
-	: public TextWriterNode
+	: public TextStreamNode
 {
 protected:
 	FILE* _fh;
@@ -46,7 +46,7 @@ protected:
 
 	virtual void open(const ValuePtr&);
 	virtual void close(const ValuePtr&);
-	// virtual void write(const ValuePtr&); inherited from TextWriterNode
+	// virtual void write(const ValuePtr&); inherited from StreamNode
 	virtual bool connected(void) const;
 	virtual ValuePtr read(void) const;
 

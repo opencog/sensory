@@ -24,7 +24,7 @@
 #define _OPENCOG_TERMINAL_NODE_H
 
 #include <stdio.h>
-#include <opencog/atoms/sensory/TextWriterNode.h>
+#include <opencog/atoms/sensory/TextStreamNode.h>
 
 namespace opencog
 {
@@ -41,7 +41,7 @@ namespace opencog
  * want to do that. Not today.
  */
 class TerminalNode
-	: public TextWriterNode
+	: public TextStreamNode
 {
 protected:
 	void halt(void) const;

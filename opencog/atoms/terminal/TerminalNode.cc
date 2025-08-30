@@ -47,14 +47,14 @@ using namespace opencog;
 // ttyname() pts(4), pty(7)
 
 TerminalNode::TerminalNode(const std::string&& str) :
-	TextWriterNode(TERMINAL_NODE, std::move(str)),
+	TextStreamNode(TERMINAL_NODE, std::move(str)),
 	_fh(nullptr),
 	_xterm_pid(0)
 {
 }
 
 TerminalNode::TerminalNode(Type t, const std::string&& str) :
-	TextWriterNode(t, std::move(str)),
+	TextStreamNode(t, std::move(str)),
 	_fh(nullptr),
 	_xterm_pid(0)
 {

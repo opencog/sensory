@@ -39,7 +39,7 @@
 using namespace opencog;
 
 IRChatNode::IRChatNode(Type t, const std::string&& str) :
-	TextWriterNode(t, std::move(str)),
+	TextStreamNode(t, std::move(str)),
 	_conn(nullptr)
 {
 	OC_ASSERT(nameserver().isA(_type, I_R_CHAT_NODE),
@@ -47,7 +47,7 @@ IRChatNode::IRChatNode(Type t, const std::string&& str) :
 }
 
 IRChatNode::IRChatNode(const std::string&& str) :
-	TextWriterNode(I_R_CHAT_NODE, std::move(str)),
+	TextStreamNode(I_R_CHAT_NODE, std::move(str)),
 	_conn(nullptr)
 {
 }

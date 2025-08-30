@@ -25,7 +25,7 @@
 
 #include <thread>
 #include <opencog/util/concurrent_queue.h>
-#include <opencog/atoms/sensory/TextWriterNode.h>
+#include <opencog/atoms/sensory/TextStreamNode.h>
 
 class IRC;
 struct irc_reply_data;
@@ -42,7 +42,7 @@ namespace opencog
  * channel. This is experimental.
  */
 class IRChatNode
-	: public TextWriterNode, protected concurrent_queue<ValuePtr>
+	: public TextStreamNode, protected concurrent_queue<ValuePtr>
 {
 private:
 	IRC* _conn;
@@ -72,7 +72,7 @@ protected:
 
 	virtual void open(const ValuePtr&);
 	virtual void close(const ValuePtr&);
-	// virtual void write(const ValuePtr&); inherited from TextWriterNode
+	// virtual void write(const ValuePtr&); inherited from StreamNode
 	virtual bool connected(void) const;
 	virtual ValuePtr read(void) const;
 
