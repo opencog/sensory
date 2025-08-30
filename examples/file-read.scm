@@ -16,6 +16,9 @@
 ; the (TextFile "file:///tmp/demo.txt") object will cause one line
 ; to be read from the file, and returned as a StringValue.
 
+;; Memoize the TextFileNode in scheme. This does tow things:
+;; 1) Avoids typing, below.
+;; 2) Avoids hitting the AtomSpace repeatedly.
 (define file-node (TextFile "file:///tmp/demo.txt"))
 
 (cog-execute!
@@ -33,16 +36,20 @@
 (cog-execute! (ValueOf file-node (Predicate "*-read-*")))
 
 ; --------------------------------------------------------
-; Basic demo: Open a file for reading, at a fixed absolute location
-; in the filesystem. Sending the (Predicate "*-read-*") message to
-; the (TextFile "file:///tmp/demo.txt") object will return a text
-; stream reader. Each examination of the stream will return a line
-; from the file, in sequential order.
+; Convert the line-by-line reder into a streaming reader. Working with
+; StreamValues simplifies processing pipelines. StreamValues will
+; deliver more data with each reference, avoiding the need to loop
+; over the *-read-* message.
+;
+; Each examination of the stream will return a line from the file,
+; in sequential order.
 
-(define txt-stream
-	(cog-value
-		(TextFile "file:///tmp/demo.txt")
-		(Predicate "*-read-*")))
+(define txt-stream (ReadStream file-node))
+
+; Lets rewind to the begining.
+(cog-execute!
+	(SetValue file-node (Predicate "*-open-*")
+		(ConceptNode "Another EOF marker")))
 
 ; Repeated references to the stream will return single lines from
 ; the file.
@@ -52,7 +59,7 @@ txt-stream
 txt-stream
 txt-stream
 
-; Eventually, this will return an empty stream. This denotes end-of-file.
+; Eventually, this will return the EOF marker.
 
 ; --------------------------------------------------------
 ; Demo: Perform indirect streaming. The text-stream will be placed
