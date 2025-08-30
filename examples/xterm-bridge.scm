@@ -133,6 +133,22 @@ areader
 areader
 areader
 
+(cog-execute!
+	(SetValue (Concept "foo") (Predicate "XTerm A")
+	(ReadStream axterm)))
+
+(cog-set-value! (Concept "foo") (Predicate "XTerm A") (ReadStream axterm))
+(cog-set-value! (Concept "foo") (Predicate "XTerm B") (ReadStream bxterm))
+
+(define a-stream-gen (ValueOf (Concept "foo") (Predicate "XTerm A")))
+(define b-stream-gen (ValueOf (Concept "foo") (Predicate "XTerm B")))
+
+(cog-execute! a-stream-gen)
+(cog-execute! a-stream-gen)
+(cog-execute! a-stream-gen)
+
+
+
 
 
 ; --------------------------------------------------------
