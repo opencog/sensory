@@ -2,7 +2,7 @@ Sending Messages
 ----------------
 There's a recurring pattern in the AtomSpace that has an inadequate
 solution. In the below, I ponder the idea of "sending messages" as a
-possbile solution.
+possible solution.
 
 The words "sending messages" hark back to a very old object-oriented
 programming idea: there's an "object", you send it "messages".
@@ -217,7 +217,7 @@ which is to be replaced by
    (SomeAtom)
    (PredicateNode "some key"))
 ```
-This breaks the strict 3-ary for, of `SetValueLink` but I guess thats
+This breaks the strict 3-ary for, of `SetValueLink` but I guess that's
 OK? The same breakage is needed for `set-value!`
 
 #### Alternative `execute!`
@@ -253,7 +253,7 @@ This has the interesting advantage of reifying the `StorageNode`, which
 is not otherwise possible. So maybe we want to keep the current `Open`
 design.
 
-The claim is that `Open` returns a stream but in this exanple, we kind
+The claim is that `Open` returns a stream, but in this example, we kind
 of want to return the object itself.
 
 The current `Write` documentation states:
@@ -263,8 +263,8 @@ The current `Write` documentation states:
     (StringValue)) ; strings to write
 ```
 but we really want to send messages... so how can we fix this? Or do we
-nead to? The conception here is very low-level: and I/O stream. We could
-maybe re-interpret the sending of messages as a write, to a stram, of
+need to? The conception here is very low-level: and I/O stream. We could
+maybe re-interpret the sending of messages as a write, to a stream, of
 the message type, followed by the data. Six of one, half-dozen of the
 other. Hard to say what is best from either the usability or the
 performance side of things.

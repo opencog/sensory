@@ -36,7 +36,7 @@ design choices governing the system.
 * [Notes Part F](DesignNotes-F.md) -- Recursion, decision making.
   How to perform recursive walks of observable networks.
   (Christmas 2024)
-* [Notes Part G](DesignNotes-G.md) -- Flow Tyope convversions.
+* [Notes Part G](DesignNotes-G.md) -- Flow Type conversions.
   The `FilterLink` can be used to alter stream flows, but its awkward.
   (February 2025)
 * [Notes Part H](DesignNotes-H.md) -- Vector Similarity.
@@ -47,6 +47,9 @@ design choices governing the system.
   look like objects, and, much like OO object-oriented objects, we
   want to send them messages. This seems to solve some old problems
   while also making contact with current work. (August 2025)
+* [Notes Part J](DesignNotes-J.md) -- Objects and Streams.
+  Contemplating a major rewrite, which is undertaken. The old
+  implementation is now called version 0 or v0.
 
 Current Implementation
 ----------------------

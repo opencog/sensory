@@ -59,7 +59,7 @@ to return
 ```
 Thus, if we imagine a `SensoryNode` to be an eyeball, and an open
 sensory node to be an eye looking at a specific thing, then the above
-has created a rather large number of eyeballs, and resursive descent
+has created a rather large number of eyeballs, and recursive descent
 into the file system will create even more.  Its a bit of a fork-bomb.
 It should probably not be built in as an automatic list iterator inside
 of the `OpenLink`.
@@ -205,5 +205,5 @@ Several design issues arise:
 * File permissions means that some files and directories will be
   unaccessible. This is handled by having the the `FileSysStream`
   throw exceptions for these cases. A design strategy is needed for
-  excpetion handling. For now, having `WriteLink` try and catch seems
+  exception handling. For now, having `WriteLink` try and catch seems
   like an OK solution.
