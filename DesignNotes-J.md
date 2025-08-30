@@ -118,9 +118,6 @@ The executation path is not bounded, it can be splattered throught the
 AtomSpace. It might not be clear that some given execution path results
 in recursion.
 
-XXX There muight be a bug in the implementation of `DefinedProceedure`
-It's not obvious that a call A->B->C->A works "as expected".
-
 So a `LooperLink` gives bounded loop execution. Is it worth implementing
 right now? There's no obvious pressing need for it, so no.
 
