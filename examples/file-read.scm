@@ -16,15 +16,21 @@
 ; the (TextFile "file:///tmp/demo.txt") object will cause one line
 ; to be read from the file, and returned as a StringValue.
 
-(cog-execute!
-	(SetValue
-		(TextFile "file:///tmp/demo.txt")
-		(Predicate "*-open-*")
-		(Node "void")))
+(define file-node (TextFile "file:///tmp/demo.txt"))
 
-(cog-value
-	(TextFile "file:///tmp/demo.txt")
-	(Predicate "*-read-*"))
+(cog-execute!
+	(SetValue file-node (Predicate "*-open-*")
+		(ConceptNode "This is my EOF marker")))
+
+; Read one line of text from the file. Do this by sending the *-read-*
+; message to the file object.
+(cog-execute! (ValueOf file-node (Predicate "*-read-*")))
+
+; Do it again and again. Keep doing it to EOF is reached.
+(cog-execute! (ValueOf file-node (Predicate "*-read-*")))
+(cog-execute! (ValueOf file-node (Predicate "*-read-*")))
+(cog-execute! (ValueOf file-node (Predicate "*-read-*")))
+(cog-execute! (ValueOf file-node (Predicate "*-read-*")))
 
 ; --------------------------------------------------------
 ; Basic demo: Open a file for reading, at a fixed absolute location
