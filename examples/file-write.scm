@@ -15,13 +15,15 @@
 ;
 ; Upon opening, the file is created, if it does not exist.
 ; The cursor is positioned at the end of the file (for appending).
-(cog-set-value! (TextFile "file:///tmp/foobar.txt")
-	(Predicate "*-open-*") (VoidValue))
+(define text-file (TextFile "file:///tmp/foobar.txt"))
+
+(cog-execute!
+	(SetValue text-file (Predicate "*-open-*") (Type 'StringValue)))
 
 ; Perform `ls -la /tmp/foo*` and you should see a file of zero length.
 
 ; Write some text to the file.
-(cog-set-value! (TextFile "file:///tmp/foobar.txt")
+(cog-set-value! text-file
 	(Predicate "*-write-*") (StringValue "Hello there!\n"))
 
 (cog-set-value! (TextFile "file:///tmp/foobar.txt")
@@ -41,9 +43,7 @@
 
 ; Define a writer, that, when executed, will write to the file.
 (define writer
-	(SetValue
-		(TextFile "file:///tmp/foobar.txt")
-		(Predicate "*-write-*")
+	(SetValue text-file (Predicate "*-write-*")
 		(ValueOf (Concept "source") (Predicate "key"))))
 
 ; Write it out.
@@ -64,12 +64,17 @@
 ; we replace that text with a file reader stream. Thus, when the
 ; writer is executed, it will suck text out of this stream, and
 ; write it to the output file.
+(define input-text-file (TextFile "file:///tmp/demo.txt"))
 (cog-execute!
 	(SetValue
 		(Concept "source") (Predicate "key")
-		(ValueOf
-			(TextFile "file:///tmp/demo.txt")
-			(Predicate "*-read-*"))))
+		(ValueOf input-text-file (Predicate "*-stream-*"))))
+
+; Open it before we do anything else.
+(define please-be-kind-rewind
+   (SetValue input-text-file (Predicate "*-open-*") (Type 'StringValue)))
+
+(cog-execute! please-be-kind-rewind)
 
 ; Running the writer will enter a loop (infinite loop), pulling one
 ; line at a time from the input file, and writing it to the output file.
@@ -85,12 +90,7 @@
 
 ; Get a fresh input stream. Each execution of SetValue will create
 ; a new stream.
-(cog-execute!
-	(SetValue
-		(Concept "source") (Predicate "key")
-		(ValueOf
-			(TextFile "file:///tmp/demo.txt")
-			(Predicate "*-read-*"))))
+(cog-execute! please-be-kind-rewind)
 
 ; And now write again:
 (cog-execute! writer)
@@ -105,9 +105,7 @@
 (cog-execute!
 	(SetValue
 		(Concept "source") (Predicate "raw file input key")
-		(ValueOf
-			(TextFile "file:///tmp/demo.txt")
-			(Predicate "*-read-*"))))
+		(ValueOf input-text-file (Predicate "*-stream-*"))))
 
 ; Define a rule that will take each line of input text, and
 ; process it in some way. In this case, it will just make
@@ -121,7 +119,7 @@
 (define rule-applier
 	(Filter
 		(Rule
-			(TypedVariable (Variable "$x") (Type 'ItemNode))
+			(TypedVariable (Variable "$x") (Type 'StringValue))
 			(Variable "$x")
 			(LinkSignature
 				(Type 'LinkValue)

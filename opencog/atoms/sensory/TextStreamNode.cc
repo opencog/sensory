@@ -66,7 +66,7 @@ void TextStreamNode::open(const ValuePtr& item_type)
 	if (not nameserver().isA(_item_type, STRING_VALUE) and
 	    not nameserver().isA(_item_type, NODE))
 		throw RuntimeException(TRACE_INFO,
-			"Expecting a StringValue or Node; got %s\n", item_type->to_string().c_str());
+			"Expecting the type to be a StringValue or Node; got %s\n", item_type->to_string().c_str());
 }
 
 // ==============================================================
