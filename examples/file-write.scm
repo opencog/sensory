@@ -148,21 +148,15 @@
 ; Run the file-writer. This uses exactly the same definition as before.
 ; Be sure to `ls -la /tmp/foobar.txt` before and after running this,
 ; or just `cat` it, to see the output file contents change.
+(cog-execute! please-be-kind-rewind)
 (cog-execute! writer)
 
 ; Do it again. Nothing happens, because the input file cursor is at
 ; the end of file.
 (cog-execute! writer)
 
-; Reset the input file cursor. (or pick a new input file.)
-(cog-execute!
-	(SetValue
-		(Concept "source") (Predicate "raw file input key")
-		(ValueOf
-			(TextFile "file:///tmp/demo.txt")
-			(Predicate "*-read-*"))))
-
-; Now, the writer will run again.
+; Rewind, and try again.
+(cog-execute! please-be-kind-rewind)
 (cog-execute! writer)
 
 ; If unclear about the promise, you can explore it several ways.
