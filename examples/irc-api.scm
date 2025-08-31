@@ -17,7 +17,7 @@
 
 ; Repeated references to the stream will return single lines from
 ; the file.
-(cog-value  chatnode (Predicate "*-read-*"))
+(cog-execute! (ValueOf chatnode (Predicate "*-read-*")))
 
 ; Join an IRC channel
 (cog-set-value! chatnode (Predicate "*-write-*")
