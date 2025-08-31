@@ -83,9 +83,9 @@ IRChatNode::~IRChatNode()
 void IRChatNode::open(const ValuePtr& vurl)
 {
 	if (not vurl->is_type(STRING_VALUE) and
-	    not vurl->is_type(vurl->is_type(NODE)))
+	    not vurl->is_type(NODE))
 		throw RuntimeException(TRACE_INFO,
-			"Expecting StrongValue or Node; got \"%s\"\n",
+			"Expecting StringValue or Node; got \"%s\"\n",
 			vurl->to_string().c_str());
 
 	if (vurl->is_type(STRING_VALUE))

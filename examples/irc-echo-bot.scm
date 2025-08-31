@@ -11,16 +11,14 @@
 ;
 (use-modules (ice-9 threads))
 (use-modules (srfi srfi-1))
-(use-modules (opencog) (opencog exec) (opencog sensory-v0))
+(use-modules (opencog) (opencog exec) (opencog sensory))
 
-; Open connection to an IRC server, and attach the stream to an Atom.
-; This allows it to be located, when needed. If the Atom is "well
-; known", then everyone can find it.
+; Open connection to an IRC server.
+
+(define chatnode (IRChatNode "echobot"))
 (cog-execute!
-	(SetValue
-		(Anchor "IRC Bot") (Predicate "echo")
-		(Open (Type 'IRChatStream)
-			(SensoryNode "irc://echobot@irc.libera.chat:6667"))))
+	(SetValue chatnode (Predicate "*-open-*")
+	(Concept "irc://echobot@irc.libera.chat:6667")))
 
 ; Build a pair of read and Write accessors for the above location.
 ; Using the StreamValueOf automatically dereferences the stream for us.
