@@ -69,7 +69,7 @@
 				(Variable "$from")
 				(Item "you said: ")
 				(Variable "$msg")))
-		(LinkSignature (Type 'LinkValue) bot-read)))
+		bot-raw))
 
 (define private-echo
 	(SetValue chatnode (Predicate "*-write-*") make-private-reply))
@@ -123,7 +123,7 @@
 (define (make-applier CONCLUSION)
 	(Filter
 		(make-msg-rule CONCLUSION)
-		(LinkSignature (Type 'LinkValue) bot-read)))
+		bot-raw))
 
 ; Convenience wrapper. Reads from IRC, extracts message, rewrites
 ; it into CONCLUSION, writes out to IRC.
