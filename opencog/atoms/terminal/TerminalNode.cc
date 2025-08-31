@@ -36,7 +36,6 @@
 #include <opencog/atoms/base/Link.h>
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/value/StringValue.h>
-#include <opencog/atoms/value/VoidValue.h>
 
 #include <opencog/sensory/types/atom_types.h>
 #include "TerminalNode.h"
@@ -154,13 +153,15 @@ bool TerminalNode::connected(void) const
 // This will read one line from the file stream, and return that line.
 // So, a line-oriented, buffered interface. For now.
 // This blocks, waiting for input, if there is no input.
-ValuePtr TerminalNode::read(void) const
+std::string TerminalNode::do_read(void) const
 {
-	if (nullptr == _fh) return createVoidValue();
+	static const std::string empty_string;
 
-#define BUFSZ 4080
-	char buff[BUFSZ];
-	buff[0] = 0;
+	if (nullptr == _fh) return empty_string;
+
+#define BUFSZ 256
+	std::string str(BUFSZ, 0);
+	char* buff = str.data();
 
 	// Locking and blocking. There seems to be a feature/bug in some
 	// combinations of linux kernel + glibc + xterm that prevents the
@@ -186,10 +187,10 @@ ValuePtr TerminalNode::read(void) const
 	if (nullptr == rd)
 	{
 		halt();
-		return createVoidValue();
+		return empty_string;
 	}
 
-	return createStringValue(buff);
+	return str;
 }
 
 // ==============================================================
