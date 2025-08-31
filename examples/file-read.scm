@@ -122,17 +122,18 @@ txt-stream
 		; a pattern to match, and the rewrite to apply. Here, the
 		; pattern match is trivial: `(Variable "$x")` matches
 		; everything, the entire body of the input, which will be
-		; a line from the text file. More pecisely, and ItemNode
+		; a line from the text file. More pecisely, a StringValue
 		; holding that line. The rewrite below is just some
 		; silliness that makes two copies of the input.
 		;
 		; The LinkSignatureLink is a constructor: it creates either
-		; a LinkValue or a Link of the specified type. In this demo,
-		; just using a plain-old List (instead of the LinkSignature)
-		; would have been OK. But if the Variable had been a Value,
-		; then using the LinkSignature would have been required.
+		; a LinkValue or a Link of the specified type. If the stream
+		; consisted of Atoms, then a plain-old List (instead of the
+		; LinkSignature) would have been OK. But since the filtered
+		; elements are Values, StringValues to be precise; they must
+		; be wrapped with a LinkSignature.
 		(Rule
-			(TypedVariable (Variable "$x") (Type 'ItemNode))
+			(TypedVariable (Variable "$x") (Type 'StringValue))
 			(Variable "$x")
 			(LinkSignature       ; Or use List here and skip next line.
 				(Type 'LinkValue)
