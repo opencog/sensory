@@ -48,12 +48,18 @@ class TextStreamNode
 	: public StreamNode
 {
 protected:
+	// The type of the Items that the *-read-* method should return.
+	// Typically either STRING_VALUE or some NODE.
+	Type _item_type;
+
 	TextStreamNode(Type t, const std::string&&);
 
 	virtual void do_write(const ValuePtr&);
 
 	// Derived classes need to implement a handler.
 	virtual void do_write(const std::string&) = 0;
+
+	virtual void open(const ValuePtr&);
 
 public:
 	virtual ~TextStreamNode();

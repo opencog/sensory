@@ -75,9 +75,10 @@ TextFileNode::~TextFileNode()
 /// Such parameters could control flushing, appending vs clobbering,
 /// and so on. XXX TODO.
 
-void TextFileNode::open(const ValuePtr& eofv)
+void TextFileNode::open(const ValuePtr& vty)
 {
-	_eof_value = eofv;
+	TextStreamNode::open(vty);
+
 	_fh = nullptr;
 	const std::string& url = get_name();
 
@@ -120,7 +121,7 @@ bool TextFileNode::connected(void) const
 ValuePtr TextFileNode::read(void) const
 {
 	// Not open. Can't do anything.
-	if (nullptr == _fh) return _eof_value;
+	if (nullptr == _fh) return createVoidValue();
 
 #define BUFSZ 4080
 	char buff[BUFSZ];
@@ -131,7 +132,7 @@ ValuePtr TextFileNode::read(void) const
 	{
 		fclose(_fh);
 		_fh = nullptr;
-		return _eof_value;
+		return createVoidValue();
 	}
 
 	return createStringValue(buff);

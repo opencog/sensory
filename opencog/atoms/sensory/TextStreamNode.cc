@@ -27,7 +27,7 @@
 #include <opencog/util/oc_assert.h>
 #include <opencog/atoms/base/Link.h>
 #include <opencog/atoms/base/Node.h>
-#include <opencog/atoms/value/LinkValue.h>
+#include <opencog/atoms/core/TypeNode.h>
 #include <opencog/atoms/value/StringValue.h>
 
 #include <opencog/sensory/types/atom_types.h>
@@ -45,6 +45,28 @@ TextStreamNode::TextStreamNode(Type t, const std::string&& url)
 TextStreamNode::~TextStreamNode()
 {
 	printf ("TextStreamNode dtor\n");
+}
+
+// ==============================================================
+
+// Decode the Item type.
+void TextStreamNode::open(const ValuePtr& item_type)
+{
+	// In the future, we could, in principle, accept wacky signatures
+	// here, or complicated type constructors of some kind of another,
+	// as long as they are able to construct something holding text
+	// strings. But for now, keep it simple. Simple TypeNode, that's all.
+	if (not item_type->is_type(TYPE_NODE))
+		throw RuntimeException(TRACE_INFO,
+			"Expecting a TypeNode; got %s\n", item_type->to_string().c_str());
+
+	TypeNodePtr tp = TypeNodeCast(item_type);
+	_item_type = tp->get_kind();
+
+	if (not nameserver().isA(_item_type, STRING_VALUE) and
+	    not nameserver().isA(_item_type, NODE))
+		throw RuntimeException(TRACE_INFO,
+			"Expecting a StringValue or Node; got %s\n", item_type->to_string().c_str());
 }
 
 // ==============================================================
