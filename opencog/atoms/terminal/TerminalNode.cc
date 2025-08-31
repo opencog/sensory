@@ -78,8 +78,10 @@ void TerminalNode::halt(void) const
 	_xterm_pid= 0;
 }
 
-void TerminalNode::open(const ValuePtr& ignore)
+void TerminalNode::open(const ValuePtr& retype)
 {
+	TextStreamNode::open(retype);
+
 	if (_fh) return;
 
 	int fd = posix_openpt(O_RDWR|O_NOCTTY);
