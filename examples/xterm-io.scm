@@ -28,7 +28,8 @@
 ;
 ; Be sure that xterm is installed, else this won't work!
 (define xterm (TerminalNode "foo"))
-(cog-set-value! xterm (Predicate "*-open-*") (VoidValue))
+(cog-execute!
+	(SetValue xterm (Predicate "*-open-*") (Type 'StringValue)))
 
 ; Sending the *-read-* message to the object will read a single line of
 ; text from the xterm window. Each call will block (appear to hang),
