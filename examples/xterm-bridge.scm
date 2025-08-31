@@ -30,8 +30,10 @@
 (define axterm (TerminalNode "term A"))
 (define bxterm (TerminalNode "term B"))
 
-(cog-set-value! axterm (Predicate "*-open-*") (VoidValue))
-(cog-set-value! bxterm (Predicate "*-open-*") (VoidValue))
+(cog-execute!
+	(SetValue axterm (Predicate "*-open-*") (Type 'StringValue)))
+(cog-execute!
+	(SetValue bxterm (Predicate "*-open-*") (Type 'StringValue)))
 
 ; Create two copiers. Executing each of these once will copy exactly
 ; one message frome one terminal to the other.
