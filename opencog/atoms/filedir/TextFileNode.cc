@@ -118,13 +118,16 @@ bool TextFileNode::connected(void) const
 
 // This will read one line from the text file, and return that line.
 // This is a line-oriented, buffered interface.
-ValuePtr TextFileNode::read(void) const
+std::string TextFileNode::do_read(void) const
 {
-	// Not open. Can't do anything.
-	if (nullptr == _fh) return createVoidValue();
+	static const std::string empty_string;
 
-#define BUFSZ 4080
-	char buff[BUFSZ];
+	// Not open. Can't do anything.
+	if (nullptr == _fh) return empty_string;
+
+#define BUFSZ 4096
+	std::string str(BUFSZ, 0);
+	char* buff = str.data();
 	char* rd = fgets(buff, BUFSZ, _fh);
 
 	// Hit file EOF. Close automatically.
@@ -132,15 +135,10 @@ ValuePtr TextFileNode::read(void) const
 	{
 		fclose(_fh);
 		_fh = nullptr;
-		return createVoidValue();
+		return empty_string;
 	}
 
-	// If a StringValue was asked for, git thenm that.
-	if (nameserver().isA(_item_type, STRING_VALUE))
-		return createStringValue(buff);
-
-	// Else it's some kind of Node.
-	return createNode(_item_type, buff);
+	return str;
 }
 
 // ==============================================================

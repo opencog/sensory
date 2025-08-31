@@ -35,7 +35,7 @@
 ; until something is typed into the terminal, followed by a carriage
 ; return. The interface is line-oriented, you have to hit enter to
 ; unblock and sent the text.
-(define reader (ValueOf (TerminalNode "foo") (Predicate "*-read-*")))
+(define reader (ValueOf xterm (Predicate "*-read-*")))
 (cog-execute! reader)
 (cog-execute! reader)
 (cog-execute! reader)

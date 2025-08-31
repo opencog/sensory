@@ -139,7 +139,7 @@
 ; stream, until end-of-file. For that, create a promise to do that,
 ; when executed.
 (define prom
-	(Promise (TypeNode 'FutureStream)  rule-applier))
+	(Promise (TypeNode 'FutureStream) rule-applier))
 
 ; Designate the promise as the source of data for the file writer.
 (cog-execute!

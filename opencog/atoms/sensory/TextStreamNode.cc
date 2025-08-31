@@ -29,6 +29,7 @@
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/core/TypeNode.h>
 #include <opencog/atoms/value/StringValue.h>
+#include <opencog/atoms/value/VoidValue.h>
 
 #include <opencog/sensory/types/atom_types.h>
 #include "TextStreamNode.h"
@@ -67,6 +68,22 @@ void TextStreamNode::open(const ValuePtr& item_type)
 	    not nameserver().isA(_item_type, NODE))
 		throw RuntimeException(TRACE_INFO,
 			"Expecting the type to be a StringValue or Node; got %s\n", item_type->to_string().c_str());
+}
+
+// ==============================================================
+
+// Reader utility
+ValuePtr TextStreamNode::read(void) const
+{
+	std::string str = do_read();
+	if (0 == str.length()) return createVoidValue();
+
+	// If a StringValue was asked for, git thenm that.
+	if (nameserver().isA(_item_type, STRING_VALUE))
+		return createStringValue(std::move(str));
+
+	// Else it's some kind of Node.
+	return createNode(_item_type, std::move(str));
 }
 
 // ==============================================================

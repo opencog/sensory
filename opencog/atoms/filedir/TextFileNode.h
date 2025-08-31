@@ -48,7 +48,7 @@ protected:
 	virtual void close(const ValuePtr&);
 	// virtual void write(const ValuePtr&); inherited from StreamNode
 	virtual bool connected(void) const;
-	virtual ValuePtr read(void) const;
+	virtual std::string do_read(void) const;
 
 public:
 	TextFileNode(const std::string&&);

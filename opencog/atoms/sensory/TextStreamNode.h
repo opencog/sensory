@@ -53,13 +53,16 @@ protected:
 	Type _item_type;
 
 	TextStreamNode(Type t, const std::string&&);
+	virtual void open(const ValuePtr&);
+
+	virtual ValuePtr read(void) const;
+	virtual std::string do_read(void) const = 0;
 
 	virtual void do_write(const ValuePtr&);
 
 	// Derived classes need to implement a handler.
 	virtual void do_write(const std::string&) = 0;
 
-	virtual void open(const ValuePtr&);
 
 public:
 	virtual ~TextStreamNode();
