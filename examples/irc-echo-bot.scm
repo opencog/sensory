@@ -23,8 +23,8 @@
 ; Build a pair of read and Write accessors for the above location.
 ; Using the StreamValueOf automatically dereferences the stream for us.
 ; Using the naked ValueOf gives direct (read and write) access.
-(define bot-read (StreamValueOf (Anchor "IRC Bot") (Predicate "echo")))
-(define bot-raw (ValueOf (Anchor "IRC Bot") (Predicate "echo")))
+(define bot-read (StreamValueOf chatnode (Predicate "*-read-*")))
+(define bot-raw (ValueOf chatnode (Predicate "*-read-*")))
 
 ; Individual messages can be read like so:
 (cog-execute! bot-read)
@@ -69,9 +69,10 @@
 				(Variable "$from")
 				(Item "you said: ")
 				(Variable "$msg")))
-		bot-raw))
+		(LinkSignature (Type 'LinkValue) bot-read)))
 
-(define private-echo (Write bot-raw make-private-reply))
+(define private-echo
+	(SetValue chatnode (Predicate "*-write-*") make-private-reply))
 
 ; Try it, once
 (cog-execute! private-echo)
