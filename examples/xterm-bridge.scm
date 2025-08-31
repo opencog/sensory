@@ -117,8 +117,8 @@
 ; --------------------------------------------------------
 ; Option 3) Convert the line-by-line reader to a stream, and then
 ; let the implicit infinite loops in the stream do all the work.
-; This is not hard, but we'll take the long road and explain this in
-; detail.
+; This is not hard, (in fact, it's done automatically) but we'll
+; take the long road and explain this in detail.
 
 ; Wrap the terminal with a reader stream.  Each read from the stream
 ; will cause a *-read-* message to the sent to the terminal object.
@@ -135,23 +135,47 @@ areader
 areader
 areader
 
-(cog-execute!
-	(SetValue (Concept "foo") (Predicate "XTerm A")
-	(ReadStream axterm)))
+; In analogoy to copy-a-to-b, we would like to be able to declare
+;
+;    (SetValue bxterm (Predicate "*-write-*")
+;        (ReadStream axterm))
+;
+; so that everything streamed from A goe to B. But the above expression
+; is not valid: ReadStream is a Value, not an Atom. What's neeeded is an
+; Atom that constructs ReadStreams. Well, there is one: the StreamNode.
+; Sending it the *-stream-* message will return a ReadStream that wraps
+; the *-read-* message on the same object. Anything inheriting from
+; StreamNode getis this wrapper "for free". This includes the
+; TextStreamNode, from which the TerminalNode is derived. In short, the
+; TerminalNode has this built in.
+;
+; It can be used in the same way as in the file reader stream demo:
+(define txt-stream-gen (ValueOf axterm (Predicate "*-stream-*")))
 
-(cog-set-value! (Concept "foo") (Predicate "XTerm A") (ReadStream axterm))
-(cog-set-value! (Concept "foo") (Predicate "XTerm B") (ReadStream bxterm))
+; Note that each call blocks, until somthing is typed into terminal A.
+(cog-execute! txt-stream-gen)
+(cog-execute! txt-stream-gen)
+(cog-execute! txt-stream-gen)
+(cog-execute! txt-stream-gen)
 
-(define a-stream-gen (ValueOf (Concept "foo") (Predicate "XTerm A")))
-(define b-stream-gen (ValueOf (Concept "foo") (Predicate "XTerm B")))
+; The bridge is now straight-forward: Take the copy-one pattern,
+; and replace *-read-* by *-stream-*
+(define stream-b-to-a
+	(SetValue axterm (Predicate "*-write-*")
+		(ValueOf bxterm (Predicate "*-stream-*"))))
 
-(cog-execute! a-stream-gen)
-(cog-execute! a-stream-gen)
-(cog-execute! a-stream-gen)
+(define stream-a-to-b
+	(SetValue bxterm (Predicate "*-write-*")
+		(ValueOf axterm (Predicate "*-stream-*"))))
 
+; Either of the above, set in motion, will run forever, copying from
+; source to destination. As loops, they will not return to the caller
+; until the corresponding input stream terminates. To run both loops
+; at the same time, put them in different threads:
 
+(cog-execute! (ExecuteThreaded stream-b-to-a stream-a-to-b))
 
-
+; That's it. Text typed into either terminal is sent to the other.
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
