@@ -86,6 +86,11 @@ ValuePtr TextStreamNode::read(void) const
 	return createNode(_item_type, std::move(str));
 }
 
+std::string TextStreamNode::do_read(void) const
+{
+	return std::string();
+}
+
 // ==============================================================
 
 // Unpack strings.
