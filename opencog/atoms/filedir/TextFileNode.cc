@@ -135,7 +135,12 @@ ValuePtr TextFileNode::read(void) const
 		return createVoidValue();
 	}
 
-	return createStringValue(buff);
+	// If a StringValue was asked for, git thenm that.
+	if (nameserver().isA(_item_type, STRING_VALUE))
+		return createStringValue(buff);
+
+	// Else it's some kind of Node.
+	return createNode(_item_type, buff);
 }
 
 // ==============================================================

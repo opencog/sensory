@@ -21,9 +21,11 @@
 ;; 2) Avoids hitting the AtomSpace repeatedly.
 (define file-node (TextFile "file:///tmp/demo.txt"))
 
+;; Reading the file will return strings. But we have a choice of what
+;; kind of strings we want: StringValue, or perhaps some kind of Node.
+;; This time, we'll try out the StringValue.
 (cog-execute!
-	(SetValue file-node (Predicate "*-open-*")
-		(ConceptNode "This is my EOF marker")))
+	(SetValue file-node (Predicate "*-open-*") (Type 'StringValue)))
 
 ; Read one line of text from the file. Do this by sending the *-read-*
 ; message to the file object.
@@ -44,10 +46,10 @@
 ; Each examination of the stream will return a line from the file,
 ; in sequential order.
 
-; But first, let's rewind to the begining.
+; But first, let's rewind to the begining. And change the return type,
+; just for grins.
 (cog-execute!
-	(SetValue file-node (Predicate "*-open-*")
-		(ConceptNode "Another EOF marker")))
+	(SetValue file-node (Predicate "*-open-*") (Type 'Concept)))
 
 ; Wrap the TextFileNode with the stream reader.
 (define txt-stream (ReadStream file-node))
@@ -70,8 +72,7 @@ txt-stream
 
 ; Again, let's rewind to the begining.
 (cog-execute!
-	(SetValue file-node (Predicate "*-open-*")
-		(ItemNode "EOF can be anyting")))
+	(SetValue file-node (Predicate "*-open-*") (Type 'Item)))
 
 (define txt-stream
 	(cog-execute! (ValueOf file-node (Predicate "*-stream-*"))))
@@ -145,10 +146,10 @@ txt-stream
 		txt-stream-gen))
 
 ; The previous demo ran the input file to end-of-file;
-; restart at the beginning.
+; restart at the beginning. Be sure to set the item type to
+; StringValue, because that is what the filter expects.
 (cog-execute!
-	(SetValue file-node (Predicate "*-open-*")
-		(ItemNode "EOF can be anyting")))
+	(SetValue file-node (Predicate "*-open-*") (Type 'StringValue)))
 
 ; Run the rule, once.
 (cog-execute! rule-applier)
@@ -169,10 +170,7 @@ txt-stream
 
 ; As above: rewind the stream to the beginning:
 (cog-execute!
-	(SetValue (Concept "foo") (Predicate "some place")
-		(ValueOf
-			(TextFile "file:///tmp/demo.txt")
-			(Predicate "*-read-*"))))
+	(SetValue file-node (Predicate "*-open-*") (Type 'StringValue)))
 
 ; Gentle reminder of how to fetch this:
 (define txt-stream-gen
