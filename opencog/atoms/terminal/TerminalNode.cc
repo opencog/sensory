@@ -69,6 +69,7 @@ TerminalNode::~TerminalNode()
 
 void TerminalNode::halt(void) const
 {
+	std::lock_guard<std::mutex> lock(_mtx);
 	if (_fh)
 		fclose (_fh);
 	_fh = nullptr;

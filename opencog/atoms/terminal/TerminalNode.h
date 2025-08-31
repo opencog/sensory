@@ -23,6 +23,7 @@
 #ifndef _OPENCOG_TERMINAL_NODE_H
 #define _OPENCOG_TERMINAL_NODE_H
 
+#include <mutex>
 #include <stdio.h>
 #include <opencog/atoms/sensory/TextStreamNode.h>
 
@@ -44,6 +45,7 @@ class TerminalNode
 	: public TextStreamNode
 {
 protected:
+	mutable std::mutex _mtx;
 	void halt(void) const;
 
 	mutable FILE* _fh;
