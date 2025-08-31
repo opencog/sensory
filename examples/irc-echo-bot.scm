@@ -117,16 +117,18 @@
 		(LinkSignature (Type 'LinkValue)
 			CONCLUSION)))
 
-; Convenience wrapper
+; Convenience wrapper.
+; Note that executing this will hang, waiting on input, and so you
+; have to say something to the bot before this returns.
 (define (make-applier CONCLUSION)
 	(Filter
 		(make-msg-rule CONCLUSION)
-		bot-raw))
+		(LinkSignature (Type 'LinkValue) bot-read)))
 
 ; Convenience wrapper. Reads from IRC, extracts message, rewrites
 ; it into CONCLUSION, writes out to IRC.
 (define (make-echoer CONCLUSION)
-	(WriteLink bot-raw (make-applier CONCLUSION)))
+	(SetValue chatnode (Predicate "*-write-*") (make-applier CONCLUSION)))
 
 ; Most of the demos below need the bot to know it's own name.
 (cog-set-value! (Anchor "IRC Bot")
@@ -137,13 +139,16 @@
 ; to sit on some public channel, in order to work.
 
 ; Join a channel.
-(cog-execute! (Write bot-raw (List (Concept "JOIN #opencog"))))
+(cog-execute! (SetValue chatnode (Predicate "*-write-*")
+	(List (Concept "JOIN #opencog"))))
 
 ; Leave a channel.
-(cog-execute! (Write bot-raw (List (Concept "PART #opencog"))))
+(cog-execute! (SetValue chatnode (Predicate "*-write-*")
+	(List (Concept "PART #opencog"))))
 
 ; --------
 ; Example: Show message
+; This hangs, until you say something to the bot.
 (define show (list (Variable "$from") (Variable "$to") (Variable "$msg")))
 (cog-execute! (make-applier show))
 
