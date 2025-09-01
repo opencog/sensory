@@ -9,8 +9,6 @@
 ; See `irc-api.scm` for a tutorial on the interfaces used here.
 ; See `xterm-bridge.scm` for a simple demo of hooking input to output.
 ;
-(use-modules (ice-9 threads))
-(use-modules (srfi srfi-1))
 (use-modules (opencog) (opencog exec) (opencog sensory))
 
 ; Open connection to an IRC server.
@@ -274,15 +272,53 @@
 
 ; --------
 ; Example: listen to everything, and write it to a file. This requires
-; opening a log-file.
+; opening a log-file, and then piping chat content to that file.
 
 (define irc-log-file (TextFile "file:///tmp/irc-chatlog.txt"))
 (cog-execute!
 	(SetValue irc-log-file (Predicate "*-open-*") (Type 'StringValue)))
 
+(cog-set-value! irc-log-file (Predicate "*-write-*")
+	(StringValue "Start of the log file\n"))
+
+;;; (cog-execute!
+;;;	(SetValue irc-log-file (Predicate "*-close-*") (Type 'StringValue)))
+
+;; This logger will pull everything from IRC (that the bit can hear)
+;; and will write it to the logfile. It will do this forever, i.e.
+;; it's an infini9te loop, so it needs to be run in it's own thread.
+;;
+;; It works, except that there's a small problem: There are no newlines
+;; at the end of messages, and the send & recipient are not demarcated.
+;; So everything written to the logfile will be an ever-expanding blob.
 (define logger
 	(SetValue irc-log-file (Predicate "*-write-*")
 		(ValueOf chatnode (Predicate "*-stream-*"))))
+
+; Don't do this, unless you want the blob, explained above.
+; (cog-execute! (ExecuteThreaded logger))
+
+; Instead, write a message formatter. This picks apart the message,
+; wraps it in some delimiters, and prints to the logfile. Much nicer!
+(define format-for-logger
+	(Filter
+		(Rule
+			(VariableList
+				(Variable "$from") (Variable "$to") (Variable "$msg"))
+			(LinkSignature (Type 'LinkValue)
+				(Variable "$from") (Variable "$to") (Variable "$msg"))
+			(LinkSignature (Type 'LinkValue)
+				(Item "MSG From: ")
+				(Variable "$from")
+				(Item " To: ")
+				(Variable "$to")
+				(Item " Message: ")
+				(Variable "$msg")
+				(Item "\n")))
+		(StreamValueOf chatnode (Predicate "*-stream-*"))))
+
+(define logger
+	(SetValue irc-log-file (Predicate "*-write-*") format-for-logger))
 
 (cog-execute! (ExecuteThreaded logger))
 
