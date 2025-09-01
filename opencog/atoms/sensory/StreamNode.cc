@@ -28,6 +28,7 @@
 #include <opencog/atoms/base/Link.h>
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/value/LinkValue.h>
+#include <opencog/atoms/value/ContainerValue.h>
 #include <opencog/atoms/value/StringValue.h>
 
 #include <opencog/sensory/types/atom_types.h>
@@ -112,6 +113,32 @@ void StreamNode::write(const ValuePtr& cref)
 	{
 		write_one(content);
 		return;
+	}
+
+	// If it is a containers, enter infinite loop, until the container
+	// is closed.
+	if (content->is_type(CONTAINER_VALUE))
+	{
+		ContainerValuePtr cvp(ContainerValueCast(content));
+
+		// If the container is open, that means some other thread
+		// is stuffing values into it. Pull them out, one by one,
+		// as they appear.
+		while (not cvp->is_closed())
+		{
+			ValuePtr v(cvp->remove());
+			if (v->is_type(LINK_VALUE) and 0 == v->size()) continue;
+			write_one(v);
+		}
+
+		// We arrive here if the container is closed.
+		// In this case, drain it, and we are done.
+		const ValueSeq& vals = cvp->value();
+		for (const ValuePtr& v : vals)
+		{
+			if (v->is_type(LINK_VALUE) and 0 == v->size()) continue;
+			write_one(v);
+		}
 	}
 
 	// If it is a stream, enter infinite loop, until it is exhausted.

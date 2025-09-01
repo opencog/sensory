@@ -202,7 +202,7 @@
 	is-pub?
 	(Item " from ")
 	(Variable "$from")
-	(Item "that ")
+	(Item " that ")
 	is-callout?
 	(Item ": ")
 	(Variable "$msg")))
@@ -275,6 +275,16 @@
 ; --------
 ; Example: listen to everything, and write it to a file. This requires
 ; opening a log-file.
+
+(define irc-log-file (TextFile "file:///tmp/irc-chatlog.txt"))
+(cog-execute!
+	(SetValue irc-log-file (Predicate "*-open-*") (Type 'StringValue)))
+
+(define logger
+	(SetValue irc-log-file (Predicate "*-write-*")
+		(ValueOf chatnode (Predicate "*-stream-*"))))
+
+(cog-execute! (ExecuteThreaded logger))
 
 ; XXX unfinished...
 

@@ -140,12 +140,12 @@ areader
 ;    (SetValue bxterm (Predicate "*-write-*")
 ;        (ReadStream axterm))
 ;
-; so that everything streamed from A goe to B. But the above expression
+; so that everything streamed from A goes to B. But the above expression
 ; is not valid: ReadStream is a Value, not an Atom. What's neeeded is an
 ; Atom that constructs ReadStreams. Well, there is one: the StreamNode.
 ; Sending it the *-stream-* message will return a ReadStream that wraps
 ; the *-read-* message on the same object. Anything inheriting from
-; StreamNode getis this wrapper "for free". This includes the
+; StreamNode gets this wrapper "for free". This includes the
 ; TextStreamNode, from which the TerminalNode is derived. In short, the
 ; TerminalNode has this built in.
 ;
@@ -169,7 +169,10 @@ areader
 		(ValueOf axterm (Predicate "*-stream-*"))))
 
 ; Either of the above, set in motion, will run forever, copying from
-; source to destination. As loops, they will not return to the caller
+; source to destination. This is done with an infinite loop in the
+; StreamNode::write() method.
+;
+: As these are both inf loops, they will not return to the caller
 ; until the corresponding input stream terminates. To run both loops
 ; at the same time, put them in different threads:
 
