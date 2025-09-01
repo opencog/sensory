@@ -87,7 +87,8 @@ void TextFileNode::open(const ValuePtr& vty)
 			"Unsupported URL \"%s\"\n", url.c_str());
 
 	// Ignore the first 7 chars "file://"
-	const char* fpath = url.substr(7).c_str();
+	std::string pathstr = url.substr(7);
+	const char* fpath = pathstr.c_str();
 	_fh = fopen(fpath, "a+");
 
 	if (nullptr == _fh)
@@ -107,8 +108,14 @@ void TextFileNode::open(const ValuePtr& vty)
 void TextFileNode::close(const ValuePtr&)
 {
 	if (_fh)
-		fclose (_fh);
+		fclose(_fh);
 	_fh = nullptr;
+}
+
+void TextFileNode::barrier(AtomSpace* ignore)
+{
+	if (_fh)
+		fflush(_fh);
 }
 
 bool TextFileNode::connected(void) const
