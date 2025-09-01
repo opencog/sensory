@@ -317,49 +317,24 @@
 				(Item "\n")))
 		(StreamValueOf chatnode (Predicate "*-stream-*"))))
 
-(define logger
+; The formater runs fine: Try it, one line at a time
+(define one-at-a-time-logger
 	(SetValue irc-log-file (Predicate "*-write-*") format-for-logger))
+(cog-execute! one-at-a-time-logger)
 
+; But we don't want a one-a-a-time interface; we want this to run
+; indefinitely.  For that, we need a promise, that can pull items
+; through the filter. (The filter itself cannot push.)
+; The PromiseLink can pull items through the Filter. So wrap the
+; filter in that. When this is attached to the file writer, it
+; will run forever. The infinite loop doing this is located in
+; StreamNode::write() method.
+(define logger
+	(SetValue irc-log-file (Predicate "*-write-*")
+		(Promise (TypeNode 'FutureStream) format-for-logger)))
+
+; Run the logger in it's own thread.
 (cog-execute! (ExecuteThreaded logger))
-
-; XXX unfinished...
-
-; -------------------------------------------------------
-
-; Hack for long-running streams. This part of the system is not yet
-; fully designed. Details will change.
-;
-; The `OutputStream::do_write_out()` method does enter an inf loop,
-; copying source to sink for as long as the source stays open. For
-; whatever reason, that is not happening in this IRC demo, probably
-; because all the filters obscure that there is a stream at the far
-; end. So this needs work.
-;
-; So, for now, hack around this. Create an inf loop here, and run it
-; in it's own thread. FYI, Tail-recursive loops can also be done in
-; Atomese; the below is done in pure scheme.
-
-(define do-exit-loop #f)
-(define (inf-loop AGENT)
-	(cog-execute! AGENT)
-	(if (not do-exit-loop) (inf-loop AGENT)))
-
-(define thread-id #f)
-(define (exit-loop)
-	(set! do-exit-loop #t)
-	(join-thread thread-id)
-	(format #t "Exited main loop\n")
-	(set! do-exit-loop #f))
-
-; Start an inf loop with the private-echo handler.
-;(define thread-id (call-with-new-thread
-;	(lambda () (inf-loop private-echo))))
-
-; Start an inf loop with the friendly echo handler
-(define thread-id (call-with-new-thread
-	(lambda () (inf-loop (make-echoer reply-to-callout)))))
-
-(exit-loop)
 
 ; The End. That's all, folks!
 ; -------------------------------------------------------
