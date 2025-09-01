@@ -8,7 +8,7 @@
 
 ; Load the C library that calls the nameserver to load the types.
 (load-extension
-	(string-append opencog-ext-path-sensory-v0-types "libsensory-v0-types")
+	(string-append opencog-ext-path-sensory-v0 "libsensory-v0-types")
 	"sensory_v0_types_init")
 
 (load-extension

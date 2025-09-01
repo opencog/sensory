@@ -36,4 +36,4 @@ INSTALL (FILES
 	DESTINATION "include/opencog/sensory-v0/types"
 )
 
-add_guile_extension(SCM_CONFIG sensory-v0-types "opencog-ext-path-sensory-v0-types")
+add_guile_extension(SCM_CONFIG sensory-v0-types "opencog-ext-path-sensory-v0")
