@@ -64,6 +64,8 @@ IRChatNode::~IRChatNode()
 
 	_loop->join();
 	delete _loop;
+
+	_qvp = nullptr;
 }
 
 // ==================================================================
@@ -129,6 +131,8 @@ void IRChatNode::open(const ValuePtr& vurl)
 		_port = atoi(_uri.substr(col+1, sls-col-1).c_str());
 	}
 
+	_qvp = createQueueValue();
+
 	_conn = new IRC;
 	_conn->context = this;
 
@@ -182,6 +186,7 @@ void IRChatNode::open(const ValuePtr& vurl)
 
 void IRChatNode::close(const ValuePtr& ignore)
 {
+	_qvp = nullptr;
 	printf("Called IRChatNode::close\n");
 }
 
@@ -326,7 +331,7 @@ printf(">>> IRC msg from %s to %s =%s\n", ird->nick, ird->target, params);
 		msg.push_back(createStringValue(start));
 
 	ValuePtr svp(createLinkValue(msg));
-	push(svp); // concurrent_queue<ValutePtr>::push(svp);
+	_qvp->add(std::move(svp));
 	return 0;
 }
 
@@ -348,16 +353,14 @@ ValuePtr IRChatNode::read(void) const
 	if (nullptr == _conn) return createVoidValue();
 
 	// XXX When is it ever closed ???
-	if (is_closed() and 0 == concurrent_queue<ValuePtr>::size())
+	if (_qvp->is_closed() and 0 == _qvp->size())
 		return createVoidValue();
 
-	// Read one at a time. (???)
+	// Read one at a time.
 	// This will hang, until there's something to read.
 	try
 	{
-		ValuePtr val;
-		const_cast<IRChatNode*>(this) -> pop(val);
-		return val;
+		return _qvp->remove();
 	}
 	catch (typename concurrent_queue<ValuePtr>::Canceled& e)
 	{}

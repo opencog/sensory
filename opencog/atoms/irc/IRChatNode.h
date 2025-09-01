@@ -24,7 +24,7 @@
 #define _OPENCOG_I_R_CHAT_NODE_H
 
 #include <thread>
-#include <opencog/util/concurrent_queue.h>
+#include <opencog/atoms/value/QueueValue.h>
 #include <opencog/atoms/sensory/TextStreamNode.h>
 
 class IRC;
@@ -42,7 +42,7 @@ namespace opencog
  * channel. This is experimental.
  */
 class IRChatNode
-	: public TextStreamNode, protected concurrent_queue<ValuePtr>
+	: public TextStreamNode
 {
 private:
 	IRC* _conn;
@@ -61,6 +61,7 @@ private:
 	int got_misc(const char*, irc_reply_data*);
 
 protected:
+	QueueValuePtr _qvp;
 	std::string _uri;
 	std::string _nick;
 	std::string _host;
