@@ -25,6 +25,7 @@
 
 ; Individual messages can be read like so:
 (cog-execute! bot-read)
+(cog-execute! bot-read)
 
 ; An alternate design would be to finish setting everything up, before
 ; opening a connection. But we want to demo it's operation as we go
@@ -167,7 +168,7 @@
 		(Item "public message")))
 (cog-execute! (make-applier is-pub?))
 
-; Create a private reply to the sender, printing mssage diagnostics.
+; Create a private reply to the sender, printing message diagnostics.
 (define id-reply
 	(list (Item "PRIVMSG") (Variable "$from")
 	(Item "Message to ")
