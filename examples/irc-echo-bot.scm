@@ -20,11 +20,8 @@
 	(SetValue chatnode (Predicate "*-open-*")
 	(Concept "irc://echobot@irc.libera.chat:6667")))
 
-; Build a pair of read and Write accessors for the above location.
-; Using the StreamValueOf automatically dereferences the stream for us.
-; Using the naked ValueOf gives direct (read and write) access.
-(define bot-read (StreamValueOf chatnode (Predicate "*-read-*")))
-(define bot-raw (ValueOf chatnode (Predicate "*-read-*")))
+; The StreamValueOf automatically unqueues one message from the stream.
+(define bot-read (StreamValueOf chatnode (Predicate "*-stream-*")))
 
 ; Individual messages can be read like so:
 (cog-execute! bot-read)
@@ -69,7 +66,7 @@
 				(Variable "$from")
 				(Item "you said: ")
 				(Variable "$msg")))
-		bot-raw))
+		bot-read))
 
 (define private-echo
 	(SetValue chatnode (Predicate "*-write-*") make-private-reply))
@@ -123,7 +120,7 @@
 (define (make-applier CONCLUSION)
 	(Filter
 		(make-msg-rule CONCLUSION)
-		bot-raw))
+		bot-read))
 
 ; Convenience wrapper. Reads from IRC, extracts message, rewrites
 ; it into CONCLUSION, writes out to IRC.
