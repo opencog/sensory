@@ -76,6 +76,7 @@ protected:
 	// virtual void write(const ValuePtr&); inherited from StreamNode
 	virtual bool connected(void) const;
 	virtual ValuePtr read(void) const;
+	virtual ValuePtr stream(void) const;
 
 public:
 	IRChatNode(const std::string&&);

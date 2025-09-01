@@ -60,7 +60,7 @@ protected:
 	// if they are, the are probably doing something wrong.
 	virtual void write(const ValuePtr&);
 
-	// Helper routine, concverts a line-oriented reader to a stream.
+	// Helper routine, converts a line-oriented reader to a stream.
 	virtual ValuePtr stream(void) const;
 
 public:

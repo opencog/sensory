@@ -369,6 +369,13 @@ ValuePtr IRChatNode::read(void) const
 	throw RuntimeException(TRACE_INFO, "Unexpected close");
 }
 
+ValuePtr IRChatNode::stream(void) const
+{
+	if (nullptr == _conn) return createVoidValue();
+
+	return _qvp;
+}
+
 // ==============================================================
 
 #define CHKNARG(NUM,MSG) \
