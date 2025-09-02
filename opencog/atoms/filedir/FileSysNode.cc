@@ -314,8 +314,10 @@ void FileSysNode::write(const ValuePtr& vp)
 
 	if (0 == cmd.compare("pwd"))
 	{
-		_qvp->add(string_to_type(_cwd));
-		_qvp->add(vp);
+		ValueSeq vents;
+		vents.push_back(vp);
+		vents.emplace_back(string_to_type(_cwd));
+		_qvp->add(std::move(createLinkValue(std::move(vents))));
 		return;
 	}
 
@@ -326,6 +328,9 @@ void FileSysNode::write(const ValuePtr& vp)
 		const std::string& path = _cwd.substr(_pfxlen);
 		DIR* dir = do_opendir(path.c_str());
 		int fd = dirfd(dir);
+
+		ValueSeq vents;
+		vents.push_back(vp);
 
 		struct dirent* dent = readdir(dir);
 		for (; dent; dent = readdir(dir))
@@ -351,13 +356,13 @@ void FileSysNode::write(const ValuePtr& vp)
 			// Dispatch by command
 			if (0 == cmd.compare("ls"))
 			{
-				_qvp->add(locurl);
+				vents.emplace_back(locurl);
 				continue;
 			}
 
 			if (0 == cmd.compare("special"))
 			{
-				_qvp->add(make_stream_dirent(dent, locurl));
+				vents.emplace_back(make_stream_dirent(dent, locurl));
 				continue;
 			}
 
@@ -381,7 +386,7 @@ void FileSysNode::write(const ValuePtr& vp)
 				time_t epoch = statxbuf.stx_btime.tv_sec;
 				vs.emplace_back(createStringValue(
 					ctime(&epoch)));
-				_qvp->add(createLinkValue(vs));
+				vents.emplace_back(createLinkValue(vs));
 				continue;
 			}
 
@@ -390,7 +395,7 @@ void FileSysNode::write(const ValuePtr& vp)
 				time_t epoch = statxbuf.stx_mtime.tv_sec;
 				vs.emplace_back(createStringValue(
 					ctime(&epoch)));
-				_qvp->add(createLinkValue(vs));
+				vents.emplace_back(createLinkValue(vs));
 				continue;
 			}
 
@@ -398,7 +403,7 @@ void FileSysNode::write(const ValuePtr& vp)
 			{
 				vs.emplace_back(createFloatValue(
 					(double) statxbuf.stx_size));
-				_qvp->add(createLinkValue(vs));
+				vents.emplace_back(createLinkValue(vs));
 				continue;
 			}
 
@@ -408,7 +413,7 @@ void FileSysNode::write(const ValuePtr& vp)
 				"Unknown command \"%s\"\n", cmd.c_str());
 		}
 		closedir(dir);
-		_qvp->add(vp);
+		_qvp->add(std::move(createLinkValue(std::move(vents))));
 		return;
 	}
 
@@ -426,8 +431,11 @@ void FileSysNode::write(const ValuePtr& vp)
 	if (0 == cmd.compare("cd"))
 	{
 		_cwd = fpath;
-		_qvp->add(createStringValue(_cwd));
-		_qvp->add(vp);
+
+		ValueSeq vents;
+		vents.push_back(vp);
+		vents.emplace_back(createStringValue(_cwd));
+		_qvp->add(std::move(createLinkValue(std::move(vents))));
 		return;
 	}
 
@@ -438,23 +446,29 @@ void FileSysNode::write(const ValuePtr& vp)
 		const std::string& path = fpath.substr(_pfxlen);
 		DIR* dir = do_opendir(path.c_str());
 
+		ValueSeq vents;
+		vents.push_back(vp);
+
 		struct dirent* dent = readdir(dir);
 		for (; dent; dent = readdir(dir))
 		{
 			if (strcmp(dent->d_name, ".")) continue;
 			ValuePtr locurl = createStringValue(fpath);
-			_qvp->add(make_stream_dirent(dent, locurl));
+			vents.emplace_back(make_stream_dirent(dent, locurl));
 			break;
 		}
 		closedir(dir);
-		_qvp->add(vp);
+		_qvp->add(std::move(createLinkValue(std::move(vents))));
 		return;
 	}
 
 	// File magic. Not implemented.
 	if (0 == cmd.compare("magic"))
 	{
-		_qvp->add(vp);
+		ValueSeq vents;
+		vents.push_back(vp);
+
+		_qvp->add(std::move(createLinkValue(std::move(vents))));
 		return;
 	}
 
