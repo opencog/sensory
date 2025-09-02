@@ -4,8 +4,8 @@ SET(CMAKE_INSTALL_MESSAGE LAZY)
 PROJECT(sensory)
 
 # Setting this will use -O3 -g -flto and the -flto flag is slow.
-# SET(CMAKE_BUILD_TYPE Release)
-SET(CMAKE_BUILD_TYPE Debug)
+SET(CMAKE_BUILD_TYPE Release)
+# SET(CMAKE_BUILD_TYPE Debug)
 
 # ----------------------------------------------------------
 # Cogutil. Required prerequisite.
