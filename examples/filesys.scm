@@ -47,17 +47,41 @@
 ; "introspection" or "reflection".
 (cog-execute! (SetValue fsnode (Predicate "*-write-*")
 	(Item "pwd")))
+
+; The result of doing the pwd is obtained with a read.
 (cog-execute! (ValueOf fsnode (Predicate "*-read-*")))
 
-(cog-execute! (SetValue fsnode (Predicate "*-write-*")
-	(Item "ls")))
+; Reading again returns the original command, indicating that
+; all of the data created by `pwd` has been seen.
 (cog-execute! (ValueOf fsnode (Predicate "*-read-*")))
+
+; Don't do this!! Doing this one more tiime will hang;
+; the current thread is trying to read more sensory info,
+; but there isn't any. The best you can do with a hang is
+; to unblock it, by issueing another command in another thread,
+; or, if you don't have that, then killing guile. Sorry!
+; (cog-execute! (ValueOf fsnode (Predicate "*-read-*")))
+
+; A scheme utility will make writing and reading easier.
+(define (run-fs-cmd CMD)
+	(define (looper)
+		(define rslt (cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
+		(format #t "Result of ~A is ~A\n" CMD rslt)
+		(if (not (equal? rslt CMD)) (looper)))
+	(cog-execute! (SetValue fsnode (Predicate "*-write-*") CMD))
+	(looper))
+
+(run-fs-cmd (Item "pwd"))
+(run-fs-cmd (Item "ls"))
+(run-fs-cmd (Item "special"))  ;; special files
+(run-fs-cmd (Item "btime"))    ;; birth time
+(run-fs-cmd (Item "mtime"))    ;; modification time
+(run-fs-cmd (Item "filesize")) ;; filesize
 
 (cog-execute! (SetValue fsnode (Predicate "*-write-*")
 	(List (Item "cd") (Item "file:///home"))))
 
-(cog-execute! (SetValue fsnode (Predicate "*-write-*")
-	(Item "ls")))
+(run-fs-cmd (Item "ls"))
 
 ; --------------------------------------------------------
 ; Now lets look at how the API for the above is represented.
