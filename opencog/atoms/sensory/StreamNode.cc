@@ -115,7 +115,7 @@ void StreamNode::write(const ValuePtr& cref)
 		return;
 	}
 
-	// If it is a containers, enter infinite loop, until the container
+	// If it is a container, enter infinite loop, until the container
 	// is closed.
 	if (content->is_type(CONTAINER_VALUE))
 	{
