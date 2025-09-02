@@ -61,8 +61,3 @@ Additional demos are provided in the
 repo. They are there, not here, because they skip over the
 connector-mating idea that is central to this repo. Instead of
 using connectors, those demos are just hand-wired.
-
-### Coding hints
-Collection of coding hints.
-
-* `hints.scm` -- Using ExecutionOutputLink and GroundedSchema

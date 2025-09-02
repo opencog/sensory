@@ -4,7 +4,7 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
 
 ADD_LIBRARY (sensory-filedir SHARED
-#	FileSysNode.cc
+	FileSysNode.cc
 	TextFileNode.cc
 )
 

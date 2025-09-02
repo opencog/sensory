@@ -1,7 +1,7 @@
 /*
- * opencog/atoms/sensory/FileSysStream.cc
+ * opencog/atoms/filedir/FileSysNode.cc
  *
- * Copyright (C) 2020 Linas Vepstas
+ * Copyright (C) 2020,2024,2025 Linas Vepstas
  * All Rights Reserved
  *
  * This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@
 #include <opencog/atoms/value/ValueFactory.h>
 
 #include <opencog/sensory/types/atom_types.h>
-#include "FileSysStream.h"
+#include "FileSysNode.h"
 
 using namespace opencog;
 
@@ -79,21 +79,21 @@ static std::string get_url_string(const Handle& senso)
 		"Unable to get sring from %s\n", senso->to_string().c_str());
 }
 
-FileSysStream::FileSysStream(const Handle& sensor)
-	: OutputStream(FILE_SYS_STREAM)
+FileSysNode::FileSysNode(const std::string&& url)
+	: TextStreamNode(FILE_SYS_NODE, std::move(url))
 {
-	// Get the URL now. Perhaps execution
-	// can be or should be defered till later?
-	init(get_url_string(sensor));
 }
 
-FileSysStream::FileSysStream(void)
-	: OutputStream(FILE_SYS_STREAM)
+FileSysNode::FileSysNode(Type t, const std::string&& url)
+	: TextStreamNode(t, std::move(url))
 {
-	do_describe();
+	if (not nameserver().isA(t, FILE_SYS_NODE))
+		throw RuntimeException(TRACE_INFO,
+			"Expecting a FileSysNode, got %d %s\n",
+			t, nameserver().getTypeName(t).c_str());
 }
 
-FileSysStream::~FileSysStream()
+FileSysNode::~FileSysNode()
 {
 }
 
@@ -115,14 +115,13 @@ FileSysStream::~FileSysStream()
 static const std::string _prefix("file://");
 static const size_t _pfxlen = _prefix.size();
 
-void FileSysStream::init(const std::string& url)
+void FileSysNode::init(const std::string& url)
 {
 	if (0 != url.compare(0, 8, "file:///"))
 		throw RuntimeException(TRACE_INFO,
 			"Unsupported URL \"%s\"\n", url.c_str());
 
 	_cwd = url;
-	do_describe();
 
 #if LATER
 	// Ignore the first 7 chars "file://"
@@ -148,12 +147,13 @@ void FileSysStream::init(const std::string& url)
 
 Handle _global_desc = Handle::UNDEFINED;
 
+#if LATER
 // TODO: The below lists only enough of the commands to do the
 // basic wiring diagram work. There are additional commands,
 // supported i an ad hoc manner, so that the motor demos can
 // be developed. The motor demos are kind of independent of the
 // wiring demos (for now).
-void FileSysStream::do_describe(void)
+void FileSysNode::do_describe(void)
 {
 	if (_global_desc) return;
 
@@ -214,33 +214,23 @@ void FileSysStream::do_describe(void)
 						createNode(TYPE_NODE, "StringValue")))));
 	cmds.emplace_back(cd_cmd);
 
-#ifdef LATER
 	Handle mkdir_cmd =
 		createLink(SECTION,
 			createNode(ITEM_NODE, "the mkdir command"));
 	cmds.emplace_back(mkdir_cmd);
-#endif
 
 	_global_desc = createLink(cmds, CHOICE_LINK);
 }
 
 // This is totally bogus because it is unused.
 // This should be class static member
-ValuePtr FileSysStream::describe(AtomSpace* as, bool silent)
+ValuePtr FileSysNode::describe(AtomSpace* as, bool silent)
 {
 	if (_description) return as->add_atom(_description);
 	_description = as->add_atom(_global_desc);
 	return _description;
 }
-
-// ==============================================================
-
-// This will read one line from the file stream, and return that line.
-// So, a line-oriented, buffered interface. For now.
-void FileSysStream::update() const
-{
-	// if (nullptr == _fh) { _value.clear(); return; }
-}
+#endif
 
 // ==============================================================
 // helpers
@@ -283,7 +273,7 @@ static ValuePtr make_stream_dirent(struct dirent* dent,
 
 // ==============================================================
 // Process a command.
-ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
+ValuePtr FileSysNode::write_out(AtomSpace* as, bool silent,
                                   const Handle& cmdref)
 {
 	Handle cref = cmdref;
@@ -448,5 +438,6 @@ ValuePtr FileSysStream::write_out(AtomSpace* as, bool silent,
 // ==============================================================
 
 // Adds factory when library is loaded.
-DEFINE_VALUE_FACTORY(FILE_SYS_STREAM, createFileSysStream)
-DEFINE_VALUE_FACTORY(FILE_SYS_STREAM, createFileSysStream, Handle)
+DEFINE_NODE_FACTORY(FileSysNode, FILE_SYS_NODE);
+
+// =========================== END OF FILE ======================

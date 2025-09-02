@@ -1,7 +1,7 @@
 /*
- * opencog/atoms/sensory/FileSysStream.h
+ * opencog/atoms/sensory/FileSysNode.h
  *
- * Copyright (C) 2024 Linas Vepstas
+ * Copyright (C) 2024,2025 Linas Vepstas
  * All Rights Reserved
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,11 +20,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_FILE_SYS_STREAM_H
-#define _OPENCOG_FILE_SYS_STREAM_H
+#ifndef _OPENCOG_FILE_SYS_NODE_H
+#define _OPENCOG_FILE_SYS_NODE_H
 
-#include <stdio.h>
-#include <opencog/atoms/sensory/OutputStream.h>
+#include <opencog/atoms/sensory/TextStreamNode.h>
 
 namespace opencog
 {
@@ -34,41 +33,34 @@ namespace opencog
  */
 
 /**
- * FileSysStreams provide a stream of ItemNodes read from a text file,
- * and, more generally, from unix socket sources. This is experimental.
+ * FileSysNode provides an object capable of navigating a filesystem.
+ * This is experimental.
  */
-class FileSysStream
-	: public OutputStream
+class FileSysNode
+	: public TextStreamNode
 {
-private:
-	void do_describe(void);
-
 protected:
 	void init(const std::string&);
-	virtual void update() const;
-
-	Handle _description;
 	mutable std::string _cwd;
 
-public:
-	FileSysStream(void);
-	FileSysStream(const Handle&);
-	virtual ~FileSysStream();
+	virtual bool connected(void) const;
+	virtual void close(const ValuePtr&);
+	virtual void do_write(const std::string&);
 
-	virtual ValuePtr describe(AtomSpace*, bool);
 	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&);
+
+public:
+	FileSysNode(const std::string&&);
+	FileSysNode(Type, const std::string&&);
+	virtual ~FileSysNode();
+
+	static Handle factory(const Handle&);
 };
 
-typedef std::shared_ptr<FileSysStream> FileSysStreamPtr;
-static inline FileSysStreamPtr FileSysStreamCast(ValuePtr& a)
-	{ return std::dynamic_pointer_cast<FileSysStream>(a); }
-
-template<typename ... Type>
-static inline std::shared_ptr<FileSysStream> createFileSysStream(Type&&... args) {
-   return std::make_shared<FileSysStream>(std::forward<Type>(args)...);
-}
+NODE_PTR_DECL(FileSysNode)
+#define createFileSysNode CREATE_DECL(FileSysNode)
 
 /** @}*/
 } // namespace opencog
 
-#endif // _OPENCOG_FILE_SYS_STREAM_H
+#endif // _OPENCOG_FILE_SYS_NODE_H
