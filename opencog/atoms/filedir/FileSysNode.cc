@@ -299,6 +299,19 @@ ValuePtr FileSysNode::read(void) const
 
 // ==============================================================
 // Process a command.
+
+static std::string get_string(const ValuePtr& vp)
+{
+	if (vp->is_type(STRING_VALUE))
+		return StringValueCast(vp)->value()[0];
+
+	 if (vp->is_type(NODE))
+		return HandleCast(vp)->get_name();
+
+	static const std::string empty_string;
+	return empty_string;
+}
+
 void FileSysNode::do_write(const ValuePtr& vp)
 {
 printf("call FileSysNode::do_write(%s)\n", vp->to_string().c_str());
@@ -307,28 +320,7 @@ printf("call FileSysNode::do_write(%s)\n", vp->to_string().c_str());
 		throw RuntimeException(TRACE_INFO,
 			"FileSysNode not open: %s\n", to_string().c_str());
 
-	std::string cmd;
-	if (vp->is_type(STRING_VALUE))
-	{
-		StringValuePtr svp(StringValueCast(vp));
-		cmd = svp->value()[0];
-	}
-	else if (vp->is_type(NODE))
-	{
-		cmd = HandleCast(vp)->get_name();
-	}
-printf("cmd = %s\n", cmd.c_str());
-
-#if 0
-	Handle cref = cmdref;
-	if (cref->is_link())
-	{
-		if (0 == cref->size())
-			throw RuntimeException(TRACE_INFO,
-				"Expecting a non-empty list: %s", cref->to_string().c_str());
-		cref = cref->getOutgoingAtom(0);
-	}
-#endif
+	std::string cmd = get_string(vp);
 
 	if (0 == cmd.compare("pwd"))
 	{
@@ -431,6 +423,14 @@ printf("cmd = %s\n", cmd.c_str());
 	}
 
 #if 0
+	if (vp->is_link())
+	{
+		if (0 == cref->size())
+			throw RuntimeException(TRACE_INFO,
+				"Expecting a non-empty list: %s", cref->to_string().c_str());
+		cref = cref->getOutgoingAtom(0);
+	}
+
 	// Commands taking a single argument; in all cases, it *must*.
 	// be a file URL, presumably obtained previously with `ls`.
 	cref = cmdref;
