@@ -27,17 +27,14 @@
 ;
 ; Anyway, that's the general plan. The details remain obscure.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory-v0))
-(use-modules (srfi srfi-1))
+(use-modules (opencog) (opencog exec) (opencog sensory))
 
 ; -----------------------------------------------------------
 ; Preliminary setup.
 
-; Open filesystem node, and anchor it.
-(cog-execute!
-	(SetValue
-		(Anchor "xplor") (Predicate "fsys")
-		(Open (Type 'FileSysStream) (Sensory "file:///tmp"))))
+; Open the filesystem node.
+(define fsnode (FileSysNode "file:///tmp"))
+(cog-set-value! fsnode (Predicate "*-open-*") (Type 'StringValue))
 
 ; In principle, the agent should do the above after discovery.
 ; For now, for this demo, just hard-code it, as above.
@@ -48,16 +45,16 @@
 ; is beside the point; the goal is to have a self-describing
 ; interface. In some programming languages, this is called
 ; "introspection" or "reflection".
-(cog-execute! (Write (ValueOf (Anchor "xplor") (Predicate "fsys"))
+(cog-execute! (SetValue fsnode (Predicate "*-write-*")
 	(Item "pwd")))
 
-(cog-execute! (Write (ValueOf (Anchor "xplor") (Predicate "fsys"))
+(cog-execute! (SetValue fsnode (Predicate "*-write-*")
 	(Item "ls")))
 
-(cog-execute! (Write (ValueOf (Anchor "xplor") (Predicate "fsys"))
+(cog-execute! (SetValue fsnode (Predicate "*-write-*")
 	(List (Item "cd") (Item "file:///home"))))
 
-(cog-execute! (Write (ValueOf (Anchor "xplor") (Predicate "fsys"))
+(cog-execute! (SetValue fsnode (Predicate "*-write-*")
 	(Item "ls")))
 
 ; --------------------------------------------------------

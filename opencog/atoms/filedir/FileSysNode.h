@@ -45,6 +45,7 @@ protected:
 
 	virtual bool connected(void) const;
 	virtual void close(const ValuePtr&);
+	virtual void do_write(const ValuePtr&);
 	virtual void do_write(const std::string&);
 
 	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&);

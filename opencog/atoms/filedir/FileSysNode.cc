@@ -137,7 +137,12 @@ printf("call FileSysNode::close()\n");
 
 void FileSysNode::do_write(const std::string& str)
 {
-printf("call FileSysNode::do_write(%s)\n", str.c_str());
+	OC_ASSERT(false, "Error: this method should never be called.");
+}
+
+void FileSysNode::do_write(const ValuePtr& vp)
+{
+printf("call FileSysNode::do_write(%s)\n", vp->to_string().c_str());
 }
 
 // ==============================================================
