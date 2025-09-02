@@ -82,6 +82,7 @@ static std::string get_url_string(const Handle& senso)
 FileSysNode::FileSysNode(const std::string&& url)
 	: TextStreamNode(FILE_SYS_NODE, std::move(url))
 {
+	init(get_name());
 }
 
 FileSysNode::FileSysNode(Type t, const std::string&& url)
@@ -91,6 +92,8 @@ FileSysNode::FileSysNode(Type t, const std::string&& url)
 		throw RuntimeException(TRACE_INFO,
 			"Expecting a FileSysNode, got %d %s\n",
 			t, nameserver().getTypeName(t).c_str());
+
+	init(get_name());
 }
 
 FileSysNode::~FileSysNode()
@@ -288,6 +291,10 @@ void FileSysNode::do_write(const ValuePtr& vp)
 {
 printf("call FileSysNode::do_write(%s)\n", vp->to_string().c_str());
 
+	if (nullptr == _qvp)
+		throw RuntimeException(TRACE_INFO,
+			"FileSysNode not open: %s\n", to_string().c_str());
+
 	std::string cmd;
 	if (vp->is_type(STRING_VALUE))
 	{
@@ -314,12 +321,15 @@ printf("cmd = %s\n", cmd.c_str());
 			"Expecting a Node: %s", cref->to_string().c_str());
 
 	const std::string& cmd = cref->get_name();
+#endif
 
 	if (0 == cmd.compare("pwd"))
 	{
-		return createStringValue(_cwd);
+		_qvp->add(string_to_type(_cwd));
+		return;
 	}
 
+#if 0
 	// Commands without any arguments. These are applied to all
 	// files/dirs in the current working dir.
 	if (1 == cmdref->size())

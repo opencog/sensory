@@ -73,9 +73,8 @@ void TextStreamNode::open(const ValuePtr& item_type)
 // ==============================================================
 
 // Reader utility
-ValuePtr TextStreamNode::read(void) const
+ValuePtr TextStreamNode::string_to_type(std::string str) const
 {
-	std::string str = do_read();
 	if (0 == str.length()) return createVoidValue();
 
 	// If a StringValue was asked for, git thenm that.
@@ -84,6 +83,11 @@ ValuePtr TextStreamNode::read(void) const
 
 	// Else it's some kind of Node.
 	return createNode(_item_type, std::move(str));
+}
+
+ValuePtr TextStreamNode::read(void) const
+{
+	return string_to_type(do_read());
 }
 
 std::string TextStreamNode::do_read(void) const

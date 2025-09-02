@@ -51,6 +51,7 @@ protected:
 	// The type of the Items that the *-read-* method should return.
 	// Typically either STRING_VALUE or some NODE.
 	Type _item_type;
+	ValuePtr string_to_type(std::string) const;
 
 	TextStreamNode(Type t, const std::string&&);
 	virtual void open(const ValuePtr&);
