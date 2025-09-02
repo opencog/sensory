@@ -124,25 +124,34 @@ void FileSysNode::init(const std::string& url)
 	_cwd = url;
 }
 
+void FileSysNode::open(const ValuePtr& vp)
+{
+	TextStreamNode::open(vp);
+
+	if (_qvp)
+		_qvp->close();
+
+	_qvp = createQueueValue();
+}
+
 bool FileSysNode::connected(void) const
 {
-printf("call FileSysNode::connected()\n");
-	return false;
+	return nullptr != _qvp;
 }
 
 void FileSysNode::close(const ValuePtr& vp)
 {
 printf("call FileSysNode::close()\n");
+	if (_qvp)
+	{
+		_qvp->close();
+		_qvp = nullptr;
+	}
 }
 
 void FileSysNode::do_write(const std::string& str)
 {
 	OC_ASSERT(false, "Error: this method should never be called.");
-}
-
-void FileSysNode::do_write(const ValuePtr& vp)
-{
-printf("call FileSysNode::do_write(%s)\n", vp->to_string().c_str());
 }
 
 // ==============================================================
@@ -275,9 +284,23 @@ static ValuePtr make_stream_dirent(struct dirent* dent,
 
 // ==============================================================
 // Process a command.
-ValuePtr FileSysNode::write_out(AtomSpace* as, bool silent,
-                                  const Handle& cmdref)
+void FileSysNode::do_write(const ValuePtr& vp)
 {
+printf("call FileSysNode::do_write(%s)\n", vp->to_string().c_str());
+
+	std::string cmd;
+	if (vp->is_type(STRING_VALUE))
+	{
+		StringValuePtr svp(StringValueCast(vp));
+		cmd = svp->value()[0];
+	}
+	else if (vp->is_type(NODE))
+	{
+		cmd = HandleCast(vp)->get_name();
+	}
+printf("cmd = %s\n", cmd.c_str());
+
+#if 0
 	Handle cref = cmdref;
 	if (cref->is_link())
 	{
@@ -291,6 +314,7 @@ ValuePtr FileSysNode::write_out(AtomSpace* as, bool silent,
 			"Expecting a Node: %s", cref->to_string().c_str());
 
 	const std::string& cmd = cref->get_name();
+
 	if (0 == cmd.compare("pwd"))
 	{
 		return createStringValue(_cwd);
@@ -432,6 +456,7 @@ ValuePtr FileSysNode::write_out(AtomSpace* as, bool silent,
 	if (0 == cmd.compare("magic"))
 	{
 	}
+#endif
 
 	throw RuntimeException(TRACE_INFO,
 		"Unknown command \"%s\"\n", cmd.c_str());

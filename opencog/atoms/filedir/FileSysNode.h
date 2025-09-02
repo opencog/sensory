@@ -23,6 +23,7 @@
 #ifndef _OPENCOG_FILE_SYS_NODE_H
 #define _OPENCOG_FILE_SYS_NODE_H
 
+#include <opencog/atoms/value/QueueValue.h>
 #include <opencog/atoms/sensory/TextStreamNode.h>
 
 namespace opencog
@@ -42,13 +43,13 @@ class FileSysNode
 protected:
 	void init(const std::string&);
 	mutable std::string _cwd;
+	mutable QueueValuePtr _qvp;
 
+	virtual void open(const ValuePtr&);
 	virtual bool connected(void) const;
 	virtual void close(const ValuePtr&);
 	virtual void do_write(const ValuePtr&);
 	virtual void do_write(const std::string&);
-
-	virtual ValuePtr write_out(AtomSpace*, bool, const Handle&);
 
 public:
 	FileSysNode(const std::string&&);
