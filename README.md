@@ -574,19 +574,32 @@ I haven't read that paper in over a decade. Perhaps it has some gems.
 
 
 ### Status
-***Version 0.4.0*** -- Experimental. Initial design will now be called
-"Version Zero".  Basic demos for Version Zero all work. The overall
-low-level architecture seemed ok-ish, but flaws have become apparent,
-and so a "Version Half" is being designed.
+***Version 0.5.0*** -- Experimental. There are two versions implemented
+in this repo: **"Version Zero"** (the original working version) and
+**"Version Half"** (the current working version).
+All demos work for both versions. Of course, Version Zero is now
+deprecated. It had a low-level architecture seemed ok-ish, but flaws
+have become apparent, and so "Version Half" was created.
 
-The upper-level abstractions remain opaque and have not yet been designed.
-The grand questions above remain mysterious, but are starting to clarify.
+Version Zero and Version Half both provide:
+* A basic interactive terminal I/O stream.
+* A basic File I/O stream.
+* A basic Filesystem navigation stream.
+* A prototype IRC chatbot stream.
 
-Version Zero provides:
-* Basic interactive terminal I/O stream.
-* Basic File I/O stream.
-* Prototype Filesystem navigation stream.
-* Prototype IRC chatbot stream.
+Version Zero also provided object interface descriptions aka "jigsaws"
+that are meant to allow gluing, using some appropriate gluing
+algorithm. These have not yet been ported to Version Half.
+
+There are two potential gluing algorithms available; both have to be
+adapted to the current framework. One is Link Grammar. It should be
+relatively easy to attach. The other is the odomter from the
+https://github.com/opencog/generate git repo. It too needs to be
+adapted.
+
+Upper-level abstractions, including how gluing should work (Random?
+Guided? Odometer? Transformer?) remain opaque and have not yet been
+designed.  The grand questions above remain mysterious.
 
 The [Architecture Overview](Architecture.md) provides a more detailed
 and specific description of how the system is supposed to look like, and
@@ -594,6 +607,8 @@ how it is to work, when it gets farther along. The
 [Design Diary](Design.md) documents the thought process used to obtain
 code that actually works and does what it needs to do.
 
+See the [examples](examples) directory for working Version Half
+examples.
 See the [examples-v0](examples-v0) directory for working Version Zero
 examples.
 
@@ -641,10 +656,10 @@ Details of the design in this git repo are explored in several places:
 * [Architecture](Architecture.md) -- Architecture overview.
 * [Design Overview](Design.md) -- Current design & TODO List.
 
-Some Version Zero explainers:
-* [IRChatStream V0](opencog/atoms/irc-v0/README.md) -- IRC chat design.
-* [TextFileStream V0](opencog/atoms/filedir-v0/README.md) -- Directory navigation design.
-* [TerminalStream V0](opencog/atoms/terminal-v0/README.md) -- Interactive terminal design.
+Some Version Half explainers:
+* [IRChatStream](opencog/atoms/irc/README.md) -- IRC chat design.
+* [TextFileStream](opencog/atoms/filedir/README.md) -- Directory navigation design.
+* [TerminalStream](opencog/atoms/terminal/README.md) -- Interactive terminal design.
 
 ### Build and Install
 This git repo follows the same directory structure and coding
@@ -661,18 +676,15 @@ sudo make install
 ```
 
 ### Examples
-Only Version Zero currently has examples.
-
-See the [examples-v0](examples-v0) directory. The simplest example is
+See the [examples](examples) directory. The simplest example is
 for pinging text between two xterms. Other examples include opening,
 reading & writing a single text file, navigating the file system,
-and a basic IRC echobot.
+and a basic IRC echobot. The IRC bot can log chat to a file.
 
 It will probably be useful to read the
 [Architecture Overview](Architecture.md) first.
 
-***Important*** All of this is pre-alpha! These examples are too
-low-level; the intent is to eventually automate the process for hooking
-up sensors to motors. Basic design work continues. But for now, these
-show some of the low-level infrastructure; the high-level stuff is still
-missing.
+***Important*** All of this is alpha! These examples are too low-level;
+the intent is to eventually automate the process for hooking up sensors
+to motors. Basic design work continues. But for now, these show some of
+the low-level infrastructure; the high-level stuff is still missing.
