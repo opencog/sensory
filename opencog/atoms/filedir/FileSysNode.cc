@@ -52,33 +52,6 @@ using namespace opencog;
 /// There are half-a-dozen commands implemented, enough to
 /// make this stream semi-usable in a pseudo "real-world" app.
 
-// Get the URL string from the sensory node.
-// In principle, `senso` should be a SensoryNode, but for the
-// crrent round of demos, we relax this and accept anything
-// that is a string. This should be reverted, someday.
-static std::string get_url_string(const Handle& senso)
-{
-	ValuePtr relax = senso;
-	if (senso->is_executable())
-		relax = senso->execute();
-
-	if (not relax->is_type(SENSORY_NODE))
-		fprintf(stderr, "Caution: using relaxed stream creation spec %s\n",
-			relax->to_string().c_str());
-
-	if (relax->is_type(LINK_VALUE))
-		relax = LinkValueCast(relax)->value()[0];
-
-	if (relax->is_type(STRING_VALUE))
-		return StringValueCast(relax)->value()[0];
-
-	if (relax->is_node())
-		return HandleCast(relax)->get_name();
-
-	throw RuntimeException(TRACE_INFO,
-		"Unable to get sring from %s\n", senso->to_string().c_str());
-}
-
 FileSysNode::FileSysNode(const std::string&& url)
 	: TextStreamNode(FILE_SYS_NODE, std::move(url))
 {
@@ -298,7 +271,11 @@ ValuePtr FileSysNode::read(void) const
 }
 
 // ==============================================================
-// Process a command.
+// Helpers to get command strings.
+// XXX TODO:
+// -- If the ValuePtr is executable, then execute it.
+// -- If the ValuePtr is a Link or ListValue, check that it's
+//    arity two.
 
 static std::string get_string(const ValuePtr& vp)
 {
@@ -311,6 +288,22 @@ static std::string get_string(const ValuePtr& vp)
 	static const std::string empty_string;
 	return empty_string;
 }
+
+static std::string get_arg_string(const ValuePtr& vp, int arg)
+{
+	if (vp->is_link())
+		return get_string(HandleCast(vp)->getOutgoingAtom(arg));
+
+	if (vp->is_type(LINK_VALUE))
+		return get_string(LinkValueCast(vp)->value()[arg]);
+
+	throw RuntimeException(TRACE_INFO,
+		"FileSysNode expecting StringValue, Node, Link or LinkValue: %s\n",
+		vp->to_string().c_str());
+}
+
+// ==============================================================
+// Process a command.
 
 void FileSysNode::do_write(const ValuePtr& vp)
 {
@@ -422,33 +415,23 @@ printf("call FileSysNode::do_write(%s)\n", vp->to_string().c_str());
 		return;
 	}
 
-#if 0
-	if (vp->is_link())
-	{
-		if (0 == cref->size())
-			throw RuntimeException(TRACE_INFO,
-				"Expecting a non-empty list: %s", cref->to_string().c_str());
-		cref = cref->getOutgoingAtom(0);
-	}
+	// Commands taking a single argument; in all cases,
+	// that argument *must* be a file URL, presumably obtained
+	// previously with `ls`.
 
-	// Commands taking a single argument; in all cases, it *must*.
-	// be a file URL, presumably obtained previously with `ls`.
-	cref = cmdref;
-	if (not cref->is_link() or cref->size() != 2)
-		throw RuntimeException(TRACE_INFO,
-			"Expecting arguments; got %s", cref->to_string().c_str());
-
-	const Handle& arg1 = cref->getOutgoingAtom(1);
-	std::string fpath = get_url_string(arg1);
+	cmd = get_arg_string(vp, 0);
+	std::string fpath = get_arg_string(vp, 1);
 
 	if (fpath.compare(0, _pfxlen, _prefix))
 		throw RuntimeException(TRACE_INFO,
-			"Expecting file URL; got %s", arg1->to_string().c_str());
+			"Expecting file URL; got %s", fpath.c_str());
 
 	if (0 == cmd.compare("cd"))
 	{
 		_cwd = fpath;
-		return createStringValue(_cwd);
+		_qvp->add(createStringValue(_cwd));
+		_qvp->add(vp);
+		return;
 	}
 
 	// Get dirent info for a single directory.
@@ -458,23 +441,25 @@ printf("call FileSysNode::do_write(%s)\n", vp->to_string().c_str());
 		const std::string& path = fpath.substr(_pfxlen);
 		DIR* dir = do_opendir(path.c_str());
 
-		ValueSeq vents;
 		struct dirent* dent = readdir(dir);
 		for (; dent; dent = readdir(dir))
 		{
 			if (strcmp(dent->d_name, ".")) continue;
 			ValuePtr locurl = createStringValue(fpath);
-			vents.emplace_back(make_stream_dirent(dent, locurl));
+			_qvp->add(make_stream_dirent(dent, locurl));
 			break;
 		}
 		closedir(dir);
-		return createLinkValue(vents);
+		_qvp->add(vp);
+		return;
 	}
 
+	// File magic. Not implemented.
 	if (0 == cmd.compare("magic"))
 	{
+		_qvp->add(vp);
+		return;
 	}
-#endif
 
 	throw RuntimeException(TRACE_INFO,
 		"Unknown command \"%s\"\n", cmd.c_str());
