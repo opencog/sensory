@@ -117,7 +117,6 @@ bool FileSysNode::connected(void) const
 
 void FileSysNode::close(const ValuePtr& vp)
 {
-printf("call FileSysNode::close()\n");
 	if (_qvp)
 	{
 		_qvp->close();
@@ -307,8 +306,6 @@ static std::string get_arg_string(const ValuePtr& vp, int arg)
 
 void FileSysNode::write(const ValuePtr& vp)
 {
-printf("call FileSysNode::write(%s)\n", vp->to_string().c_str());
-
 	if (nullptr == _qvp)
 		throw RuntimeException(TRACE_INFO,
 			"FileSysNode not open: %s\n", to_string().c_str());
