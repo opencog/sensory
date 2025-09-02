@@ -122,25 +122,22 @@ void FileSysNode::init(const std::string& url)
 			"Unsupported URL \"%s\"\n", url.c_str());
 
 	_cwd = url;
+}
 
-#if LATER
-	// Ignore the first 7 chars "file://"
-	const char* fpath = url.substr(7).c_str();
-	_fh = fopen(fpath, "a+");
+bool FileSysNode::connected(void) const
+{
+printf("call FileSysNode::connected()\n");
+	return false;
+}
 
-	if (nullptr == _fh)
-	{
-		int norr = errno;
-		char buff[80];
-		buff[0] = 0;
-		// Apparently, we are getting the Gnu version of strerror_r
-		// and not the XSI version. I suppose it doesn't matter.
-		char * ers = strerror_r(norr, buff, 80);
-		throw RuntimeException(TRACE_INFO,
-			"Unable to open URL \"%s\"\nError was \"%s\"\n",
-			url.c_str(), ers);
-	}
-#endif
+void FileSysNode::close(const ValuePtr& vp)
+{
+printf("call FileSysNode::close()\n");
+}
+
+void FileSysNode::do_write(const std::string& str)
+{
+printf("call FileSysNode::do_write(%s)\n", str.c_str());
 }
 
 // ==============================================================
