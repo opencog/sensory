@@ -78,9 +78,7 @@
 (run-fs-cmd (Item "mtime"))    ;; modification time
 (run-fs-cmd (Item "filesize")) ;; filesize
 
-(cog-execute! (SetValue fsnode (Predicate "*-write-*")
-	(List (Item "cd") (Item "file:///home"))))
-
+(run-fs-cmd (List (Item "cd") (Item "file:///home")))
 (run-fs-cmd (Item "ls"))
 
 ; --------------------------------------------------------

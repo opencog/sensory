@@ -305,9 +305,9 @@ static std::string get_arg_string(const ValuePtr& vp, int arg)
 // ==============================================================
 // Process a command.
 
-void FileSysNode::do_write(const ValuePtr& vp)
+void FileSysNode::write(const ValuePtr& vp)
 {
-printf("call FileSysNode::do_write(%s)\n", vp->to_string().c_str());
+printf("call FileSysNode::write(%s)\n", vp->to_string().c_str());
 
 	if (nullptr == _qvp)
 		throw RuntimeException(TRACE_INFO,

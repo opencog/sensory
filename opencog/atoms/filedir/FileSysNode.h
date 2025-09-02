@@ -49,7 +49,7 @@ protected:
 	virtual bool connected(void) const;
 	virtual void close(const ValuePtr&);
 	ValuePtr read(void) const;
-	virtual void do_write(const ValuePtr&);
+	virtual void write(const ValuePtr&);
 	virtual void do_write(const std::string&);
 
 public:
