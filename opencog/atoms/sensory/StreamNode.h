@@ -45,7 +45,11 @@ class StreamNode
 	: public SensoryNode
 {
 protected:
+	// The type of the Items that the *-read-* method should return.
+	Type _item_type;
+
 	StreamNode(Type t, const std::string&&);
+	virtual void open(const ValuePtr&);
 
 	// Derived classes to implement this.
 	virtual void do_write(const ValuePtr&) = 0;
