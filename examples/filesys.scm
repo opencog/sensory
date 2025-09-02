@@ -47,9 +47,11 @@
 ; "introspection" or "reflection".
 (cog-execute! (SetValue fsnode (Predicate "*-write-*")
 	(Item "pwd")))
+(cog-execute! (ValueOf fsnode (Predicate "*-read-*")))
 
 (cog-execute! (SetValue fsnode (Predicate "*-write-*")
 	(Item "ls")))
+(cog-execute! (ValueOf fsnode (Predicate "*-read-*")))
 
 (cog-execute! (SetValue fsnode (Predicate "*-write-*")
 	(List (Item "cd") (Item "file:///home"))))

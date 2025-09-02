@@ -286,6 +286,18 @@ static ValuePtr make_stream_dirent(struct dirent* dent,
 }
 
 // ==============================================================
+// Dequeue anything perceived
+
+ValuePtr FileSysNode::read(void) const
+{
+	if (nullptr == _qvp)
+		throw RuntimeException(TRACE_INFO,
+			"FileSysNode not open: %s\n", to_string().c_str());
+
+	return _qvp->remove();
+}
+
+// ==============================================================
 // Process a command.
 void FileSysNode::do_write(const ValuePtr& vp)
 {
