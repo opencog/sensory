@@ -51,11 +51,7 @@
 ; The result of doing the pwd is obtained with a read.
 (cog-execute! (ValueOf fsnode (Predicate "*-read-*")))
 
-; Reading again returns the original command, indicating that
-; all of the data created by `pwd` has been seen.
-(cog-execute! (ValueOf fsnode (Predicate "*-read-*")))
-
-; Don't do this!! Doing this one more tiime will hang;
+; Don't do this!! Doing this one more time will hang;
 ; the current thread is trying to read more sensory info,
 ; but there isn't any. The best you can do with a hang is
 ; to unblock it, by issueing another command in another thread,
@@ -64,12 +60,8 @@
 
 ; A scheme utility will make writing and reading easier.
 (define (run-fs-cmd CMD)
-	(define (looper)
-		(define rslt (cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
-		(format #t "Result of ~A is ~A\n" CMD rslt)
-		(if (not (equal? rslt CMD)) (looper)))
 	(cog-execute! (SetValue fsnode (Predicate "*-write-*") CMD))
-	(looper))
+	(cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
 
 (run-fs-cmd (Item "pwd"))
 (run-fs-cmd (Item "ls"))
