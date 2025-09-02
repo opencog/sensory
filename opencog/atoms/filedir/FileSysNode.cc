@@ -328,29 +328,23 @@ printf("cmd = %s\n", cmd.c_str());
 				"Expecting a non-empty list: %s", cref->to_string().c_str());
 		cref = cref->getOutgoingAtom(0);
 	}
-	if (not cref->is_node())
-		throw RuntimeException(TRACE_INFO,
-			"Expecting a Node: %s", cref->to_string().c_str());
-
-	const std::string& cmd = cref->get_name();
 #endif
 
 	if (0 == cmd.compare("pwd"))
 	{
 		_qvp->add(string_to_type(_cwd));
+		_qvp->add(vp);
 		return;
 	}
 
-#if 0
 	// Commands without any arguments. These are applied to all
 	// files/dirs in the current working dir.
-	if (1 == cmdref->size())
+	if (0 < cmd.size())
 	{
 		const std::string& path = _cwd.substr(_pfxlen);
 		DIR* dir = do_opendir(path.c_str());
 		int fd = dirfd(dir);
 
-		ValueSeq vents;
 		struct dirent* dent = readdir(dir);
 		for (; dent; dent = readdir(dir))
 		{
@@ -375,13 +369,13 @@ printf("cmd = %s\n", cmd.c_str());
 			// Dispatch by command
 			if (0 == cmd.compare("ls"))
 			{
-				vents.emplace_back(locurl);
+				_qvp->add(locurl);
 				continue;
 			}
 
 			if (0 == cmd.compare("special"))
 			{
-				vents.emplace_back(make_stream_dirent(dent, locurl));
+				_qvp->add(make_stream_dirent(dent, locurl));
 				continue;
 			}
 
@@ -405,7 +399,7 @@ printf("cmd = %s\n", cmd.c_str());
 				time_t epoch = statxbuf.stx_btime.tv_sec;
 				vs.emplace_back(createStringValue(
 					ctime(&epoch)));
-				vents.emplace_back(createLinkValue(vs));
+				_qvp->add(createLinkValue(vs));
 				continue;
 			}
 
@@ -414,7 +408,7 @@ printf("cmd = %s\n", cmd.c_str());
 				time_t epoch = statxbuf.stx_mtime.tv_sec;
 				vs.emplace_back(createStringValue(
 					ctime(&epoch)));
-				vents.emplace_back(createLinkValue(vs));
+				_qvp->add(createLinkValue(vs));
 				continue;
 			}
 
@@ -422,19 +416,21 @@ printf("cmd = %s\n", cmd.c_str());
 			{
 				vs.emplace_back(createFloatValue(
 					(double) statxbuf.stx_size));
-				vents.emplace_back(createLinkValue(vs));
+				_qvp->add(createLinkValue(vs));
 				continue;
 			}
 
-			// If we are here, its an unknown commans
+			// If we are here, its an unknown command
 			closedir(dir);
 			throw RuntimeException(TRACE_INFO,
 				"Unknown command \"%s\"\n", cmd.c_str());
 		}
 		closedir(dir);
-		return createLinkValue(vents);
+		_qvp->add(vp);
+		return;
 	}
 
+#if 0
 	// Commands taking a single argument; in all cases, it *must*.
 	// be a file URL, presumably obtained previously with `ls`.
 	cref = cmdref;
