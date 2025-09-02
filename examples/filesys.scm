@@ -87,6 +87,15 @@
 ; Ultimately, we want such pipes to be in Atomese, not scheme,
 ; but it is easier to poke at bit bits and pieces with scheme.
 
+;;; XXX Everything below here is broken, unimplemented,
+;;; under-designed, half-baked port of a previous version that
+;;; barely never almost even ran and had missing pieces.
+;;; Of course, TODO, finish me.
+;;; A working version can be found in sensory-v0 which is
+;;; is where this is being ported from.
+;;; See the paper on structuralism for more details on a
+;;; possible design.
+
 ; Get the description of what this sensory device provides.
 (define fsys-descr
 	(cog-execute! (Lookat (Type 'FileSysStream))))
