@@ -78,7 +78,7 @@ handle multiple iterators, so each instance needs to have a private
 class instance that provides the actual i/o handles. So lets sketch this:
 ```
 class TextStream
-	: public LinkStreamValue
+	: public LinkValue
 {
 	virtual void update() const = 0;
 };
@@ -206,7 +206,7 @@ things that return the desired streams.
 How to write?
 ```
 class OutputStream
-	: public LinkStreamValue
+	: public LinkValue
 {
 	virtual ValuePtr write_out(const Handle&) = 0;
 };

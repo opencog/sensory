@@ -35,7 +35,7 @@
 using namespace opencog;
 
 OutputStream::OutputStream(Type t)
-	: LinkStreamValue(t)
+	: LinkValue(t)
 {
 	OC_ASSERT(nameserver().isA(_type, OUTPUT_STREAM),
 		"Bad OutputStream constructor!");
@@ -132,7 +132,7 @@ ValuePtr OutputStream::do_write_out(AtomSpace* as, bool silent,
 	}
 
 	// If it is not a stream, then just print and return.
-	if (not content->is_type(LINK_STREAM_VALUE))
+	if (not content->is_type(LINK_VALUE))
 	{
 		write_one(as, silent, content);
 		return content;

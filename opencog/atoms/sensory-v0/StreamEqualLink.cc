@@ -22,7 +22,7 @@
  */
 
 #include <opencog/atoms/core/TypeNode.h>
-#include <opencog/atoms/value/LinkStreamValue.h>
+#include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atoms/value/StringValue.h>
 #include <opencog/util/exceptions.h>
 
@@ -83,8 +83,8 @@ bool StreamEqualLink::bevaluate(AtomSpace* as, bool silent)
 			// If its a stream, explicitly get only the first item
 			// in the stream. (This may cause unintended data loss
 			// in buffered streams).
-			if (vp->is_type(LINK_STREAM_VALUE))
-				vp = LinkStreamValueCast(vp)->value()[0];
+			if (vp->is_type(LINK_VALUE))
+				vp = LinkValueCast(vp)->value()[0];
 			comps.push_back(vp);
 		}
 		else

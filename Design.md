@@ -101,7 +101,7 @@ things that return the desired streams.
 How does the C++ perform the write?
 ```
 class OutputStream
-	: public LinkStreamValue
+	: public LinkValue
 {
 	virtual ValuePtr write_out(const Handle&) = 0;
 };

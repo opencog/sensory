@@ -32,7 +32,7 @@
 using namespace opencog;
 
 ReadStream::ReadStream(const Handle& senso)
-	: LinkStreamValue(READ_STREAM)
+	: LinkValue(READ_STREAM)
 {
 	if (not senso->is_type(SENSORY_NODE))
 		throw RuntimeException(TRACE_INFO,

@@ -23,7 +23,7 @@
 #ifndef _OPENCOG_OUTPUT_STREAM_H
 #define _OPENCOG_OUTPUT_STREAM_H
 
-#include <opencog/atoms/value/LinkStreamValue.h>
+#include <opencog/atoms/value/LinkValue.h>
 
 namespace opencog
 {
@@ -38,7 +38,7 @@ namespace opencog
  * This API is experimental.
  */
 class OutputStream
-	: public LinkStreamValue
+	: public LinkValue
 {
 protected:
 	OutputStream(Type t);

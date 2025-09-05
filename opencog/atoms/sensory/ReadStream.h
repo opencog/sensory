@@ -26,7 +26,7 @@
 
 #include <stdio.h>
 #include <opencog/atoms/sensory/SensoryNode.h>
-#include <opencog/atoms/value/LinkStreamValue.h>
+#include <opencog/atoms/value/LinkValue.h>
 
 namespace opencog
 {
@@ -43,7 +43,7 @@ namespace opencog
  * This is experimental.
  */
 class ReadStream
-	: public LinkStreamValue
+	: public LinkValue
 {
 protected:
 	SensoryNodePtr _snp;
