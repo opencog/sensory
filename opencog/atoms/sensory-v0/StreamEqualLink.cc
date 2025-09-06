@@ -83,7 +83,7 @@ bool StreamEqualLink::bevaluate(AtomSpace* as, bool silent)
 			// If its a stream, explicitly get only the first item
 			// in the stream. (This may cause unintended data loss
 			// in buffered streams).
-			if (vp->is_type(LINK_VALUE))
+			if (vp->is_type(STREAM_VALUE))
 				vp = LinkValueCast(vp)->value()[0];
 			comps.push_back(vp);
 		}

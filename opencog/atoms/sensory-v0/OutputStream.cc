@@ -132,7 +132,7 @@ ValuePtr OutputStream::do_write_out(AtomSpace* as, bool silent,
 	}
 
 	// If it is not a stream, then just print and return.
-	if (not content->is_type(LINK_VALUE))
+	if (not content->is_type(STREAM_VALUE))
 	{
 		write_one(as, silent, content);
 		return content;

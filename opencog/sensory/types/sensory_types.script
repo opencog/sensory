@@ -5,7 +5,7 @@
 
 // Wrap objects with one-at-a-time *-read-* methods, giving them
 // a stream API.
-READ_STREAM <- LINK_VALUE,HANDLE_ARG
+READ_STREAM <- STREAM_VALUE,HANDLE_ARG
 
 // ---------------------------------------------
 // Values above, Atoms below.

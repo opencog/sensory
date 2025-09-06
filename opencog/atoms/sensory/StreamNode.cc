@@ -127,7 +127,7 @@ void StreamNode::write(const ValuePtr& cref)
 	}
 
 	// If it is not a stream, then just print and return.
-	if (not content->is_type(LINK_VALUE))
+	if (not content->is_type(STREAM_VALUE))
 	{
 		write_one(content);
 		return;
