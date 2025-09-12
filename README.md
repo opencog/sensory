@@ -21,6 +21,10 @@ This is part of a group of inter-related research projects:
 * [Agents](https://github.com/opencog/agents), which was originally
   intended to make use of the above, but has gotten sidelines a bit.
 
+The most challenging deployment of the ideas here are in the
+[Atomese SIMD](https://github.com/opencog/atomese-simd) project,
+which aims to provide CUDE/OpenCL interfaces to GPU compute reseources.
+
 Motivation
 ----------
 OpenCog has repeatedly attempted to build "embodied AI systems", by
@@ -46,9 +50,10 @@ arranged by students in Ethiopia as a part of university coursework.
 All of these failed, in large part because not enough effort was
 put into understanding sensing and motion, and far too much on
 reasoning, planning and language. The ideas of sensing and movement
-seem trivial and obvious, and are implemented with brute-force hackery.
-Not worthy of intellectual effort, in contrast to the veneration
-given to reasoning and logic.  This is a fundamental mistake.
+seem trivial and obvious, and are usually implemented with brute-force
+hackery.  For most, these are not worthy of intellectual effort, in
+contrast to the veneration given to reasoning and logic.  This is
+a fundamental mistake.
 
 
 Philosophical Overview
@@ -61,7 +66,8 @@ low-level sensory API. Having such a theory would clarify how learning
 systems might learn how to use it, or, more generally, how to
 "use things", how to have a cause-and-effect in the universe.
 
-For OpenCog, and, specifically, for OpenCog Atomese, all interaction,
+For OpenCog, and, specifically, for OpenCog
+[Atomese](https://wiki.opencog.org/w/Atomese), all interaction,
 knowledge, data and reasoning is represented with and performed by
 Atoms (stored in a hypergraph database) and Values (transient data
 flowing through a network defined by Atoms).
@@ -116,9 +122,12 @@ These are the questions that seem to matter, for agent design. The code
 in this git repo is some extremely low-level, crude Atomese interfaces
 that try to expose these issues up into the AtomSpace.
 
-Currently, four interfaces are being explored: a basic text-terminal,
-a single-file reader/writer, a unix filesystem navigator, and an IRC
-chat interface. Hopefully, this is broad enough to expose some of the
+This repo demos four interfaces: a basic text-terminal, a single-file
+reader/writer, a unix filesystem navigator, and an IRC chat interface.
+The [atomese-simd](https://github.com/opencog/atomese-simd) repo uses
+the interfaces here to connect to CPU's.
+
+Hopefully, this collection is broad enough to expose some of the
 design issues. Basically, chat is not like a filesystem: there is a
 large variety of IRC commands, there are public channels, there are
 private conversations. They are bi-directional.  The kind of sensory
