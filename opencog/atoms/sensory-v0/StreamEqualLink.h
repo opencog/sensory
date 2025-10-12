@@ -56,7 +56,7 @@ public:
 	// Same as evaluation.
 	virtual bool is_executable(void) const { return true; }
 	virtual ValuePtr execute(AtomSpace* as, bool silent) {
-		return ValueCast(evaluate(as, silent)); }
+		return evaluate(as, silent); }
 
 	static Handle factory(const Handle&);
 };
