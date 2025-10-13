@@ -24,7 +24,7 @@
 #define _OPENCOG_STREAM_EQUAL_LINK_H
 
 #include <opencog/atoms/core/UnorderedLink.h>
-#include <opencog/atoms/truthvalue/TruthValue.h>
+#include <opencog/atoms/value/Value.h>
 #include <opencog/sensory-v0/types/atom_types.h>
 
 namespace opencog
