@@ -30,7 +30,6 @@
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/value/BoolValue.h>
 #include <opencog/atoms/value/StringValue.h>
-#include <opencog/atoms/value/VoidValue.h>
 #include <opencog/atoms/value/ValueFactory.h>
 
 #include <opencog/sensory/types/atom_types.h>
