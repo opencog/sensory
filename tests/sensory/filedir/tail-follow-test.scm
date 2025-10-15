@@ -87,7 +87,7 @@
 	(string-contains (cog-name appended-line) "Appended"))
 
 ; Test that we can disable tail mode
-(cog-execute! (SetValue file-node-tail (Predicate "*-follow-*") (Number 0)))
+(cog-set-value! file-node-tail (Predicate "*-follow-*") (BoolValue #f))
 
 ; After disabling tail mode, reading at EOF should return VoidValue immediately
 ; (not block waiting for more data)
