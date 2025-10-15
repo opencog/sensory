@@ -209,7 +209,7 @@ std::string TextFileNode::do_read(void) const
 
 		// Wait for inotify event
 		char event_buf[sizeof(struct inotify_event) + NAME_MAX + 1];
-		ssize_t len = read(_inotify_fd, event_buf, sizeof(event_buf));
+		ssize_t len = ::read(_inotify_fd, event_buf, sizeof(event_buf));
 
 		if (len < 0)
 		{
