@@ -42,7 +42,7 @@ class TextFileNode
 {
 protected:
 	mutable FILE* _fh;
-	bool _tail_mode;
+	mutable bool _tail_mode;
 	mutable int _inotify_fd;
 	mutable int _watch_fd;
 
