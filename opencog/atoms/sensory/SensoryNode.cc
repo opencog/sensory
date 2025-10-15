@@ -60,6 +60,15 @@ void SensoryNode::follow(const ValuePtr& value)
 	// Default: do nothing. Derived classes can override.
 }
 
+// The open, close and write messages are hopefully self-explanatory.
+//
+// The barrier message is a multi-threading ordering message, so that
+// everything before is ordered to happen before everything after.
+//
+// The follow message is initially for tailing a file, but seems to be
+// a sufficiently generic concept that "anything" could be tailed.
+// The name "tail" is avoided to avoid head/tail confusion. The word
+// "follow" is rare in unix/comp-sci but seems appropriate for the idea.
 void SensoryNode::setValue(const Handle& key, const ValuePtr& value)
 {
 	// The value must be store only if it is not one of the values
@@ -73,12 +82,9 @@ void SensoryNode::setValue(const Handle& key, const ValuePtr& value)
 	}
 
 	// Create a fast dispatch table using case-statement branching.
-	static constexpr uint32_t p_open =
-		dispatch_hash("*-open-*");
-	static constexpr uint32_t p_close =
-		dispatch_hash("*-close-*");
-	static constexpr uint32_t p_write =
-		dispatch_hash("*-write-*");
+	static constexpr uint32_t p_open = dispatch_hash("*-open-*");
+	static constexpr uint32_t p_close = dispatch_hash("*-close-*");
+	static constexpr uint32_t p_write = dispatch_hash("*-write-*");
 	static constexpr uint32_t p_barrier = dispatch_hash("*-barrier-*");
 	static constexpr uint32_t p_follow = dispatch_hash("*-follow-*");
 
