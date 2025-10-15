@@ -53,6 +53,7 @@ protected:
 	// virtual void write(const ValuePtr&); inherited from StreamNode
 	virtual bool connected(void) const;
 	virtual void barrier(AtomSpace* = nullptr);
+	virtual void follow(const ValuePtr&);
 	virtual std::string do_read(void) const;
 
 public:

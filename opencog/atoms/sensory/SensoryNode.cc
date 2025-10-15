@@ -55,6 +55,11 @@ void SensoryNode::barrier(AtomSpace* as)
 	as->barrier();
 }
 
+void SensoryNode::follow(const ValuePtr& value)
+{
+	// Default: do nothing. Derived classes can override.
+}
+
 void SensoryNode::setValue(const Handle& key, const ValuePtr& value)
 {
 	// The value must be store only if it is not one of the values
@@ -75,6 +80,7 @@ void SensoryNode::setValue(const Handle& key, const ValuePtr& value)
 	static constexpr uint32_t p_write =
 		dispatch_hash("*-write-*");
 	static constexpr uint32_t p_barrier = dispatch_hash("*-barrier-*");
+	static constexpr uint32_t p_follow = dispatch_hash("*-follow-*");
 
 // There's almost no chance at all that any user will use some key
 // that is a PredicateNode that has a string name that collides with
@@ -109,6 +115,10 @@ void SensoryNode::setValue(const Handle& key, const ValuePtr& value)
 		case p_barrier:
 			COLL("*-barrier-*");
 			barrier(AtomSpaceCast(value).get());
+			return;
+		case p_follow:
+			COLL("*-follow-*");
+			follow(value);
 			return;
 		default:
 			break;
