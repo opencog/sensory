@@ -18,6 +18,8 @@ TARGET_LINK_LIBRARIES(sensory-irc
 	${COGUTIL_LIBRARY}
 )
 
+ADD_GUILE_EXTENSION(SCM_CONFIG sensory-irc "opencog-ext-path-sensory-filedir")
+
 INSTALL (TARGETS sensory-irc EXPORT AtomSpaceTargets
 	DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
 )

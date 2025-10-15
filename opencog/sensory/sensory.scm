@@ -16,15 +16,15 @@
 	"opencog_sensory_init")
 
 (load-extension
-	(string-append opencog-ext-path-sensory "libsensory-filedir")
+	(string-append opencog-ext-path-sensory-filedir "libsensory-filedir")
 	"opencog_sensory_filedir_init")
 
 (load-extension
-	(string-append opencog-ext-path-sensory "libsensory-irc")
+	(string-append opencog-ext-path-sensory-irc "libsensory-irc")
 	"opencog_sensory_irc_init")
 
 (load-extension
-	(string-append opencog-ext-path-sensory "libsensory-terminal")
+	(string-append opencog-ext-path-sensory-terminal "libsensory-terminal")
 	"opencog_sensory_terminal_init")
 
 (include-from-path "opencog/sensory/types/sensory_types.scm")
