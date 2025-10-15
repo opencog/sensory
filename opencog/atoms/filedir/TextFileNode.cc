@@ -28,6 +28,7 @@
 #include <opencog/util/exceptions.h>
 #include <opencog/util/oc_assert.h>
 #include <opencog/atoms/base/Node.h>
+#include <opencog/atoms/value/BoolValue.h>
 #include <opencog/atoms/value/StringValue.h>
 #include <opencog/atoms/value/VoidValue.h>
 #include <opencog/atoms/value/ValueFactory.h>
@@ -171,6 +172,17 @@ void TextFileNode::barrier(AtomSpace* ignore)
 bool TextFileNode::connected(void) const
 {
 	return (nullptr != _fh);
+}
+
+void TextFileNode::follow(const ValuePtr& value)
+{
+	// Enable or disable tail mode based on BoolValue
+	if (value->get_type() == BOOL_VALUE)
+	{
+		const std::vector<bool>& bv = BoolValueCast(value)->value();
+		if (0 < bv.size())
+			_tail_mode = bv[0];
+	}
 }
 
 // This will read one line from the text file, and return that line.

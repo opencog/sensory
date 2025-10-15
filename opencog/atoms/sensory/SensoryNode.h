@@ -54,6 +54,7 @@ protected:
 	virtual void close(const ValuePtr&) = 0;
 	virtual void write(const ValuePtr&) = 0;
 	virtual void barrier(AtomSpace* = nullptr);
+	virtual void follow(const ValuePtr&);
 
 	virtual bool connected(void) const = 0;
 	virtual ValuePtr read(void) const = 0;
