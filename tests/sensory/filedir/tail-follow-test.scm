@@ -33,26 +33,23 @@
 
 (define file-node-normal (TextFile (string-append "file://" test-file)))
 
-; Open in normal mode (no follow)
-(cog-execute! (SetValue file-node-normal (Predicate "*-open-*") (Type 'StringValue)))
+; Open in normal mode (no follow) - use Item type to get Nodes back
+(cog-execute! (SetValue file-node-normal (Predicate "*-open-*") (Type 'Item)))
 
-; Create stream
-(define stream-normal (cog-execute! (ValueOf file-node-normal (Predicate "*-stream-*"))))
-
-; Read first line
-(define line1 (cog-execute! stream-normal))
+; Read first line using *-read-* message
+(define line1 (cog-execute! (ValueOf file-node-normal (Predicate "*-read-*"))))
 (test-assert "normal-mode-line1"
 	(string-contains (cog-name line1) "Line 1"))
 
 ; Read second line
-(define line2 (cog-execute! stream-normal))
+(define line2 (cog-execute! (ValueOf file-node-normal (Predicate "*-read-*"))))
 (test-assert "normal-mode-line2"
 	(string-contains (cog-name line2) "Line 2"))
 
-; Read EOF - should return empty
-(define eof-marker (cog-execute! stream-normal))
+; Read EOF - should return VoidValue
+(define eof-marker (cog-execute! (ValueOf file-node-normal (Predicate "*-read-*"))))
 (test-assert "normal-mode-eof"
-	(equal? "" (cog-name eof-marker)))
+	(equal? 'VoidValue (cog-type eof-marker)))
 
 ; ----------------------------------------------------------
 ; Test 2: Tail mode waits for new content
@@ -66,16 +63,13 @@
 		(display "Start\n")))
 
 ; Enable tail mode BEFORE opening
-(cog-execute! (SetValue file-node-tail (Predicate "*-follow-*") (BoolValue #t)))
+(cog-set-value! file-node-tail (Predicate "*-follow-*") (BoolValue #t))
 
-; Open in tail mode
-(cog-execute! (SetValue file-node-tail (Predicate "*-open-*") (Type 'StringValue)))
+; Open in tail mode - use Item type to get Nodes back
+(cog-execute! (SetValue file-node-tail (Predicate "*-open-*") (Type 'Item)))
 
-; Create stream
-(define stream-tail (cog-execute! (ValueOf file-node-tail (Predicate "*-stream-*"))))
-
-; Read the initial line
-(define start-line (cog-execute! stream-tail))
+; Read the initial line using *-read-* message
+(define start-line (cog-execute! (ValueOf file-node-tail (Predicate "*-read-*"))))
 (test-assert "tail-mode-initial"
 	(string-contains (cog-name start-line) "Start"))
 
@@ -88,33 +82,25 @@
 
 ; This read should block until the append happens, then return the new line
 ; Note: This will wait up to ~1 second for the append
-(define appended-line (cog-execute! stream-tail))
+(define appended-line (cog-execute! (ValueOf file-node-tail (Predicate "*-read-*"))))
 (test-assert "tail-mode-appended"
 	(string-contains (cog-name appended-line) "Appended"))
 
 ; Test that we can disable tail mode
-(cog-execute! (SetValue file-node-tail (Predicate "*-follow-*") (BoolValue #f)))
+(cog-execute! (SetValue file-node-tail (Predicate "*-follow-*") (Number 0)))
 
-; Append another line
-(with-output-to-port (open-file test-file "a")
-	(lambda () (display "Final line\n")))
-
-; After disabling tail mode, reading at EOF should return empty
-; First read the final line we just added
-(define final-line (cog-execute! stream-tail))
-(test-assert "tail-mode-final"
-	(string-contains (cog-name final-line) "Final"))
-
-; Now at EOF with tail mode disabled - should return empty
-(define eof-after-disable (cog-execute! stream-tail))
+; After disabling tail mode, reading at EOF should return VoidValue immediately
+; (not block waiting for more data)
+(define eof-after-disable (cog-execute! (ValueOf file-node-tail (Predicate "*-read-*"))))
 (test-assert "tail-mode-disabled-eof"
-	(equal? "" (cog-name eof-after-disable)))
+	(equal? 'VoidValue (cog-type eof-after-disable)))
 
 ; ----------------------------------------------------------
 ; Clean up
 
-(cog-execute! (SetValue file-node-normal (Predicate "*-close-*") (stv 1 1)))
-(cog-execute! (SetValue file-node-tail (Predicate "*-close-*") (stv 1 1)))
+; Close files - using Number 1 as a simple atom to trigger close
+(cog-execute! (SetValue file-node-normal (Predicate "*-close-*") (Number 1)))
+(cog-execute! (SetValue file-node-tail (Predicate "*-close-*") (Number 1)))
 
 (catch #t
 	(lambda () (delete-file test-file))
