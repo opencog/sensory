@@ -42,6 +42,10 @@ class TextFileNode
 {
 protected:
 	mutable FILE* _fh;
+	bool _tail_mode;
+	int _inotify_fd;
+	int _watch_fd;
+
 	virtual void do_write(const std::string&);
 
 	virtual void open(const ValuePtr&);
