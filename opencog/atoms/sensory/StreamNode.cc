@@ -70,6 +70,11 @@ void StreamNode::open(const ValuePtr& item_type)
 // ==============================================================
 
 // Wrap ourselves in a streamer.
+//
+// This is a "reasonable" default implementation, enough to get an
+// operational stream() method for those classes that do not provide
+// thier own. If a class does over-ride this method, it will typically
+// return a ContainerValue (QueueValue or UnisetValue) here.
 ValuePtr StreamNode::stream(void) const
 {
 	return createReadStream(get_handle());
