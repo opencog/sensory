@@ -68,7 +68,7 @@ ValuePtr TextStreamNode::string_to_type(std::string str) const
 {
 	if (0 == str.length()) return createVoidValue();
 
-	// If a StringValue was asked for, git thenm that.
+	// If a StringValue was asked for, get them that.
 	if (nameserver().isA(_item_type, STRING_VALUE))
 		return createStringValue(std::move(str));
 
