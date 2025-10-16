@@ -102,7 +102,7 @@ then `OpenLink` will throw an exception.
 We don't have an exception-handling architecture, yet. However,
 exceptions do seem like the correct approach: the input pattern could
 have performed validation on the input, but this just wastes CPU cycles
-when the input is clean. Exceptions hide any manditory checking in
+when the input is clean. Exceptions hide any mandatory checking in
 the C++ code implementing `OpenLink`, where CPU overhead is minimized.
 
 
@@ -162,7 +162,7 @@ creating some new, sideways interpretation here seems wrong.
 Parallelism
 -----------
 Short reminder: the `ExecuteThreadedLink` can take a sequence and run it
-in multpile threads. This should be enough to dissipate an concerns
+in multiple threads. This should be enough to dissipate an concerns
 about serialization, sequencing and parallelism.
 
 Recursion

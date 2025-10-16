@@ -52,7 +52,7 @@ list of valid messages they can receive? This is certainly desired with
 the `Describe` functionality discussed and partly implemented here.
 
 The name `ObjectNode` is consistent with traditional object-oriented
-prgramming naming conventions: `ObjectNode`s are meant to be stateful
+programming naming conventions: `ObjectNode`s are meant to be stateful
 classes.
 
 However, since the AtomSpace is designed to be effectively stateless,

@@ -48,7 +48,7 @@ August 2025 update: Total re-write begun. Both `OpenLink` and
 
 The `WriteLink` is gone, but raises a new problem. The v0 `WriteLink`
 had a built-in infinite loop that would suck a stream dry, pushing it
-out somwhere. The current default object api doesn't expose the notion
+out somewhere. The current default object api doesn't expose the notion
 of pulling from a stream. But having this kind of auto-run info loop
 driver feels like a good idea.  How should it be implemented?
 
@@ -111,10 +111,10 @@ So it's ugly. What are the alternatives? Well, this:
    (LooperLink (cog-atomspace) copy-one-b-to-a)
 ```
 which runs the loop until an exception is thrown. But is this better?
-Its more modular: it wraps the entire loop, begining to end. Whereas
+Its more modular: it wraps the entire loop, beginning to end. Whereas
 DefinedProceedure A could call B could call C which calls A, maybe.
 If it calls A, then it recurses, and that forms athe loop, and it runs.
-The executation path is not bounded, it can be splattered throught the
+The execution path is not bounded, it can be splattered throughout the
 AtomSpace. It might not be clear that some given execution path results
 in recursion.
 
@@ -185,7 +185,7 @@ or
 This time, the infinite loop is in `TextWriterNode`, which will suck
 from it's input, until drained. That is, we already have the needed inf
 loop, it's in the `TextWriterNode`, and is a port of the code in v0
-`OutputStream`. So hurrah! we are done!
+`OutputStream`. So hurrah! We are done!
 
 Which is better, `LineStreamLink` or `StreamNode`? My gut instinct is
 that `StreamNode` fits the current paradigm better, and is more

@@ -226,7 +226,7 @@ parsing.
 Solution:
 * Stage zero: this is what LookatLink does.
 * Stage one: build a connector-matcher. This is not a full parser,
-  but is a prereq for matching connetors. MatchLink
+  but is a prereq for matching connectors. MatchLink
 * Stage two: punt, build a random selector.
 * Stage three: build a HookupLink
 * Stage four: `cog-execute!` is all we need.

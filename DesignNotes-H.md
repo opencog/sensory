@@ -16,7 +16,7 @@ The goal is to write an agent that can perform this compare. It's an
 "agent" because it self-describes it's own input types, and its output
 types as well: the format descriptions are not external to the agent,
 but are intrinsic to it. That is, the agent presents a list of
-connnectors that are joinable.
+connectors that are joinable.
 
 ### Data sources
 This agent needs to get input from somewhere. But where?  Earlier
