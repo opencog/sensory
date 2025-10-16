@@ -131,4 +131,19 @@ different demands on time and space. That's hardware; analogous
 statements can be said for algorithms: some algorithms might compute the
 same things as others, but are exponentially faster/slower.
 
-The upward problem
+The upward problem is that most of activity of coding is tedious,
+mindless, boring, repetitive. When I port code from here to there, or
+add this feture or that one, most of it is stupid and time wasting.
+Type `make` at the command line. Oh, failed to compile? Fix that. Do it
+again and again and again. Just because I forgot to move some file, copy
+some code, add a semi-colon to the end of a line. Claude releives much
+of this tedium, and, for this, I am grateful: it can do the tedious bits
+that I don't want to. It can do those tedious bits in a machine-like,
+mechanical fasion. I am also grateful for jack-hammers, when I am
+busting concrete. Plain-old chisel and hammer is not fun. So it appears
+that "the world below" is best treated by mindless, mechanical
+rearrangemenets. But "the world above" is impenetrable, unforeseeable,
+and we have to ergodically try all possibilities. So my intelligence
+exists at this phase-transition boundary, between what is machine-like
+and tedious, below, and the unknowable, revealed through epiphanies,
+above.
