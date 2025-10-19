@@ -64,3 +64,32 @@ to do anything. Any pile of shit that vaguely matches what you asked
 for, Claude will generate this. (Rest of philosophical ruminations moved
 to `learn/learn-lang-diary/learn-lang-diary-part-ten-E.lyx`. Interesting
 but out of place, here!?)
+
+Watching and Following Redux
+----------------------------
+I am confusing myself. I think the new plan is this:
+* Calling `*-stream-*` on a file (aka calling `SensoryNode::stream()`)
+  should follow (tail) that file. The required flag needed to
+  enable inotify should be set when `stream()` is called.
+
+* For `FileSysNode`, there should be a "watch" command, much like the
+  current support for "cd" or "ls". The `FileSysNode::write()` handles
+  this. It creates a UnisetValue and launches a thread to fill that
+  uniset. This is done for *each* watch, so that multiple watchers can
+  run at the same time.
+
+  The `FileSysNode::read()` returns that UnisetValue ... which is a
+  ListValue, so attempts to access it will block until there are changes.
+
+  Great? How to stop watching? Options: if the UnisetValue is closed,
+  then the thread should be halted, and the blocked reader unblocks.
+  But who has the handle to to the UnisetValue? That won't work.
+  Answer: the user doing watch should have done open, then kept a copy
+  of what was opened, and close that.
+
+  The confusion? If two users specify `FileSysNode` with the same
+  initial location, the AtomSpace willl return the same object. This
+  could be confusing for this who expected something else. Thus,
+  there must be a way of having multiple sensory nodes into a file
+  system.  This suggests that perhaps the initial URL should be "fake".
+  Lets try that.
