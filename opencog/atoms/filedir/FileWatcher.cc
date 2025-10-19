@@ -75,7 +75,7 @@ void FileWatcher::add_watch(const std::string& path, uint32_t mask)
 	// Initialize inotify if not already done
 	if (_inotify_fd < 0)
 	{
-		_inotify_fd = inotify_init();
+		_inotify_fd = inotify_init1(IN_NONBLOCK);
 		if (_inotify_fd < 0)
 		{
 			int norr = errno;
@@ -123,8 +123,8 @@ std::pair<uint32_t, std::string> FileWatcher::wait_event()
 
 		if (len < 0)
 		{
-			// Interrupted by signal - retry
-			if (errno == EINTR)
+			// Interrupted by signal or would block (non-blocking mode) - retry
+			if (errno == EINTR || errno == EAGAIN)
 				continue;
 
 			// Real error

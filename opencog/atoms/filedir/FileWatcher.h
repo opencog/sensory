@@ -107,6 +107,14 @@ public:
 	 * @return The path being watched, or empty string if not watching
 	 */
 	const std::string& watched_path() const { return _watch_path; }
+
+	/**
+	 * Get the inotify file descriptor.
+	 * Useful for using with poll() or select() in custom event loops.
+	 *
+	 * @return The inotify file descriptor, or -1 if not initialized
+	 */
+	int get_fd() const { return _inotify_fd; }
 };
 
 /** @}*/
