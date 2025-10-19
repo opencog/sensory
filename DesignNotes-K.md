@@ -93,3 +93,21 @@ I am confusing myself. I think the new plan is this:
   This could be confusing for those who expected something else.
   Distinct  `FileSysNode` can be created by using `file:///bad-url`
   and then `cd`-ing to the desired location.
+
+  Given that there is no way to close open `ContainerValues` in Atomese,
+  then spawning a new one for each "watch" does not entirely make sense.
+  It gloms up the c++ code, certainly, and requires tracking multiple
+  threads, which seems like overkill. Thus, there is an alternative
+  design. Here, a FileSysNode behaves normally, up until the point that
+  the "watch" command is issued. At this point, it changes behavior:
+  the watch closes the earlier `QueueValue` used for reads, creates
+  a new UnisetValue in it's place. It then spawns a thread that will
+  listen for changes, and write those changes to the UnisetValue.
+  This will continue, until the `*-close-*` message is sent, which will
+  close the UnisetValue, and reset everything. This seems to be a
+  smaller, less complex design.
+
+  The main drawback is that it seems slightly incompatible with how the
+  other commands work ... sort-of-ish. In other ways, it works
+  sort-of-ish like unix shells, doing pipein in the foreground...
+  I guess. The right style is just not clear right now.
