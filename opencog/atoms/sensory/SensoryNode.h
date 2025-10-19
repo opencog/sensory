@@ -59,6 +59,7 @@ protected:
 	virtual bool connected(void) const = 0;
 	virtual ValuePtr read(void) const = 0;
 	virtual ValuePtr stream(void) const = 0;
+	virtual ValuePtr watch(void) const;
 
 public:
 	virtual ~SensoryNode();
