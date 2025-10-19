@@ -34,6 +34,7 @@
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/value/FloatValue.h>
 #include <opencog/atoms/value/LinkValue.h>
+#include <opencog/atoms/value/QueueValue.h>
 #include <opencog/atoms/value/StringValue.h>
 #include <opencog/atoms/value/ValueFactory.h>
 
@@ -104,23 +105,23 @@ void FileSysNode::open(const ValuePtr& vp)
 {
 	TextStreamNode::open(vp);
 
-	if (_qvp)
-		_qvp->close();
+	if (_cvp)
+		_cvp->close();
 
-	_qvp = createQueueValue();
+	_cvp = createQueueValue();
 }
 
 bool FileSysNode::connected(void) const
 {
-	return nullptr != _qvp;
+	return nullptr != _cvp;
 }
 
 void FileSysNode::close(const ValuePtr& vp)
 {
-	if (_qvp)
+	if (_cvp)
 	{
-		_qvp->close();
-		_qvp = nullptr;
+		_cvp->close();
+		_cvp = nullptr;
 	}
 }
 
@@ -262,11 +263,11 @@ static ValuePtr make_stream_dirent(struct dirent* dent,
 
 ValuePtr FileSysNode::read(void) const
 {
-	if (nullptr == _qvp)
+	if (nullptr == _cvp)
 		throw RuntimeException(TRACE_INFO,
 			"FileSysNode not open: %s\n", to_string().c_str());
 
-	return _qvp->remove();
+	return _cvp->remove();
 }
 
 // ==============================================================
@@ -306,7 +307,7 @@ static std::string get_arg_string(const ValuePtr& vp, int arg)
 
 void FileSysNode::write(const ValuePtr& vp)
 {
-	if (nullptr == _qvp)
+	if (nullptr == _cvp)
 		throw RuntimeException(TRACE_INFO,
 			"FileSysNode not open: %s\n", to_string().c_str());
 
@@ -317,7 +318,7 @@ void FileSysNode::write(const ValuePtr& vp)
 		ValueSeq vents;
 		vents.push_back(vp);
 		vents.emplace_back(string_to_type(_cwd));
-		_qvp->add(std::move(createLinkValue(std::move(vents))));
+		_cvp->add(std::move(createLinkValue(std::move(vents))));
 		return;
 	}
 
@@ -413,7 +414,7 @@ void FileSysNode::write(const ValuePtr& vp)
 				"Unknown command \"%s\"\n", cmd.c_str());
 		}
 		closedir(dir);
-		_qvp->add(std::move(createLinkValue(std::move(vents))));
+		_cvp->add(std::move(createLinkValue(std::move(vents))));
 		return;
 	}
 
@@ -435,7 +436,7 @@ void FileSysNode::write(const ValuePtr& vp)
 		ValueSeq vents;
 		vents.push_back(vp);
 		vents.emplace_back(createStringValue(_cwd));
-		_qvp->add(std::move(createLinkValue(std::move(vents))));
+		_cvp->add(std::move(createLinkValue(std::move(vents))));
 		return;
 	}
 
@@ -458,7 +459,7 @@ void FileSysNode::write(const ValuePtr& vp)
 			break;
 		}
 		closedir(dir);
-		_qvp->add(std::move(createLinkValue(std::move(vents))));
+		_cvp->add(std::move(createLinkValue(std::move(vents))));
 		return;
 	}
 
@@ -468,7 +469,7 @@ void FileSysNode::write(const ValuePtr& vp)
 		ValueSeq vents;
 		vents.push_back(vp);
 
-		_qvp->add(std::move(createLinkValue(std::move(vents))));
+		_cvp->add(std::move(createLinkValue(std::move(vents))));
 		return;
 	}
 
