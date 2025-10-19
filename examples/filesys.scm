@@ -10,9 +10,16 @@
 (use-modules (opencog) (opencog exec) (opencog sensory))
 
 ; -----------------------------------------------------------
-; Preliminary setup.
+; Open the filesystem node. The URL must be of the form
+;    `file:///somewhere/anything`
+; The file path does not have to actually exist, even at open time;
+; however, subsequent commands will throw an exception if applied to
+; non-existent directories or files. Thus, the first command after an
+; open of a non-existant path should be a `cd` to a valid path.
+;
+; XXX TODO: maybe change design to return VoidValue, instead of
+; throwing?
 
-; Open the filesystem node.
 (define fsnode (FileSysNode "file:///tmp"))
 (cog-set-value! fsnode (Predicate "*-open-*") (Type 'StringValue))
 

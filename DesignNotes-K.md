@@ -83,13 +83,13 @@ I am confusing myself. I think the new plan is this:
 
   Great? How to stop watching? Options: if the UnisetValue is closed,
   then the thread should be halted, and the blocked reader unblocks.
-  But who has the handle to to the UnisetValue? That won't work.
-  Answer: the user doing watch should have done open, then kept a copy
-  of what was opened, and close that.
+  But who has the handle to to the UnisetValue? The present flow design
+  doesn't offer this control of ContainerValues. The current solution
+  has to be that the stream doing the watch creates a new `FileSysNode`
+  and then closes it when it is no longer interested in watching.
 
-  The confusion? If two users specify `FileSysNode` with the same
-  initial location, the AtomSpace willl return the same object. This
-  could be confusing for this who expected something else. Thus,
-  there must be a way of having multiple sensory nodes into a file
-  system.  This suggests that perhaps the initial URL should be "fake".
-  Lets try that.
+  A point of confusion: If two users specify `FileSysNode` with the
+  same initial location, the AtomSpace will return the same object.
+  This could be confusing for those who expected something else.
+  Distinct  `FileSysNode` can be created by using `file:///bad-url`
+  and then `cd`-ing to the desired location.
