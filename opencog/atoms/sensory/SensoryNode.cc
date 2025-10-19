@@ -61,12 +61,6 @@ void SensoryNode::follow(const ValuePtr& value)
 	// Default: do nothing. Derived classes can override.
 }
 
-ValuePtr SensoryNode::watch(void) const
-{
-	// Default: do nothing. Derived classes can override.
-	return createVoidValue();
-}
-
 // The open, close and write messages are hopefully self-explanatory.
 //
 // The barrier message is a multi-threading ordering message, so that
@@ -153,8 +147,6 @@ ValuePtr SensoryNode::getValue(const Handle& key) const
 		dispatch_hash("*-read-*");
 	static constexpr uint32_t p_stream =
 		dispatch_hash("*-stream-*");
-	static constexpr uint32_t p_watch =
-		dispatch_hash("*-watch-*");
 	static constexpr uint32_t p_monitor =
 		dispatch_hash("*-monitor-*");
 
@@ -167,9 +159,6 @@ ValuePtr SensoryNode::getValue(const Handle& key) const
 		case p_stream:
 			COLL("*-stream-*");
 			return stream();
-		case p_watch:
-			COLL("*-watch-*");
-			return watch();
 		case p_connected_p:
 			COLL("*-connected?-*");
 			return createBoolValue(connected());
