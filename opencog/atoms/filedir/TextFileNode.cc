@@ -23,7 +23,6 @@
 #include <errno.h>
 #include <string.h> // for strerror()
 #include <sys/inotify.h>
-#include <unistd.h>
 
 #include <opencog/util/exceptions.h>
 #include <opencog/util/oc_assert.h>
@@ -41,8 +40,7 @@ TextFileNode::TextFileNode(Type t, const std::string&& url) :
 	TextStreamNode(t, std::move(url)),
 	_fh(nullptr),
 	_tail_mode(false),
-	_inotify_fd(-1),
-	_watch_fd(-1)
+	_watcher()
 {
 	OC_ASSERT(nameserver().isA(_type, TEXT_FILE_NODE),
 		"Bad TextFileNode constructor!");
@@ -52,17 +50,13 @@ TextFileNode::TextFileNode(const std::string&& url) :
 	TextStreamNode(TEXT_FILE_NODE, std::move(url)),
 	_fh(nullptr),
 	_tail_mode(false),
-	_inotify_fd(-1),
-	_watch_fd(-1)
+	_watcher()
 {
 }
 
 TextFileNode::~TextFileNode()
 {
-	if (_watch_fd >= 0 && _inotify_fd >= 0)
-		inotify_rm_watch(_inotify_fd, _watch_fd);
-	if (_inotify_fd >= 0)
-		::close(_inotify_fd);
+	_watcher.remove_watch();
 	if (_fh)
 		fclose(_fh);
 }
@@ -119,43 +113,22 @@ void TextFileNode::open(const ValuePtr& vty)
 	// Setup inotify for tail mode
 	if (_tail_mode)
 	{
-		_inotify_fd = inotify_init();
-		if (_inotify_fd < 0)
+		try
 		{
-			int norr = errno;
-			fclose(_fh);
-			_fh = nullptr;
-			throw RuntimeException(TRACE_INFO,
-				"Failed to initialize inotify: %s\n", strerror(norr));
+			_watcher.add_watch(fpath, IN_MODIFY | IN_CLOSE_WRITE);
 		}
-
-		_watch_fd = inotify_add_watch(_inotify_fd, fpath, IN_MODIFY | IN_CLOSE_WRITE);
-		if (_watch_fd < 0)
+		catch (...)
 		{
-			int norr = errno;
-			::close(_inotify_fd);
-			_inotify_fd = -1;
 			fclose(_fh);
 			_fh = nullptr;
-			throw RuntimeException(TRACE_INFO,
-				"Failed to add inotify watch on \"%s\": %s\n",
-				fpath, strerror(norr));
+			throw;
 		}
 	}
 }
 
 void TextFileNode::close(const ValuePtr&)
 {
-	if (_watch_fd >= 0 && _inotify_fd >= 0)
-	{
-		inotify_rm_watch(_inotify_fd, _watch_fd);
-		_watch_fd = -1;
-	}
-	if (_inotify_fd >= 0)
-	{
-		::close(_inotify_fd);
-		_inotify_fd = -1;
-	}
+	_watcher.remove_watch();
 	if (_fh)
 		fclose(_fh);
 	_fh = nullptr;
@@ -219,30 +192,17 @@ std::string TextFileNode::do_read(void) const
 		clearerr(_fh);  // Clear EOF indicator
 
 		// Wait for inotify event
-		char event_buf[sizeof(struct inotify_event) + NAME_MAX + 1];
-		ssize_t len = ::read(_inotify_fd, event_buf, sizeof(event_buf));
-
-		if (len < 0)
+		try
 		{
-			if (errno == EINTR)
-				continue;  // Interrupted, try again
-
-			// Real error - close and return
-			int norr = errno;
+			_watcher.wait_event();
+		}
+		catch (...)
+		{
+			// Error - close and return
 			fclose(_fh);
 			_fh = nullptr;
-			if (_watch_fd >= 0 && _inotify_fd >= 0)
-			{
-				inotify_rm_watch(_inotify_fd, _watch_fd);
-				_watch_fd = -1;
-			}
-			if (_inotify_fd >= 0)
-			{
-				::close(_inotify_fd);
-				_inotify_fd = -1;
-			}
-			throw RuntimeException(TRACE_INFO,
-				"inotify read failed: %s\n", strerror(norr));
+			_watcher.remove_watch();
+			throw;
 		}
 
 		// File was modified - loop back and try reading again
