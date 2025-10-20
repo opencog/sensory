@@ -152,7 +152,25 @@ void TextFileNode::follow(const ValuePtr& value)
 	{
 		const std::vector<bool>& bv = BoolValueCast(value)->value();
 		if (0 < bv.size())
-			_tail_mode = bv[0];
+		{
+			bool new_mode = bv[0];
+
+			// If enabling tail mode and file is open, set up watcher
+			if (new_mode && !_tail_mode && _fh)
+			{
+				// Get the file path from the URL
+				std::string url = get_name();
+				std::string pathstr = url.substr(7); // Skip "file://"
+				_watcher.add_watch(pathstr.c_str());
+			}
+			// If disabling tail mode, remove the watcher
+			else if (!new_mode && _tail_mode)
+			{
+				_watcher.remove_watch();
+			}
+
+			_tail_mode = new_mode;
+		}
 	}
 }
 
