@@ -72,7 +72,8 @@
 ; changes that have been made to files in the directory. The events
 ; can be dequeued, one by one, or they can be streamed. (Recall that
 ; "streaming" means that these events can be processed through some
-; pipeline written in Atomese.)
+; pipeline written in Atomese.) Stream continues indefinitely, until
+; the node is closed (sent the `*-close-*` message.)
 ;
 ; To keep things distinct, the demo will use a different demo directory.
 
@@ -95,6 +96,14 @@
 ; those changes, one at a time.
 (cog-execute! (ValueOf watchnode (Predicate "*-read-*")))
 
+; The `StreamValueOf` link behaves similarly, taking one sample from
+; the stream each time that it is executed. CAUTION: Do NOT attempt
+; `ValueOf` here. The `ValueOf` will function correctly, and return
+; the stream handle. However, the guile scheme shell, when it attempts
+; to print this stream, will hang: the print will not return until
+; the stream closes. With some cleverness, it can be closed from a
+; different thread, if you've arranged for that thread in advance.
+; If not, you will hard-hang.
 (cog-execute! (StreamValueOf watchnode (Predicate "*-stream-*")))
 
 ; --------------------------------------------------------
