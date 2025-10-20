@@ -38,6 +38,7 @@ Examples that demonstrate how the API works, and the most basic usage.
 * `file-write.scm` -- Stream Atoms/Values to a file.
 * `xterm-io.scm` -- Stream Atoms/Values fomr/to an interactive terminal.
 * `irc-api.scm` -- Demo of connecting to IRC and interacting.
+* `filesys.scm` -- Navigate and explore the filesystem.
 
 ### Agent demos
 Examples showing how prototype agents can be built up in Atomese.
@@ -46,7 +47,7 @@ processing pipelines to build crude stimulus-response agents.
 
 * `xterm-bridge.scm` -- Copying text between two xterms
 * `irc-echo-bot.scm` -- IRC echo bot demo.
-* `filesys.scm` -- Demo of navigating a filesystem.
+* `introspect.scm` -- (Under construction; broken)
 
 The ultimate design goal is to replace the crude hand-crafted
 stimulus-response pipelines with a system that learns how to use
