@@ -25,6 +25,7 @@
 
 #include <opencog/atoms/value/ContainerValue.h>
 #include <opencog/atoms/sensory/TextStreamNode.h>
+#include "FileWatcher.h"
 
 namespace opencog
 {
@@ -44,6 +45,9 @@ protected:
 	void init(const std::string&);
 	mutable std::string _cwd;
 	mutable ContainerValuePtr _cvp;
+
+	// Directory watching support
+	mutable FileWatcher _watcher;
 
 	virtual void open(const ValuePtr&);
 	virtual bool connected(void) const;

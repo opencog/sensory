@@ -36,6 +36,7 @@
 #include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atoms/value/QueueValue.h>
 #include <opencog/atoms/value/StringValue.h>
+#include <opencog/atoms/value/UnisetValue.h>
 #include <opencog/atoms/value/ValueFactory.h>
 
 #include <opencog/sensory/types/atom_types.h>
@@ -54,13 +55,15 @@ using namespace opencog;
 /// make this stream semi-usable in a pseudo "real-world" app.
 
 FileSysNode::FileSysNode(const std::string&& url)
-	: TextStreamNode(FILE_SYS_NODE, std::move(url))
+	: TextStreamNode(FILE_SYS_NODE, std::move(url)),
+	  _watcher()
 {
 	init(get_name());
 }
 
 FileSysNode::FileSysNode(Type t, const std::string&& url)
-	: TextStreamNode(t, std::move(url))
+	: TextStreamNode(t, std::move(url)),
+	  _watcher()
 {
 	if (not nameserver().isA(t, FILE_SYS_NODE))
 		throw RuntimeException(TRACE_INFO,
@@ -72,6 +75,7 @@ FileSysNode::FileSysNode(Type t, const std::string&& url)
 
 FileSysNode::~FileSysNode()
 {
+	_watcher.stop_watching();
 }
 
 /// Attempt to open the URL for reading and writing.
@@ -118,6 +122,9 @@ bool FileSysNode::connected(void) const
 
 void FileSysNode::close(const ValuePtr& vp)
 {
+	// Stop watching
+	_watcher.stop_watching();
+
 	if (_cvp)
 	{
 		_cvp->close();
@@ -319,6 +326,24 @@ void FileSysNode::write(const ValuePtr& vp)
 		vents.push_back(vp);
 		vents.emplace_back(string_to_type(_cwd));
 		_cvp->add(std::move(createLinkValue(std::move(vents))));
+		return;
+	}
+
+	if (0 == cmd.compare("watch"))
+	{
+		// Close existing container
+		if (_cvp)
+			_cvp->close();
+
+		// Create UnisetValue
+		_cvp = createUnisetValue();
+
+		// Extract path from file:// URL
+		const std::string& path = _cwd.substr(_pfxlen);
+
+		// Start watching in background thread
+		_watcher.start_watching(path, _cvp);
+
 		return;
 	}
 
