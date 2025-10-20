@@ -21,12 +21,15 @@
  */
 
 #include <errno.h>
+#include <limits.h>
+#include <poll.h>
 #include <string.h>
 #include <sys/inotify.h>
 #include <unistd.h>
-#include <limits.h>
 
 #include <opencog/util/exceptions.h>
+#include <opencog/atoms/value/StringValue.h>
+#include <opencog/atoms/value/ValueFactory.h>
 
 #include "FileWatcher.h"
 
@@ -146,4 +149,61 @@ std::pair<uint32_t, std::string> FileWatcher::wait_event()
 
 		return std::make_pair(event->mask, filename);
 	}
+}
+
+bool FileWatcher::poll_and_add_events(const ContainerValuePtr& cvp, int timeout_ms)
+{
+	if (_inotify_fd < 0 || _watch_fd < 0)
+		return false; // Not watching, signal exit
+
+	// Poll for events
+	struct pollfd pfd;
+	pfd.fd = _inotify_fd;
+	pfd.events = POLLIN;
+
+	int ret = poll(&pfd, 1, timeout_ms);
+	if (ret < 0)
+	{
+		if (errno == EINTR)
+			return true; // Interrupted, continue watching
+		return false; // Error, signal exit
+	}
+
+	if (ret == 0)
+		return true; // Timeout, continue watching
+
+	// Read inotify events
+	char buf[4096] __attribute__((aligned(__alignof__(struct inotify_event))));
+	ssize_t len = read(_inotify_fd, buf, sizeof(buf));
+	if (len < 0)
+	{
+		if (errno == EAGAIN || errno == EINTR)
+			return true; // Would block or interrupted, continue watching
+		return false; // Error or fd closed, signal exit
+	}
+
+	if (len == 0)
+		return true; // No data, continue watching
+
+	// Process events and add to container
+	const struct inotify_event *event;
+	for (char *ptr = buf; ptr < buf + len;
+	     ptr += sizeof(struct inotify_event) + event->len)
+	{
+		event = (const struct inotify_event *) ptr;
+
+		// Check for overflow (ignore as requested)
+		if (event->mask & IN_Q_OVERFLOW)
+			continue;
+
+		// Only process events with filenames
+		if (event->len > 0)
+		{
+			std::string filename(event->name);
+			ValuePtr vp = createStringValue(filename);
+			cvp->add(vp);
+		}
+	}
+
+	return true; // Events processed, continue watching
 }

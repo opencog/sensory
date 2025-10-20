@@ -25,6 +25,7 @@
 
 #include <string>
 #include <utility>
+#include <opencog/atoms/value/ContainerValue.h>
 
 namespace opencog
 {
@@ -114,6 +115,15 @@ public:
 	 * @return The inotify file descriptor, or -1 if not initialized
 	 */
 	int get_fd() const { return _inotify_fd; }
+
+	/**
+	 * Poll for events and add filenames to container.
+	 *
+	 * @param cvp Container to add filenames to (as StringValues)
+	 * @param timeout_ms Timeout in milliseconds to wait for events
+	 * @return true if events were processed, false on timeout/error (signals exit)
+	 */
+	bool poll_and_add_events(const ContainerValuePtr& cvp, int timeout_ms);
 };
 
 /** @}*/
