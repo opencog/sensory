@@ -15,7 +15,7 @@
 ; The file path does not have to actually exist, even at open time;
 ; however, subsequent commands will throw an exception if applied to
 ; non-existent directories or files. Thus, the first command after an
-; open of a non-existant path should be a `cd` to a valid path.
+; open of a non-existent path should be a `cd` to a valid path.
 ;
 ; XXX TODO: maybe change design to return VoidValue, instead of
 ; throwing?
@@ -37,7 +37,7 @@
 ; queue. This kind of blocking behavior is what we want for pipeline
 ; designs: i.e. a pipeline always waits for data to show up, and is
 ; blocked while waiting.  However, this can lead to confusion if you
-;; accidentally do too many reads, and then wonder why evertyhing seems
+;; accidentally do too many reads, and then wonder why everything seems
 ; to be hung. A write will unblock, but still can be confusing. You
 ; have been warned.
 

@@ -36,7 +36,7 @@ Examples that demonstrate how the API works, and the most basic usage.
 
 * `file-read.scm` -- Stream file contents to StreamValue
 * `file-write.scm` -- Stream Atoms/Values to a file.
-* `xterm-io.scm` -- Stream Atoms/Values fomr/to an interactive terminal.
+* `xterm-io.scm` -- Stream Atoms/Values from/to an interactive terminal.
 * `irc-api.scm` -- Demo of connecting to IRC and interacting.
 * `filesys.scm` -- Navigate and explore the filesystem.
 

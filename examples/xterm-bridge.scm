@@ -36,7 +36,7 @@
 	(SetValue bxterm (Predicate "*-open-*") (Type 'StringValue)))
 
 ; Create two copiers. Executing each of these once will copy exactly
-; one message frome one terminal to the other.
+; one message from one terminal to the other.
 
 (define copy-one-b-to-a
 	(SetValue axterm (Predicate "*-write-*")
@@ -49,7 +49,7 @@
 ; --------------------------------------------------------
 ; The current xterm reader API is NOT streaming, it is line-at-a-time.
 ; Thus, to get an endlessly running system, a pair of infinite loops
-; need to be constructed, with each loop copying on ine direction.
+; need to be constructed, with each loop copying on one direction.
 ; There are three ways to build such loops:
 ; 1) Write them in scheme
 ; 2) Write them in Atomese
@@ -59,14 +59,14 @@
 ;
 ; --------------------------------------------------------
 ; Option 1) scheme loops: this works, but violates the principle that
-; everythig should be done in Atomese. The goal, as always, is to write
+; everything should be done in Atomese. The goal, as always, is to write
 ; all dataflows in Atomese, as graphs, and not in scheme/python/etc.
 
 (define (b-to-a-loop) (cog-execute! copy-one-b-to-a) (b-to-a-loop))
 (define (a-to-b-loop) (cog-execute! copy-one-a-to-b) (a-to-b-loop))
 
 ; Because we want to run both loops at the same time, they each need to
-; go into thier own threads.
+; go into their own threads.
 (call-with-new-thread b-to-a-loop)
 (call-with-new-thread a-to-b-loop)
 
@@ -86,7 +86,7 @@
 ; Define two infinite loops, via tail recursion. The PureExecLink
 ; executes everything that it wraps in the given AtomSpace. We do
 ; all the work in *this* Atomspace; this must be given explicitly,
-; as otherwise the excecution is done "purely", in a temporary
+; as otherwise the execution is done "purely", in a temporary
 ; scratch AtomSpace.
 (Define
 	(DefinedProcedure "b-to-a-tail")
@@ -97,7 +97,7 @@
 	(PureExec (cog-atomspace) copy-one-a-to-b (DefinedProcedure "a-to-b-tail")))
 
 ; If you mess with the above, you will discover that redefines are not
-; allowed. To work around that, extract the defintion, like so:
+; allowed. To work around that, extract the definition, like so:
 ;    (cog-extract-recursive! (DefinedProcedure "b-to-a-tail"))
 
 ; One infinite loop at a time can be run like so:
@@ -141,7 +141,7 @@ areader
 ;        (ReadStream axterm))
 ;
 ; so that everything streamed from A goes to B. But the above expression
-; is not valid: ReadStream is a Value, not an Atom. What's neeeded is an
+; is not valid: ReadStream is a Value, not an Atom. What's needed is an
 ; Atom that constructs ReadStreams. Well, there is one: the StreamNode.
 ; Sending it the *-stream-* message will return a ReadStream that wraps
 ; the *-read-* message on the same object. Anything inheriting from
@@ -152,7 +152,7 @@ areader
 ; It can be used in the same way as in the file reader stream demo:
 (define txt-stream-gen (ValueOf axterm (Predicate "*-stream-*")))
 
-; Note that each call blocks, until somthing is typed into terminal A.
+; Note that each call blocks, until something is typed into terminal A.
 (cog-execute! txt-stream-gen)
 (cog-execute! txt-stream-gen)
 (cog-execute! txt-stream-gen)

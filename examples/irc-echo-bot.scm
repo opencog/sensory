@@ -317,7 +317,7 @@
 				(Item "\n")))
 		(StreamValueOf chatnode (Predicate "*-stream-*"))))
 
-; The formater runs fine: Try it, one line at a time
+; The formatter runs fine: Try it, one line at a time
 (define one-at-a-time-logger
 	(SetValue irc-log-file (Predicate "*-write-*") format-for-logger))
 (cog-execute! one-at-a-time-logger)
