@@ -24,6 +24,7 @@
 #define _OPENCOG_FILE_WATCHER_H
 
 #include <string>
+#include <thread>
 #include <utility>
 #include <opencog/atoms/value/ContainerValue.h>
 
@@ -58,9 +59,11 @@ private:
 	int _watch_fd;
 	std::string _watch_path;
 	uint32_t _event_mask;
+	std::thread _watch_thread;
 
 	void cleanup_watch();
 	void cleanup_inotify();
+	void watch_thread_func(const ContainerValuePtr& cvp, int timeout_ms);
 
 public:
 	FileWatcher();
@@ -118,12 +121,30 @@ public:
 
 	/**
 	 * Poll for events and add filenames to container.
+	 * This is a lower-level API for custom event loops.
 	 *
 	 * @param cvp Container to add filenames to (as StringValues)
 	 * @param timeout_ms Timeout in milliseconds to wait for events
 	 * @return true if events were processed, false on timeout/error (signals exit)
 	 */
 	bool poll_and_add_events(const ContainerValuePtr& cvp, int timeout_ms);
+
+	/**
+	 * Start watching a path in a background thread.
+	 * Events will be automatically added to the container.
+	 *
+	 * @param path The file or directory path to watch
+	 * @param cvp Container to add filenames to (as StringValues)
+	 * @param timeout_ms Timeout in milliseconds for polling (default: 5000)
+	 * @throws RuntimeException if watch setup fails or already watching
+	 */
+	void start_watching(const std::string& path, const ContainerValuePtr& cvp, int timeout_ms = 5000);
+
+	/**
+	 * Stop the background watching thread.
+	 * Blocks until the thread has exited.
+	 */
+	void stop_watching();
 };
 
 /** @}*/

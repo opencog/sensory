@@ -45,6 +45,7 @@ FileWatcher::FileWatcher() :
 
 FileWatcher::~FileWatcher()
 {
+	stop_watching();
 	cleanup_watch();
 	cleanup_inotify();
 }
@@ -206,4 +207,39 @@ bool FileWatcher::poll_and_add_events(const ContainerValuePtr& cvp, int timeout_
 	}
 
 	return true; // Events processed, continue watching
+}
+
+void FileWatcher::watch_thread_func(const ContainerValuePtr& cvp, int timeout_ms)
+{
+	// Poll and add events in a loop until told to stop
+	while (poll_and_add_events(cvp, timeout_ms))
+	{
+		// Continue watching...
+	}
+	// When poll_and_add_events returns false, exit thread
+}
+
+void FileWatcher::start_watching(const std::string& path, const ContainerValuePtr& cvp, int timeout_ms)
+{
+	// Check if already watching
+	if (_watch_thread.joinable())
+		throw RuntimeException(TRACE_INFO,
+			"FileWatcher already watching - call stop_watching() first\n");
+
+	// Setup watch
+	add_watch(path);
+
+	// Start background thread
+	_watch_thread = std::thread(&FileWatcher::watch_thread_func, this, cvp, timeout_ms);
+}
+
+void FileWatcher::stop_watching()
+{
+	// Stop watch thread if running
+	if (_watch_thread.joinable())
+	{
+		cleanup_watch();     // This will cause poll_and_add_events to return false
+		cleanup_inotify();   // Close inotify fd
+		_watch_thread.join();
+	}
 }
