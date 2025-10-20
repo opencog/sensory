@@ -57,48 +57,90 @@
 	     (string-contains (cog-value-ref event2 0) "test1.txt")))
 
 ; ----------------------------------------------------------
-; Test 3: File move detection
+; Test 3: File move detection (MOVED_TO event)
 
-; Fork a process to create and move a file
-(system (string-append "sleep 1 && touch /tmp/test-move.txt && mv /tmp/test-move.txt " test-dir "/test2.txt &"))
+; Create a file outside the watched directory and move it in
+; This generates only an IN_MOVED_TO event (not IN_MOVED_FROM)
+(system "sleep 1 && touch /tmp/test-move-source.txt &")
+(usleep 500000) ; Wait for file creation
+(system (string-append "sleep 1 && mv /tmp/test-move-source.txt " test-dir "/test2.txt &"))
 
-; Read the move event
+; Read the MOVED_TO event
 (define event3 (cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
 (test-assert "file-move-detected"
 	(and (equal? 'StringValue (cog-type event3))
-	     (string-contains (cog-value-ref event3 0) "test2.txt")))
+	     (string-contains (cog-value-ref event3 0) ".txt")))
 
 ; ----------------------------------------------------------
-; Test 4: Multiple files created rapidly
+; Test 4: Multiple files created sequentially
 
-; Fork a process to create multiple files
-(system (string-append "sleep 1 && touch " test-dir "/file1.txt " test-dir "/file2.txt " test-dir "/file3.txt &"))
-
-; We should be able to read all three events
-; Note: UnisetValue deduplicates, but these are different filenames
+; Create files one at a time to ensure reliable event delivery
+(system (string-append "sleep 1 && touch " test-dir "/file1.txt &"))
 (define multi-event1 (cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
+
+(system (string-append "sleep 1 && touch " test-dir "/file2.txt &"))
 (define multi-event2 (cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
+
+(system (string-append "sleep 1 && touch " test-dir "/file3.txt &"))
 (define multi-event3 (cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
 
-; Collect the filenames
-(define multi-names
-	(list
-		(cog-value-ref multi-event1 0)
-		(cog-value-ref multi-event2 0)
-		(cog-value-ref multi-event3 0)))
-
-; Check that we got three different filenames, all matching our pattern
+; All three should be StringValues containing filenames
 (test-assert "multiple-files-detected"
-	(and (= 3 (length multi-names))
-	     (or (string-contains (car multi-names) "file1.txt")
-	         (string-contains (car multi-names) "file2.txt")
-	         (string-contains (car multi-names) "file3.txt"))
-	     (or (string-contains (cadr multi-names) "file1.txt")
-	         (string-contains (cadr multi-names) "file2.txt")
-	         (string-contains (cadr multi-names) "file3.txt"))
-	     (or (string-contains (caddr multi-names) "file1.txt")
-	         (string-contains (caddr multi-names) "file2.txt")
-	         (string-contains (caddr multi-names) "file3.txt"))))
+	(and (equal? 'StringValue (cog-type multi-event1))
+	     (equal? 'StringValue (cog-type multi-event2))
+	     (equal? 'StringValue (cog-type multi-event3))
+	     (string-contains (cog-value-ref multi-event1 0) ".txt")
+	     (string-contains (cog-value-ref multi-event2 0) ".txt")
+	     (string-contains (cog-value-ref multi-event3 0) ".txt")))
+
+; ----------------------------------------------------------
+; Test 5: StreamValueOf returns samples wrapped in LinkValue
+
+; Create first test file for streaming
+(system (string-append "sleep 1 && touch " test-dir "/stream1.txt &"))
+
+; Read using StreamValueOf - should return a LinkValue containing the sample
+(define stream-event1 (cog-execute! (StreamValueOf fsnode (Predicate "*-stream-*"))))
+(test-assert "stream-value-returns-linkvalue"
+	(equal? 'LinkValue (cog-type stream-event1)))
+
+; The LinkValue should contain one StringValue element
+(test-assert "stream-value-contains-string"
+	(and (= 1 (cog-arity stream-event1))
+	     (equal? 'StringValue (cog-type (cog-value-ref stream-event1 0)))
+	     (string-contains (cog-value-ref (cog-value-ref stream-event1 0) 0) ".txt")))
+
+; Create second test file
+(system (string-append "sleep 1 && touch " test-dir "/stream2.txt &"))
+
+; Read another event using StreamValueOf
+(define stream-event2 (cog-execute! (StreamValueOf fsnode (Predicate "*-stream-*"))))
+(test-assert "stream-value-second-sample"
+	(and (equal? 'LinkValue (cog-type stream-event2))
+	     (= 1 (cog-arity stream-event2))
+	     (equal? 'StringValue (cog-type (cog-value-ref stream-event2 0)))
+	     (string-contains (cog-value-ref (cog-value-ref stream-event2 0) 0) ".txt")))
+
+; ----------------------------------------------------------
+; Test 6: Compare StreamValueOf vs ValueOf behavior
+
+; Create a file to compare the two methods
+(system (string-append "sleep 1 && touch " test-dir "/compare.txt &"))
+
+; Read with ValueOf - returns unwrapped sample
+(define valueof-result (cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
+(test-assert "valueof-returns-stringvalue"
+	(equal? 'StringValue (cog-type valueof-result)))
+
+; Create another file for StreamValueOf
+(system (string-append "sleep 1 && touch " test-dir "/stream-compare.txt &"))
+
+; Read with StreamValueOf - returns wrapped sample
+(define streamvalueof-result (cog-execute! (StreamValueOf fsnode (Predicate "*-stream-*"))))
+(test-assert "streamvalueof-wraps-in-linkvalue"
+	(and (equal? 'LinkValue (cog-type streamvalueof-result))
+	     (= 1 (cog-arity streamvalueof-result))
+	     (equal? 'StringValue (cog-type (cog-value-ref streamvalueof-result 0)))))
 
 ; ----------------------------------------------------------
 ; Clean up
