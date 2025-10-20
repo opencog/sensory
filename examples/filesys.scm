@@ -65,4 +65,37 @@
 (run-fs-cmd (Item "ls"))
 
 ; --------------------------------------------------------
+; Directories can also be watched for file additions, removals and
+; changes. This interfaces works a bit differently than the above:
+; the changes are streamed, as they occur, rather than returned in
+; one blob. Here, the stream functions as an "event queue", holding
+; changes that have been made to files in the directory. The events
+; can be dequeued, one by one, or they can be streamed. (Recall that
+; "streaming" means that these events can be processed through some
+; pipeline written in Atomese.)
+;
+; To keep things distinct, the demo will use a different demo directory.
+
+(mkdir "/tmp/demo-watch")
+(define watchnode (FileSysNode "file:///tmp/demo-watch"))
+(cog-set-value! watchnode (Predicate "*-open-*") (Type 'StringValue))
+(cog-set-value! watchnode (Predicate "*-write-*") (StringValue "watch"))
+
+; The stream can be accessed two different ways: by reading events,
+; one at a time, from the event queue, or by streaming. The
+; one-at-a-time API is provided by the `*-read-*` message, which
+; dequeues one event and returns it. (It will block, if the queue
+; is empty.) The `*-stream-*` message returns a handle to the stream.
+; The stream can be sampled, one at a time, with the `StreamValueOf`
+; link.
+
+; Run the below. In another terminal, create, destroy or edit
+; some file in the `/tmp/demo-watch` directory.  Note that this
+; will hang, until there is some change. Repeated calls will return
+; those changes, one at a time.
+(cog-execute! (ValueOf watchnode (Predicate "*-read-*")))
+
+(cog-execute! (StreamValueOf watchnode (Predicate "*-stream-*")))
+
+; --------------------------------------------------------
 ; The End! That's All, Folks!
