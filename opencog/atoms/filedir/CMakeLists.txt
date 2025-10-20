@@ -4,6 +4,7 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR})
 
 ADD_LIBRARY (sensory-filedir SHARED
+	FileWatcher.cc
 	FileSysNode.cc
 	TextFileNode.cc
 )
@@ -25,6 +26,7 @@ INSTALL (TARGETS sensory-filedir EXPORT AtomSpaceTargets
 )
 
 INSTALL (FILES
+	FileWatcher.h
 	FileSysNode.h
 	TextFileNode.h
 	DESTINATION "include/opencog/atoms/sensory"

@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include <opencog/atoms/sensory/TextStreamNode.h>
+#include "FileWatcher.h"
 
 namespace opencog
 {
@@ -43,8 +44,7 @@ class TextFileNode
 protected:
 	mutable FILE* _fh;
 	mutable bool _tail_mode;
-	mutable int _inotify_fd;
-	mutable int _watch_fd;
+	mutable FileWatcher _watcher;
 
 	virtual void do_write(const std::string&);
 

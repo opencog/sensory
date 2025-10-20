@@ -34,7 +34,9 @@
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/value/FloatValue.h>
 #include <opencog/atoms/value/LinkValue.h>
+#include <opencog/atoms/value/QueueValue.h>
 #include <opencog/atoms/value/StringValue.h>
+#include <opencog/atoms/value/UnisetValue.h>
 #include <opencog/atoms/value/ValueFactory.h>
 
 #include <opencog/sensory/types/atom_types.h>
@@ -53,13 +55,15 @@ using namespace opencog;
 /// make this stream semi-usable in a pseudo "real-world" app.
 
 FileSysNode::FileSysNode(const std::string&& url)
-	: TextStreamNode(FILE_SYS_NODE, std::move(url))
+	: TextStreamNode(FILE_SYS_NODE, std::move(url)),
+	  _watcher()
 {
 	init(get_name());
 }
 
 FileSysNode::FileSysNode(Type t, const std::string&& url)
-	: TextStreamNode(t, std::move(url))
+	: TextStreamNode(t, std::move(url)),
+	  _watcher()
 {
 	if (not nameserver().isA(t, FILE_SYS_NODE))
 		throw RuntimeException(TRACE_INFO,
@@ -71,6 +75,7 @@ FileSysNode::FileSysNode(Type t, const std::string&& url)
 
 FileSysNode::~FileSysNode()
 {
+	_watcher.stop_watching();
 }
 
 /// Attempt to open the URL for reading and writing.
@@ -104,23 +109,26 @@ void FileSysNode::open(const ValuePtr& vp)
 {
 	TextStreamNode::open(vp);
 
-	if (_qvp)
-		_qvp->close();
+	if (_cvp)
+		_cvp->close();
 
-	_qvp = createQueueValue();
+	_cvp = createQueueValue();
 }
 
 bool FileSysNode::connected(void) const
 {
-	return nullptr != _qvp;
+	return nullptr != _cvp;
 }
 
 void FileSysNode::close(const ValuePtr& vp)
 {
-	if (_qvp)
+	// Stop watching
+	_watcher.stop_watching();
+
+	if (_cvp)
 	{
-		_qvp->close();
-		_qvp = nullptr;
+		_cvp->close();
+		_cvp = nullptr;
 	}
 }
 
@@ -262,11 +270,11 @@ static ValuePtr make_stream_dirent(struct dirent* dent,
 
 ValuePtr FileSysNode::read(void) const
 {
-	if (nullptr == _qvp)
+	if (nullptr == _cvp)
 		throw RuntimeException(TRACE_INFO,
 			"FileSysNode not open: %s\n", to_string().c_str());
 
-	return _qvp->remove();
+	return _cvp->remove();
 }
 
 // ==============================================================
@@ -306,7 +314,7 @@ static std::string get_arg_string(const ValuePtr& vp, int arg)
 
 void FileSysNode::write(const ValuePtr& vp)
 {
-	if (nullptr == _qvp)
+	if (nullptr == _cvp)
 		throw RuntimeException(TRACE_INFO,
 			"FileSysNode not open: %s\n", to_string().c_str());
 
@@ -317,7 +325,25 @@ void FileSysNode::write(const ValuePtr& vp)
 		ValueSeq vents;
 		vents.push_back(vp);
 		vents.emplace_back(string_to_type(_cwd));
-		_qvp->add(std::move(createLinkValue(std::move(vents))));
+		_cvp->add(std::move(createLinkValue(std::move(vents))));
+		return;
+	}
+
+	if (0 == cmd.compare("watch"))
+	{
+		// Close existing container
+		if (_cvp)
+			_cvp->close();
+
+		// Create UnisetValue
+		_cvp = createUnisetValue();
+
+		// Extract path from file:// URL
+		const std::string& path = _cwd.substr(_pfxlen);
+
+		// Start watching in background thread
+		_watcher.start_watching(path, _cvp);
+
 		return;
 	}
 
@@ -413,7 +439,7 @@ void FileSysNode::write(const ValuePtr& vp)
 				"Unknown command \"%s\"\n", cmd.c_str());
 		}
 		closedir(dir);
-		_qvp->add(std::move(createLinkValue(std::move(vents))));
+		_cvp->add(std::move(createLinkValue(std::move(vents))));
 		return;
 	}
 
@@ -435,7 +461,7 @@ void FileSysNode::write(const ValuePtr& vp)
 		ValueSeq vents;
 		vents.push_back(vp);
 		vents.emplace_back(createStringValue(_cwd));
-		_qvp->add(std::move(createLinkValue(std::move(vents))));
+		_cvp->add(std::move(createLinkValue(std::move(vents))));
 		return;
 	}
 
@@ -458,7 +484,7 @@ void FileSysNode::write(const ValuePtr& vp)
 			break;
 		}
 		closedir(dir);
-		_qvp->add(std::move(createLinkValue(std::move(vents))));
+		_cvp->add(std::move(createLinkValue(std::move(vents))));
 		return;
 	}
 
@@ -468,7 +494,7 @@ void FileSysNode::write(const ValuePtr& vp)
 		ValueSeq vents;
 		vents.push_back(vp);
 
-		_qvp->add(std::move(createLinkValue(std::move(vents))));
+		_cvp->add(std::move(createLinkValue(std::move(vents))));
 		return;
 	}
 

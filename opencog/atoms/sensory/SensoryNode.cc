@@ -26,6 +26,7 @@
 #include <opencog/atomspace/AtomSpace.h>
 #include <opencog/atoms/value/BoolValue.h>
 #include <opencog/atoms/value/StringValue.h>
+#include <opencog/atoms/value/VoidValue.h>
 #include "DispatchHash.h"
 #include "SensoryNode.h"
 

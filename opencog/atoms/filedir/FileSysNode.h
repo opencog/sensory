@@ -23,8 +23,9 @@
 #ifndef _OPENCOG_FILE_SYS_NODE_H
 #define _OPENCOG_FILE_SYS_NODE_H
 
-#include <opencog/atoms/value/QueueValue.h>
+#include <opencog/atoms/value/ContainerValue.h>
 #include <opencog/atoms/sensory/TextStreamNode.h>
+#include "FileWatcher.h"
 
 namespace opencog
 {
@@ -43,7 +44,10 @@ class FileSysNode
 protected:
 	void init(const std::string&);
 	mutable std::string _cwd;
-	mutable QueueValuePtr _qvp;
+	mutable ContainerValuePtr _cvp;
+
+	// Directory watching support
+	mutable FileWatcher _watcher;
 
 	virtual void open(const ValuePtr&);
 	virtual bool connected(void) const;
