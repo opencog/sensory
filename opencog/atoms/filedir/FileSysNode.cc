@@ -37,6 +37,7 @@
 #include <opencog/atoms/value/QueueValue.h>
 #include <opencog/atoms/value/StringValue.h>
 #include <opencog/atoms/value/UnisetValue.h>
+#include <opencog/atoms/value/VoidValue.h>
 #include <opencog/atoms/value/ValueFactory.h>
 
 #include <opencog/sensory/types/atom_types.h>
@@ -118,6 +119,12 @@ void FileSysNode::open(const ValuePtr& vp)
 bool FileSysNode::connected(void) const
 {
 	return nullptr != _cvp;
+}
+
+ValuePtr FileSysNode::stream(void) const
+{
+	if (not connected()) return createVoidValue();
+	return _cvp;
 }
 
 void FileSysNode::close(const ValuePtr& vp)
