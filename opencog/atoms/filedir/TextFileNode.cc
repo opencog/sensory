@@ -176,7 +176,11 @@ std::string TextFileNode::do_read(void) const
 
 		// Got data - return it
 		if (nullptr != rd)
+		{
+			// Resize string to actual length.
+			str.resize(strlen(buff));
 			return str;
+		}
 
 		// Hit EOF
 		if (!_tail_mode)
