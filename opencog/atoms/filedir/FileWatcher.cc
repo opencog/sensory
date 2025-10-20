@@ -66,7 +66,7 @@ void FileWatcher::cleanup_inotify()
 	}
 }
 
-void FileWatcher::add_watch(const std::string& path, uint32_t mask)
+void FileWatcher::add_watch(const std::string& path)
 {
 	// Remove any existing watch first
 	if (_watch_fd >= 0)
@@ -83,6 +83,9 @@ void FileWatcher::add_watch(const std::string& path, uint32_t mask)
 				"Failed to initialize inotify: %s\n", strerror(norr));
 		}
 	}
+
+	// Event mask for watching files and directories
+	uint32_t mask = IN_CREATE | IN_MODIFY | IN_MOVED_TO | IN_DELETE | IN_CLOSE_WRITE;
 
 	// Add watch on the path
 	_watch_fd = inotify_add_watch(_inotify_fd, path.c_str(), mask);

@@ -70,13 +70,12 @@ public:
 	FileWatcher& operator=(const FileWatcher&) = delete;
 
 	/**
-	 * Add a watch on the specified path with the given event mask.
+	 * Add a watch on the specified path.
 	 *
 	 * @param path The file or directory path to watch
-	 * @param mask The inotify event mask (e.g., IN_MODIFY | IN_CLOSE_WRITE)
 	 * @throws RuntimeException if inotify initialization or watch setup fails
 	 */
-	void add_watch(const std::string& path, uint32_t mask);
+	void add_watch(const std::string& path);
 
 	/**
 	 * Remove the current watch and cleanup.

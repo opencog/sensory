@@ -22,7 +22,6 @@
 
 #include <errno.h>
 #include <string.h> // for strerror()
-#include <sys/inotify.h>
 
 #include <opencog/util/exceptions.h>
 #include <opencog/util/oc_assert.h>
@@ -115,7 +114,7 @@ void TextFileNode::open(const ValuePtr& vty)
 	{
 		try
 		{
-			_watcher.add_watch(fpath, IN_MODIFY | IN_CLOSE_WRITE);
+			_watcher.add_watch(fpath);
 		}
 		catch (...)
 		{
