@@ -4,10 +4,8 @@
 ; Tests that FileSysNode can watch a directory using inotify, detecting
 ; file creation, modification, and move events.
 ;
-(use-modules (opencog))
-(use-modules (opencog exec))
+(use-modules (opencog) (opencog exec) (opencog sensory))
 (use-modules (opencog test-runner))
-(use-modules (opencog sensory))
 
 (opencog-test-runner)
 
