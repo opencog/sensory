@@ -72,6 +72,8 @@ void FileWatcher::cleanup_inotify()
 
 void FileWatcher::add_watch(const std::string& path)
 {
+	std::lock_guard<std::mutex> lock(_mtx);
+
 	// Remove any existing watch first
 	if (_watch_fd >= 0)
 		cleanup_watch();
@@ -108,16 +110,24 @@ void FileWatcher::add_watch(const std::string& path)
 
 void FileWatcher::remove_watch()
 {
+	std::lock_guard<std::mutex> lock(_mtx);
 	cleanup_watch();
 	cleanup_inotify();
 }
 
 std::pair<uint32_t, std::string> FileWatcher::wait_event()
 {
-	if (_inotify_fd < 0 || _watch_fd < 0)
+	int inotify_fd_copy;
+
+	// Check if watch is active (with lock)
 	{
-		throw RuntimeException(TRACE_INFO,
-			"FileWatcher::wait_event() called without active watch\n");
+		std::lock_guard<std::mutex> lock(_mtx);
+		if (_inotify_fd < 0 || _watch_fd < 0)
+		{
+			throw RuntimeException(TRACE_INFO,
+				"FileWatcher::wait_event() called without active watch\n");
+		}
+		inotify_fd_copy = _inotify_fd;
 	}
 
 	// Buffer for inotify events
@@ -126,13 +136,22 @@ std::pair<uint32_t, std::string> FileWatcher::wait_event()
 
 	while (true)
 	{
-		ssize_t len = ::read(_inotify_fd, event_buf, sizeof(event_buf));
+		// Read without holding lock (this blocks)
+		ssize_t len = ::read(inotify_fd_copy, event_buf, sizeof(event_buf));
 
 		if (len < 0)
 		{
 			// Interrupted by signal or would block (non-blocking mode) - retry
 			if (errno == EINTR || errno == EAGAIN)
 				continue;
+
+			// If fd was closed from another thread (during shutdown), return gracefully
+			// This happens when another thread calls remove_watch() while we're blocked
+			if (errno == EBADF || errno == EINVAL)
+			{
+				// Return a sentinel value indicating watch was removed
+				return std::make_pair(0, std::string());
+			}
 
 			// Real error
 			int norr = errno;
@@ -154,12 +173,19 @@ std::pair<uint32_t, std::string> FileWatcher::wait_event()
 
 bool FileWatcher::poll_and_add_events(const ContainerValuePtr& cvp, int timeout_ms)
 {
-	if (_inotify_fd < 0 || _watch_fd < 0)
-		return false; // Not watching, signal exit
+	int inotify_fd_copy;
 
-	// Poll for events
+	// Check if watch is active (with lock)
+	{
+		std::lock_guard<std::mutex> lock(_mtx);
+		if (_inotify_fd < 0 || _watch_fd < 0)
+			return false; // Not watching, signal exit
+		inotify_fd_copy = _inotify_fd;
+	}
+
+	// Poll for events (without holding lock)
 	struct pollfd pfd;
-	pfd.fd = _inotify_fd;
+	pfd.fd = inotify_fd_copy;
 	pfd.events = POLLIN;
 
 	int ret = poll(&pfd, 1, timeout_ms);
@@ -173,9 +199,9 @@ bool FileWatcher::poll_and_add_events(const ContainerValuePtr& cvp, int timeout_
 	if (ret == 0)
 		return true; // Timeout, continue watching
 
-	// Read inotify events
+	// Read inotify events (without holding lock)
 	char buf[4096] __attribute__((aligned(__alignof__(struct inotify_event))));
-	ssize_t len = read(_inotify_fd, buf, sizeof(buf));
+	ssize_t len = read(inotify_fd_copy, buf, sizeof(buf));
 	if (len < 0)
 	{
 		if (errno == EAGAIN || errno == EINTR)
@@ -221,25 +247,40 @@ void FileWatcher::watch_thread_func(const ContainerValuePtr& cvp, int timeout_ms
 
 void FileWatcher::start_watching(const std::string& path, const ContainerValuePtr& cvp, int timeout_ms)
 {
-	// Check if already watching
-	if (_watch_thread.joinable())
-		throw RuntimeException(TRACE_INFO,
-			"FileWatcher already watching - call stop_watching() first\n");
+	{
+		std::lock_guard<std::mutex> lock(_mtx);
+		// Check if already watching
+		if (_watch_thread.joinable())
+			throw RuntimeException(TRACE_INFO,
+				"FileWatcher already watching - call stop_watching() first\n");
+	}
 
-	// Setup watch
+	// Setup watch (add_watch has its own lock)
 	add_watch(path);
 
 	// Start background thread
-	_watch_thread = std::thread(&FileWatcher::watch_thread_func, this, cvp, timeout_ms);
+	{
+		std::lock_guard<std::mutex> lock(_mtx);
+		_watch_thread = std::thread(&FileWatcher::watch_thread_func, this, cvp, timeout_ms);
+	}
 }
 
 void FileWatcher::stop_watching()
 {
-	// Stop watch thread if running
-	if (_watch_thread.joinable())
+	bool should_join = false;
+
+	// Check if thread is running and cleanup (with lock)
 	{
-		cleanup_watch();     // This will cause poll_and_add_events to return false
-		cleanup_inotify();   // Close inotify fd
-		_watch_thread.join();
+		std::lock_guard<std::mutex> lock(_mtx);
+		if (_watch_thread.joinable())
+		{
+			should_join = true;
+			cleanup_watch();     // This will cause poll_and_add_events to return false
+			cleanup_inotify();   // Close inotify fd
+		}
 	}
+
+	// Join thread without holding lock (join can block)
+	if (should_join)
+		_watch_thread.join();
 }

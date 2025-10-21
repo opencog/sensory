@@ -24,6 +24,7 @@
 #define _OPENCOG_TEXT_FILE_NODE_H
 
 #include <stdio.h>
+#include <mutex>
 #include <opencog/atoms/sensory/TextStreamNode.h>
 #include "FileWatcher.h"
 
@@ -42,6 +43,7 @@ class TextFileNode
 	: public TextStreamNode
 {
 protected:
+	mutable std::mutex _mtx;  // Protects _fh and coordinates close/read
 	mutable FILE* _fh;
 	mutable bool _tail_mode;
 	mutable FileWatcher _watcher;
