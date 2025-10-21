@@ -127,6 +127,7 @@ void TextFileNode::open(const ValuePtr& vty)
 
 void TextFileNode::close(const ValuePtr&)
 {
+	std::lock_guard<std::mutex> lock(_mtx);
 	_watcher.remove_watch();
 	if (_fh)
 		fclose(_fh);
@@ -181,8 +182,11 @@ std::string TextFileNode::do_read(void) const
 {
 	static const std::string empty_string;
 
-	// Not open. Can't do anything.
-	if (nullptr == _fh) return empty_string;
+	// Check if file is open (with lock)
+	{
+		std::lock_guard<std::mutex> lock(_mtx);
+		if (nullptr == _fh) return empty_string;
+	}
 
 #define BUFSZ 4096
 	std::string str(BUFSZ, 0);
@@ -190,7 +194,22 @@ std::string TextFileNode::do_read(void) const
 
 	while (true)
 	{
-		char* rd = fgets(buff, BUFSZ, _fh);
+		FILE* fh_copy;
+		bool tail_mode_copy;
+
+		// Lock to access _fh and read
+		{
+			std::lock_guard<std::mutex> lock(_mtx);
+
+			// Check if closed while we were waiting
+			if (nullptr == _fh) return empty_string;
+
+			fh_copy = _fh;
+			tail_mode_copy = _tail_mode;
+		}
+
+		// Read without holding lock (fgets is thread-safe for different FILEs)
+		char* rd = fgets(buff, BUFSZ, fh_copy);
 
 		// Got data - return it
 		if (nullptr != rd)
@@ -201,29 +220,45 @@ std::string TextFileNode::do_read(void) const
 		}
 
 		// Hit EOF
-		if (!_tail_mode)
+		if (!tail_mode_copy)
 		{
 			// Normal mode: close and end stream
-			fclose(_fh);
-			_fh = nullptr;
+			std::lock_guard<std::mutex> lock(_mtx);
+			if (_fh)  // Check again in case another thread closed it
+			{
+				fclose(_fh);
+				_fh = nullptr;
+			}
 			return empty_string;
 		}
 
 		// Tail mode: wait for file modification
-		clearerr(_fh);  // Clear EOF indicator
+		clearerr(fh_copy);  // Clear EOF indicator
 
-		// Wait for inotify event
+		// Wait for inotify event (WITHOUT holding lock - this blocks!)
+		std::pair<uint32_t, std::string> event;
 		try
 		{
-			_watcher.wait_event();
+			event = _watcher.wait_event();
 		}
 		catch (...)
 		{
-			// Error - close and return
-			fclose(_fh);
-			_fh = nullptr;
+			// Error - try to close and return
+			std::lock_guard<std::mutex> lock(_mtx);
+			if (_fh)
+			{
+				fclose(_fh);
+				_fh = nullptr;
+			}
 			_watcher.remove_watch();
 			throw;
+		}
+
+		// Check if watch was removed (shutdown signal from another thread)
+		if (event.first == 0 && event.second.empty())
+		{
+			// Watch was closed - return empty to unblock
+			return empty_string;
 		}
 
 		// File was modified - loop back and try reading again

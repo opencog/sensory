@@ -25,6 +25,7 @@
 
 #include <string>
 #include <thread>
+#include <mutex>
 #include <utility>
 #include <opencog/atoms/value/ContainerValue.h>
 
@@ -55,6 +56,7 @@ namespace opencog
 class FileWatcher
 {
 private:
+	mutable std::mutex _mtx;  // Protects all internal state
 	int _inotify_fd;
 	int _watch_fd;
 	std::string _watch_path;
