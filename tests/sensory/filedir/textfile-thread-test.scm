@@ -81,7 +81,7 @@
 (cog-execute! (ValueOf file-node-2 (Predicate "*-read-*")))
 (cog-execute! (ValueOf file-node-2 (Predicate "*-read-*")))
 
-; Create a threaded execution:
+; Create pure Atomese threaded execution:
 ; Thread 1: Try to read (will block)
 ; Thread 2: Sleep then close
 (define threaded-test
@@ -89,12 +89,12 @@
 		; Thread 1: Reader - will block waiting for data
 		(ValueOf file-node-2 (Predicate "*-read-*"))
 
-		; Thread 2: Closer - sleeps then closes
+		; Thread 2: Closer - sleeps then closes (pure Atomese)
 		(SequentialAnd
 			; Sleep to let reader block first
 			(Sleep (Number 0.5))
-			; Then close to unblock reader
-			(SetValue file-node-2 (Predicate "*-close-*") (VoidValue)))))
+			; Then close to unblock reader (using Concept as close signal)
+			(SetValue file-node-2 (Predicate "*-close-*") (Concept "close-signal")))))
 
 ; Execute the threaded test
 ; This should complete without hanging
@@ -111,11 +111,10 @@
 (test-assert "atomese-thread-completed"
 	(or threaded-result threaded-exception))
 
-; If we got a result, it should be a LinkValue with two results
-; (one from reader thread, one from closer thread)
+; If we got a result, it should be a QueueValue with results from both threads
 (test-assert "atomese-thread-result-structure"
 	(or (and threaded-result
-	         (equal? 'LinkValue (cog-type threaded-result)))
+	         (equal? 'QueueValue (cog-type threaded-result)))
 	    threaded-exception)) ; Exception is acceptable
 
 ; ----------------------------------------------------------
