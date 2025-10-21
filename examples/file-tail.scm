@@ -23,8 +23,8 @@
 ; message to the file object.
 (cog-execute! (ValueOf file-node (Predicate "*-read-*")))
 
-; Do it again and again. Keep doing it untile one of these hangs.
-; When it hangs, it will wait until more text is appended to the file.
+; Do it again and again. Keep doing it untile one of these blocks.
+; When it blocks, it will wait until more text is appended to the file.
 ; Thus: `echo "gaba gaba hey" >> /tmp/tail.txt` will unstick it.
 (cog-execute! (ValueOf file-node (Predicate "*-read-*")))
 (cog-execute! (ValueOf file-node (Predicate "*-read-*")))
@@ -32,40 +32,38 @@
 (cog-execute! (ValueOf file-node (Predicate "*-read-*")))
 
 ; --------------------------------------------------------
-; The *-stream-* message will return a handle to the QueueValue
-; that is accumulating the append events. These can be dequeued one
-; at a time, again hanging when there's nothing there.
+; The *-stream-* message will return a handle to a StreamValue
+; that will return appended lines, one by one. Referencing the
+; stream will dequeue them one at a time, again blocking when
+; there's nothing there.
 
 (define txt-stream
 	(cog-execute! (ValueOf file-node (Predicate "*-stream-*"))))
 
 ; Repeated references to the stream will return single lines from
-; the file.
+; the file. Remember to `echo First rule is ... >> /tmp/tail.txt`
 txt-stream
 txt-stream
 txt-stream
-
-; --------------------------------------------------------
-; Demo: Perform indirect streaming. The text-stream will be placed
-; as a Value on some Atom, where it can be accessed and processed.
-;
-; Anchor the text stream at "some place", where it can be found.
-(cog-execute!
-	(SetValue (Concept "foo") (Predicate "some place")
-		(ValueOf file-node (Predicate "*-stream-*"))))
-
-; The stream can be accessed by just fetching it from "some place",
-; the location it is anchored at.
-(define txt-stream-gen
-	(ValueOf (Concept "foo") (Predicate "some place")))
 
 ; --------------------------------------------------------
 ; Demo: Perform processing on the stream. For each line of the
 ; input file, apply a rule to rewrite it into a different form.
+;
+; To make the stream processor "realistic", the text-dtream source
+; needs to placed somewhere, where it can be found.  Notice a trick
+; used here: the `DontExec` link shelters the `ValueOf`, and prevents
+; it from being executed while the SetValue is running.
+(cog-execute!
+	(SetValue (Concept "foo") (Predicate "some place")
+		(DontExec (ValueOf file-node (Predicate "*-stream-*")))))
+
+; Access to the stream.
+(define txt-stream-gen
+	(ValueOf (Concept "foo") (Predicate "some place")))
 
 ; This rule just makes two copies of each input line, interleaving
-; it with other text. It is built with the same ValueOf promise, as
-; above.
+; it with other text. The `txt-stream-gen` is the source of input.
 (define rule-applier
 	(Filter
 		(Rule
@@ -83,7 +81,10 @@ txt-stream
 ; Run the rule, once.
 (cog-execute! rule-applier)
 
-; Repeat it again, over and over, till the end-of-file.
+; Repeat it again, over and over. This will block, unless the
+; file is appended to. This will continue, until the text stream
+; is sent the `*-close-*` message. If blocked, then the `*-close-*`
+; has to be sent from another thread.
 (cog-execute! rule-applier)
 (cog-execute! rule-applier)
 (cog-execute! rule-applier)
