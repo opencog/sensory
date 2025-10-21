@@ -88,9 +88,13 @@ txt-stream
 ; as a Value on some Atom, where it can be accessed and processed.
 ;
 ; Anchor the text stream at "some place", where it can be found.
+; The DontExecLink allows the stream to be installed at "some place",
+; without touching the stream during installation. Without it, the
+; ValueOf would have been executed, and the file pointer would have
+; been off by one.
 (cog-execute!
 	(SetValue (Concept "foo") (Predicate "some place")
-		(ValueOf file-node (Predicate "*-stream-*"))))
+		(DontExec (ValueOf file-node (Predicate "*-stream-*")))))
 
 ; The stream can be accessed by just fetching it from "some place",
 ; the location it is anchored at.
