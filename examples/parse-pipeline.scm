@@ -34,13 +34,16 @@
 (define txt-stream-gen
 	(ValueOf (Concept "foo") (Predicate "some place")))
 
+; A rule to parse text using the (old) LG English parser.
+(define parser
+	(Filter
+		(Rule
+			(TypedVariable (Variable "$x") (Type 'StringValue))
+			(Variable "$x")
+			(LgParseBonds (Variable "$x") (LgDict "en") (Number 1)))
+		txt-stream-gen))
 
-; Parse the file contents, one line at a time. The "any" dict generates
-; random word-pairs. The (Number 1) asks for only one parse per
-; sentence.
-(cog-execute! (LgParseBonds txt-stream-gen (LgDict "any") (Number 1)))
-(cog-execute! (LgParseBonds txt-stream-gen (LgDict "any") (Number 1)))
-(cog-execute! (LgParseBonds txt-stream-gen (LgDict "any") (Number 1)))
+(cog-execute! parser)
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
