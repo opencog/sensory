@@ -46,11 +46,56 @@
 		(Rule
 			(TypedVariable (Variable "$x") (Type 'StringValue))
 			(Variable "$x")
-			(LgParseBonds (Variable "$x") (LgDict "en") (Number 1)))
+			(LgParseBonds (Variable "$x") (LgDict "en") (Number 4)))
 		txt-stream))
 
 ; Sniff test. Does it work?
 ; (cog-execute! parser)
+
+; Create the a(cog-execute! bonder)nchor for the parsed text.
+(cog-execute!
+	(SetValue (Anchor "parse pipe") (Predicate "parsed text")
+		(DontExec parser)))
+
+; Anchor reference
+(define parse-stream
+	(ValueOf (Anchor "parse pipe") (Predicate "parsed text")))
+
+; Sniff test. Does it work?
+; (cog-execute! parse-stream)
+
+; --------------------------------------------------------
+; A rule that unto 
+
+(define linker
+	(Filter
+		(Rule
+			(TypedVariable (Glob "$linkages") (Type 'LinkValue))
+			(LinkSignature (Type 'LinkValue)
+				(Glob "$linkages"))
+			(Glob "$linakges"))
+		parse-stream))
+
+; Sniff test. Does it work?
+; (cog-execute! linker)
+
+; --------------------------------------------------------
+; A rule to extract just the bonds from the stream
+
+(define bonder
+	(Filter
+		(Rule
+			(VariableList
+				(TypedVariable (Variable "$words") (Type 'LinkValue))
+				(TypedVariable (Variable "$bonds") (Type 'LinkValue)))
+			(LinkSignature (Type 'LinkValue)
+				(Variable "$words")
+				(Variable "$bonds"))
+			(Variable "$bonds"))
+		parse-stream))
+
+; Sniff test. Does it work?
+; (cog-execute! bonder)
 
 ; Create the anchor for the parsed text.
 (cog-execute!
@@ -59,21 +104,7 @@
 
 ; Anchor reference
 (define parse-stream
-	(ValueOf (Anchor "parse pipe") (Predicate "text source")))
-
-; Sniff test. Does it work?
-; (cog-execute! parse-stream)
-
-; --------------------------------------------------------
-; A rule to extract bonds
-
-(define bonder
-	(Filter
-		(Rule
-			(TypedVariable (Variable "$x") (Type 'StringValue))
-			(Variable "$x")
-			(LgParseBonds (Variable "$x") (LgDict "en") (Number 1)))
-		txt-stream))
+	(ValueOf (Anchor "parse pipe") (Predicate "parsed text")))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
