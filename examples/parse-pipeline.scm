@@ -27,23 +27,53 @@
 
 ; Create initial source anchor.
 (cog-execute!
-	(SetValue (Concept "foo") (Predicate "some place")
+	(SetValue (Anchor "parse pipe") (Predicate "text source")
 		(DontExec (ValueOf file-node (Predicate "*-stream-*")))))
 
 ; Anchor reference
-(define txt-stream-gen
-	(ValueOf (Concept "foo") (Predicate "some place")))
+(define txt-stream
+	(ValueOf (Anchor "parse pipe") (Predicate "text source")))
 
+; Sniff test: does it work?
+; (cog-execute! txt-stream)
+
+; --------------------------------------------------------
 ; A rule to parse text using the (old) LG English parser.
+; Output is a pair of LinkValues: one containing the words
+; in the sentence, and another with the links.
 (define parser
 	(Filter
 		(Rule
 			(TypedVariable (Variable "$x") (Type 'StringValue))
 			(Variable "$x")
 			(LgParseBonds (Variable "$x") (LgDict "en") (Number 1)))
-		txt-stream-gen))
+		txt-stream))
 
-(cog-execute! parser)
+; Sniff test. Does it work?
+; (cog-execute! parser)
+
+; Create the anchor for the parsed text.
+(cog-execute!
+	(SetValue (Anchor "parse pipe") (Predicate "parsed text")
+		(DontExec parser)))
+
+; Anchor reference
+(define parse-stream
+	(ValueOf (Anchor "parse pipe") (Predicate "text source")))
+
+; Sniff test. Does it work?
+; (cog-execute! parse-stream)
+
+; --------------------------------------------------------
+; A rule to extract bonds
+
+(define bonder
+	(Filter
+		(Rule
+			(TypedVariable (Variable "$x") (Type 'StringValue))
+			(Variable "$x")
+			(LgParseBonds (Variable "$x") (LgDict "en") (Number 1)))
+		txt-stream))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
