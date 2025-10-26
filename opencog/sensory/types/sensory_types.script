@@ -3,8 +3,9 @@
 // a collection of types suitable for defining sensory interfaces
 // to the external world.
 
-// Wrap objects with one-at-a-time *-read-* methods, giving them
-// a stream API.
+// Wrap objects that have one-at-a-time *-read-* methods, giving them
+// a stream API. Note that StreamValues are, by definition, LinkValues,
+// and so the contents of the LinkValue itself are changing.
 READ_STREAM <- STREAM_VALUE,HANDLE_ARG
 
 // ---------------------------------------------
@@ -16,7 +17,7 @@ SENSORY_NODE <- OBJECT_NODE
 // Utility implementing some common tools for writing.
 STREAM_NODE <- SENSORY_NODE
 
-// Further specialization, for test (utf-8) strings
+// Further specialization, for text (utf-8) strings
 TEXT_STREAM_NODE <- STREAM_NODE
 
 // Read text file, one line at a time. Write (append) to text file.
