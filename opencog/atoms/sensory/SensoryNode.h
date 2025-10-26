@@ -37,6 +37,7 @@ namespace opencog
 class SensoryNode : public Node
 {
 	friend class ReadStream;
+	friend class TextStream;
 
 protected:
 	SensoryNode(Type, const std::string&&);
