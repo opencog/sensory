@@ -208,13 +208,21 @@ std::string TextFileNode::do_read(void) const
 			tail_mode_copy = _tail_mode;
 		}
 
-		// Read without holding lock (fgets is thread-safe for different FILEs)
+		// No lock; fgets is thread-safe for different files.
+		// XXX FIXME Someday we should do something about lines
+		// that are longer than BUFSZ, but not today.
 		char* rd = fgets(buff, BUFSZ, fh_copy);
 
-		// Got data - return it
 		if (nullptr != rd)
 		{
-			// Resize string to actual length.
+			// We used str.data() as buff to avoid copying ...
+			// but now the length is wrong. So resize.
+			// String includes the terminating newline.
+			// If we manually trimmed the newline, and the file
+			// had an empty line in it, we'd return and empty
+			// string, which fails, because we use empty string
+			// as EOF. So this needs fixing. I guess!?
+			// Also what about CRLF? I dunno. Ignore, I guess.
 			str.resize(strlen(buff));
 			return str;
 		}
