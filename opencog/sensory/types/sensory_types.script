@@ -8,6 +8,9 @@
 // and so the contents of the LinkValue itself are changing.
 READ_STREAM <- STREAM_VALUE,HANDLE_ARG
 
+// The StringValue provides a more suitable API for text.
+TEXT_STREAM <- STRING_VALUE,HANDLE_ARG
+
 // ---------------------------------------------
 // Values above, Atoms below.
 
