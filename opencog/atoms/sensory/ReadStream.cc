@@ -64,6 +64,19 @@ void ReadStream::update() const
 }
 
 // ==============================================================
+// XXX TODO. Someday, we need a working to_short_string() that
+// can be used by RocksStorage to ... store this thing. I guess.
+
+std::string ReadStream::to_string(const std::string& indent) const
+{
+   std::string rv = indent + "(" + nameserver().getTypeName(_type);
+   rv += "\n" + _snp->to_short_string(indent + "   ") + ")\n";
+   rv += indent + "; Currently:\n";
+   rv += LinkValue::to_string(indent + "; ", LINK_VALUE);
+   return rv;
+}
+
+// ==============================================================
 
 // Adds factory when library is loaded.
 DEFINE_VALUE_FACTORY(READ_STREAM, createReadStream, Handle)

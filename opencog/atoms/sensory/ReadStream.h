@@ -52,6 +52,8 @@ protected:
 public:
 	ReadStream(const Handle&);
 	virtual ~ReadStream();
+
+	virtual std::string to_string(const std::string& indent = "") const;
 };
 
 VALUE_PTR_DECL(ReadStream)
