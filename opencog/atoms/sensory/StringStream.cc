@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/TextStream.cc
+ * opencog/atoms/sensory/StringStream.cc
  *
  * Copyright (C) 2025 BrainyBlaze Dynamics, Inc.
  * All Rights Reserved
@@ -27,12 +27,12 @@
 #include <opencog/atoms/value/ValueFactory.h>
 
 #include <opencog/sensory/types/atom_types.h>
-#include "TextStream.h"
+#include "StringStream.h"
 
 using namespace opencog;
 
-TextStream::TextStream(const Handle& senso)
-	: StringValue(TEXT_STREAM, std::vector<std::string>())
+StringStream::StringStream(const Handle& senso)
+	: StringValue(STRING_STREAM, std::vector<std::string>())
 {
 	if (not senso->is_type(SENSORY_NODE))
 		throw RuntimeException(TRACE_INFO,
@@ -41,7 +41,7 @@ TextStream::TextStream(const Handle& senso)
 	_snp = SensoryNodeCast(senso);
 }
 
-TextStream::~TextStream()
+StringStream::~StringStream()
 {
 }
 
@@ -54,7 +54,7 @@ TextStream::~TextStream()
 // This accesses the SensoryNode private methods directly; the
 // alternative would be to call the public getValue() method, but
 // that does nothing except add overhead.
-void TextStream::update() const
+void StringStream::update() const
 {
 	if (not _snp->connected())
 	{
@@ -95,7 +95,7 @@ void TextStream::update() const
 // XXX TODO. Someday, we need a working to_short_string() that
 // can be used by RocksStorage to ... store this thing. I guess.
 
-std::string TextStream::to_string(const std::string& indent) const
+std::string StringStream::to_string(const std::string& indent) const
 {
    std::string rv = indent + "(" + nameserver().getTypeName(_type);
    rv += "\n" + _snp->to_short_string(indent + "   ") + ")\n";
@@ -107,6 +107,6 @@ std::string TextStream::to_string(const std::string& indent) const
 // ==============================================================
 
 // Adds factory when library is loaded.
-DEFINE_VALUE_FACTORY(TEXT_STREAM, createTextStream, Handle)
+DEFINE_VALUE_FACTORY(STRING_STREAM, createStringStream, Handle)
 
 // ====================================================================

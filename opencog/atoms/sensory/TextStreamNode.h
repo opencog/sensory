@@ -61,7 +61,6 @@ protected:
 	// Derived classes need to implement a handler.
 	virtual void do_write(const std::string&) = 0;
 
-	// Override to return TextStream instead of ReadStream
 	virtual ValuePtr stream(void) const;
 
 public:

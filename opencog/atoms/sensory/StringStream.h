@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/TextStream.h
+ * opencog/atoms/sensory/StringStream.h
  *
  * Copyright (C) 2024 Linas Vepstas
  * Copyright (C) 2025 BrainyBlaze Dynamics Inc.
@@ -21,8 +21,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _OPENCOG_TEXT_STREAM_H
-#define _OPENCOG_TEXT_STREAM_H
+#ifndef _OPENCOG_STRING_STREAM_H
+#define _OPENCOG_STRING_STREAM_H
 
 #include <stdio.h>
 #include <opencog/atoms/sensory/SensoryNode.h>
@@ -36,7 +36,7 @@ namespace opencog
  */
 
 /**
- * TextStream wraps ObjectNodes that provide one-at-a-time *-read-*
+ * StringStream wraps ObjectNodes that provide one-at-a-time *-read-*
  * methods, and provides a stream of string values obtained by reading,
  * on demand.
  *
@@ -45,7 +45,7 @@ namespace opencog
  *
  * This is experimental.
  */
-class TextStream
+class StringStream
 	: public StringValue
 {
 protected:
@@ -53,16 +53,16 @@ protected:
 	virtual void update() const;
 
 public:
-	TextStream(const Handle&);
-	virtual ~TextStream();
+	StringStream(const Handle&);
+	virtual ~StringStream();
 
 	virtual std::string to_string(const std::string& indent = "") const;
 };
 
-VALUE_PTR_DECL(TextStream)
-CREATE_VALUE_DECL(TextStream)
+VALUE_PTR_DECL(StringStream)
+CREATE_VALUE_DECL(StringStream)
 
 /** @}*/
 } // namespace opencog
 
-#endif // _OPENCOG_TEXT_STREAM_H
+#endif // _OPENCOG_STRING_STREAM_H
