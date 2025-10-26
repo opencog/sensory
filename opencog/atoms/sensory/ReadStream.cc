@@ -71,7 +71,7 @@ std::string ReadStream::to_string(const std::string& indent) const
 {
    std::string rv = indent + "(" + nameserver().getTypeName(_type);
    rv += "\n" + _snp->to_short_string(indent + "   ") + ")\n";
-   rv += indent + "; Currently:\n";
+   rv += indent + "; Current sample:\n";
    rv += LinkValue::to_string(indent + "; ", LINK_VALUE);
    return rv;
 }
