@@ -22,8 +22,9 @@
 ; Set up the text source.
 
 (define file-node (TextFile "file:///tmp/demo.txt"))
-(cog-execute!
+(define opener
 	(SetValue file-node (Predicate "*-open-*") (Type 'StringValue)))
+(cog-execute! opener)
 
 ; Create initial source anchor.
 (cog-execute!
@@ -52,7 +53,7 @@
 ; Sniff test. Does it work?
 ; (cog-execute! parser)
 
-; Create the a(cog-execute! bonder)nchor for the parsed text.
+; Create the anchor for the parsed text.
 (cog-execute!
 	(SetValue (Anchor "parse pipe") (Predicate "parsed text")
 		(DontExec parser)))
@@ -65,19 +66,65 @@
 ; (cog-execute! parse-stream)
 
 ; --------------------------------------------------------
-; A rule that unto 
+; XXXX Everything below here is broken junk XXXX
+; A rule that unto
+
+(define fs (FlatStream parse-stream))
+(cog-set-value! (Anchor "parse pipe") (Predicate "linkage stream") fs)
 
 (define linker
-	(Filter
-		(Rule
-			(TypedVariable (Glob "$linkages") (Type 'LinkValue))
-			(LinkSignature (Type 'LinkValue)
-				(Glob "$linkages"))
-			(Glob "$linakges"))
-		parse-stream))
+	(PromiseLink (Type 'FlatStream)
+	parse-stream))
+
+; Create the anchor for the lingae text.
+(cog-execute!
+	(SetValue (Anchor "parse pipe") (Predicate "linkage stream")
+		linker))
+
+; Anchor reference
+(define linkage-stream
+	(ValueOf (Anchor "parse pipe") (Predicate "linkage stream")))
+
+; Sniff test. Does it work?
+; (cog-execute! linkage-stream)
+
+(cog-execute! (CollectionOf (Type 'List) linkage-stream))
+
+(define relinker  (cog-execute! linker))
+
+(cog-value-ref fs 0)
+
+(use-modules (opencog) (opencog exec))
+(define syn
+	(LinkValue
+		(LinkValue
+			(FloatValue 1 2 3)
+			(FloatValue 4 5 6))
+
+		(LinkValue
+			(FloatValue 7 8 9)
+			(FloatValue 10 11 12))))
+
+(cog-set-value! (Concept "foo") (Predicate "bar") syn)
+
+(define fs (FlatStream (ValueOf (Concept "foo") (Predicate "bar"))))
+(cog-value-ref fs 0)
+
 
 ; Sniff test. Does it work?
 ; (cog-execute! linker)
+
+; Create the anchor for the parsed text.
+(cog-execute!
+	(SetValue (Anchor "parse pipe") (Predicate "linkages")
+		(DontExec linker)))
+
+; Anchor reference
+(define linkage-stream
+	(ValueOf (Anchor "parse pipe") (Predicate "linkages")))
+
+; Sniff test. Does it work?
+; (cog-execute! linkage-stream)
 
 ; --------------------------------------------------------
 ; A rule to extract just the bonds from the stream
@@ -92,7 +139,7 @@
 				(Variable "$words")
 				(Variable "$bonds"))
 			(Variable "$bonds"))
-		parse-stream))
+		linkage-stream))
 
 ; Sniff test. Does it work?
 ; (cog-execute! bonder)
