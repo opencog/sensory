@@ -31,6 +31,7 @@
 #include <opencog/atoms/value/VoidValue.h>
 
 #include <opencog/sensory/types/atom_types.h>
+#include "StringStream.h"
 #include "TextStreamNode.h"
 
 using namespace opencog;
@@ -107,6 +108,13 @@ void TextStreamNode::do_write(const ValuePtr& content)
 
 	throw RuntimeException(TRACE_INFO,
 		"Expecting strings, got %s\n", content->to_string().c_str());
+}
+
+// ==============================================================
+
+ValuePtr TextStreamNode::stream(void) const
+{
+	return createStringStream(get_handle());
 }
 
 // ==============================================================

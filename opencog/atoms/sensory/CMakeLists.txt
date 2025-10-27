@@ -7,6 +7,7 @@ ADD_LIBRARY (sensory SHARED
 	ReadStream.cc
 	SensoryNode.cc
 	StreamNode.cc
+	StringStream.cc
 	TextStreamNode.cc
 )
 
@@ -27,6 +28,7 @@ INSTALL (FILES
 	ReadStream.h
 	SensoryNode.h
 	StreamNode.h
+	StringStream.h
 	TextStreamNode.h
 	DESTINATION "include/opencog/atoms/sensory"
 )

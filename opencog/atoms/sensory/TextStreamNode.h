@@ -61,6 +61,8 @@ protected:
 	// Derived classes need to implement a handler.
 	virtual void do_write(const std::string&) = 0;
 
+	virtual ValuePtr stream(void) const;
+
 public:
 	virtual ~TextStreamNode();
 };
