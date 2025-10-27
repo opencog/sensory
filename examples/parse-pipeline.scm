@@ -90,7 +90,7 @@
 ; Just like the above. Create the anchor for the linkages.
 (cog-execute!
 	(SetValue (Anchor "parse pipe") (Predicate "linkage stream")
-		(DontExec linker)))
+		linker))
 
 ; Just as before: the Anchor reference to the stream of linkages.
 (define linkage-stream
