@@ -12,6 +12,19 @@
 ; generates fairly complicated data representations that are
 ; challenging to process.
 ;
+; For each sentence in the input text, the LG parser produces four
+; linkages. This demo uses the `FlatStream` Value to flatten this
+; list, and issue only one linkage at a time.
+;
+; Each linkage is a compund structure, having a list of words, and
+; a list of bonds between words (word-pairs). A FilterLink is used
+; to unwrap this structure, discard the words, and keep the bonds.
+;
+; --------
+; Not implemented her (yet, but appears in main aatomspace demos):
+; Count the number of word-pairs, and compute the MI between them,
+; using nothing but a pure Atomese pipeline, continuing the below.
+;
 (use-modules (opencog) (opencog exec) (opencog sensory))
 (use-modules (opencog nlp) (opencog nlp lg-parse))
 
