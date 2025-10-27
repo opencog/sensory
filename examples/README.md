@@ -47,6 +47,7 @@ processing pipelines to build crude stimulus-response agents.
 
 * `xterm-bridge.scm` -- Copying text between two xterms
 * `irc-echo-bot.scm` -- IRC echo bot demo.
+* `parse-pipeline.scm` -- A comlicated pipeline processing demo.
 * `introspect.scm` -- (Under construction; broken)
 
 The ultimate design goal is to replace the crude hand-crafted
