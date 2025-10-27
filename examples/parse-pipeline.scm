@@ -76,18 +76,23 @@
 ; it gets the next lump from the input. In the below, four stream
 ; elements will be generated for each input sentence.
 
-; The declaration is very simple: just promise to apply the flattener
-; to the parse stream.
+; The declaration is simple: just promise to apply the flattener
+; to the parse stream. Well, the flattener striped off one too
+; many layers, so the LinkSignature puts one layer back.
 (define linker
-	(PromiseLink (Type 'FlatStream)
-	parse-stream))
+	(LinkSignature (Type 'LinkValue)
+		(PromiseLink (Type 'FlatStream)
+		parse-stream)))
 
-; Just like the above. Create the anchor for the linkage text.
+; Sniff test. Does it work?
+; (cog-execute! linker)
+
+; Just like the above. Create the anchor for the linkages.
 (cog-execute!
 	(SetValue (Anchor "parse pipe") (Predicate "linkage stream")
-		linker))
+		(DontExec linker)))
 
-; Just as before: the Anchor reference.
+; Just as before: the Anchor reference to the stream of linkages.
 (define linkage-stream
 	(ValueOf (Anchor "parse pipe") (Predicate "linkage stream")))
 
@@ -95,7 +100,12 @@
 ; (cog-execute! linkage-stream)
 
 ; --------------------------------------------------------
-; A rule to extract just the bonds from the stream
+; Each linkage has two parts: a word-list, and a list of linkages
+; between the words. The word-list is reapeated each time, as the
+; spelling-checker might select different alternatives for mis-spelled
+; words. The tokenizer might split them differently. For this demo,
+; we want to access only the bond list. The filer below will extract
+; this.
 
 (define bonder
 	(Filter
@@ -103,7 +113,7 @@
 			(VariableList
 				(TypedVariable (Variable "$words") (Type 'LinkValue))
 				(TypedVariable (Variable "$bonds") (Type 'LinkValue)))
-			(LinkSignature (Type 'LinkValue)
+			(LinkSignature (TypeInh 'LinkValue)
 				(Variable "$words")
 				(Variable "$bonds"))
 			(Variable "$bonds"))
@@ -112,14 +122,18 @@
 ; Sniff test. Does it work?
 ; (cog-execute! bonder)
 
-; Create the anchor for the parsed text.
+; Create the anchor for the word bonds
 (cog-execute!
-	(SetValue (Anchor "parse pipe") (Predicate "parsed text")
-		(DontExec parser)))
+	(SetValue (Anchor "parse pipe") (Predicate "word bonds")
+		(DontExec bonder)))
 
 ; Anchor reference
-(define parse-stream
-	(ValueOf (Anchor "parse pipe") (Predicate "parsed text")))
+(define bond-stream
+	(ValueOf (Anchor "parse pipe") (Predicate "word bonds")))
+
+; Sniff test. Does it work?
+; (cog-execute! bond-stream)
+
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
