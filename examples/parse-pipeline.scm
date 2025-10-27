@@ -45,7 +45,8 @@
 (define parser
 	(Filter
 		(Rule
-			(TypedVariable (Variable "$x") (Type 'StringValue))
+			(TypedVariable (Variable "$x") (Type 'StringStream))
+			; (Variable "$x") ; Use this for the untyped vardecl
 			(Variable "$x")
 			(LgParseBonds (Variable "$x") (LgDict "en") (Number 4)))
 		txt-stream))
@@ -66,62 +67,29 @@
 ; (cog-execute! parse-stream)
 
 ; --------------------------------------------------------
-; XXXX Everything below here is broken junk XXXX
-; A rule that unto
+; The parser above was configured to generate four linkages (parses)
+; per sentance. These are bundled together in a single LinkValue.
+; It is convenient to process them one at a time, rather than in one
+; big gulp. The FlatStream provides this utility. It accepts as input,
+; a stream where data items are bundled into lumps (with LinkValue),
+; and then doles them out one by until the lump has been emptied. Then
+; it gets the next lump from the input. In the below, four stream
+; elements will be generated for each input sentence.
 
-(define fs (FlatStream parse-stream))
-(cog-set-value! (Anchor "parse pipe") (Predicate "linkage stream") fs)
-
+; The declaration is very simple: just promise to apply the flattener
+; to the parse stream.
 (define linker
 	(PromiseLink (Type 'FlatStream)
 	parse-stream))
 
-; Create the anchor for the lingae text.
+; Just like the above. Create the anchor for the linkage text.
 (cog-execute!
 	(SetValue (Anchor "parse pipe") (Predicate "linkage stream")
 		linker))
 
-; Anchor reference
+; Just as before: the Anchor reference.
 (define linkage-stream
 	(ValueOf (Anchor "parse pipe") (Predicate "linkage stream")))
-
-; Sniff test. Does it work?
-; (cog-execute! linkage-stream)
-
-(cog-execute! (CollectionOf (Type 'List) linkage-stream))
-
-(define relinker  (cog-execute! linker))
-
-(cog-value-ref fs 0)
-
-(use-modules (opencog) (opencog exec))
-(define syn
-	(LinkValue
-		(LinkValue
-			(FloatValue 1 2 3)
-			(FloatValue 4 5 6))
-
-		(LinkValue
-			(FloatValue 7 8 9)
-			(FloatValue 10 11 12))))
-
-(cog-set-value! (Concept "foo") (Predicate "bar") syn)
-
-(define fs (FlatStream (ValueOf (Concept "foo") (Predicate "bar"))))
-(cog-value-ref fs 0)
-
-
-; Sniff test. Does it work?
-; (cog-execute! linker)
-
-; Create the anchor for the parsed text.
-(cog-execute!
-	(SetValue (Anchor "parse pipe") (Predicate "linkages")
-		(DontExec linker)))
-
-; Anchor reference
-(define linkage-stream
-	(ValueOf (Anchor "parse pipe") (Predicate "linkages")))
 
 ; Sniff test. Does it work?
 ; (cog-execute! linkage-stream)
