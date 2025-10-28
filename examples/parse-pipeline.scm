@@ -94,8 +94,8 @@
 ; many layers, so the LinkSignature puts one layer back.
 (define linker
 	(LinkSignature (Type 'LinkValue)
-		(PromiseLink (Type 'FlatStream)
-		parse-stream)))
+		(CollectionOfLink (Type 'FlatStream)
+			(OrderedLink parse-stream))))
 
 ; Sniff test. Does it work?
 ; (cog-execute! linker)

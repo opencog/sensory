@@ -138,12 +138,12 @@
 ; We don't want to do just one line: we want to process the entire
 ; stream, until end-of-file. For that, create a promise to do that,
 ; when executed.
-(define prom
-	(Promise (TypeNode 'FutureStream) rule-applier))
+(define promise
+	(CollectionOf (TypeNode 'FutureStream) (OrderedLink rule-applier)))
 
 ; Designate the promise as the source of data for the file writer.
 (cog-execute!
-	(SetValue (Concept "source") (Predicate "key") prom))
+	(SetValue (Concept "source") (Predicate "key") promise))
 
 ; Run the file-writer. This uses exactly the same definition as before.
 ; Be sure to `ls -la /tmp/foobar.txt` before and after running this,
@@ -161,7 +161,7 @@
 
 ; If unclear about the promise, you can explore it several ways.
 ; One is to do this: (Be sure to reset the input file, first.)
-;    (cog-value->list (cog-execute! prom))
+;    (cog-value->list (cog-execute! promise))
 ; This will process one line at a time.
 ;
 ; Equivalently, use ValueOf to get the value:

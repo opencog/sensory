@@ -325,13 +325,13 @@
 ; But we don't want a one-a-a-time interface; we want this to run
 ; indefinitely.  For that, we need a promise, that can pull items
 ; through the filter. (The filter itself cannot push.)
-; The PromiseLink can pull items through the Filter. So wrap the
+; The FutureStream can pull items through the Filter. So wrap the
 ; filter in that. When this is attached to the file writer, it
 ; will run forever. The infinite loop doing this is located in
 ; StreamNode::write() method.
 (define logger
 	(SetValue irc-log-file (Predicate "*-write-*")
-		(Promise (TypeNode 'FutureStream) format-for-logger)))
+		(CollectionOf (TypeNode 'FutureStream) (OrderedLink format-for-logger))))
 
 ; Run the logger in it's own thread.
 (cog-execute! (ExecuteThreaded logger))
