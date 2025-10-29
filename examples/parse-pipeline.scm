@@ -26,7 +26,7 @@
 ; using nothing but a pure Atomese pipeline, continuing the below.
 ;
 (use-modules (opencog) (opencog exec) (opencog sensory))
-(use-modules (opencog nlp) (opencog nlp lg-parse))
+(use-modules (opencog lg))
 
 ; Before running this demo, copy `demo.txt` to the /tmp directory.
 ; (copy-file "demo.txt" "/tmp/demo.txt")
@@ -135,10 +135,18 @@
 ; Sniff test. Does it work?
 ; (cog-execute! bonder)
 
+; The above creates a double-wrapped list. Peel off one layer.
+(define unwrapper
+	(CollectionOfLink (Type 'FlatStream)
+			(OrderedLink bonder)))
+
+; Sniff test. Does it work?
+; (cog-value->list (cog-execute! unwrapper))
+
 ; Create the anchor for the word bonds
 (cog-execute!
 	(SetValue (Anchor "parse pipe") (Predicate "word bonds")
-		(DontExec bonder)))
+		(DontExec unwrapper)))
 
 ; Anchor reference
 (define bond-stream
@@ -146,6 +154,25 @@
 
 ; Sniff test. Does it work?
 ; (cog-execute! bond-stream)
+
+; --------------------------------------------------------
+; With the bonds between word-pairs available, one may now begin
+; statistical analysis. A good place to begin is simply counting
+; word-pairs.
+
+(define counter
+	(Filter
+		(Rule
+			(TypedVariable (Variable "$edge") (Type 'Edge))
+			(Variable "$edge")
+			(IncrementValueOn
+				(Variable "$edge")
+				(Predicate ":edge-count:")
+				(Number 1)))
+		bond-stream))
+
+; Sniff test. Does it work?
+; (cog-execute! counter)
 
 
 ; --------------------------------------------------------
