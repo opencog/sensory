@@ -174,6 +174,18 @@
 ; Sniff test. Does it work?
 ; (cog-execute! counter)
 
+; Create the anchor for the word bonds
+(cog-execute!
+	(SetValue (Anchor "parse pipe") (Predicate "counted bonds")
+		(DontExec counter)))
+
+; Anchor reference
+(define counted-stream
+	(ValueOf (Anchor "parse pipe") (Predicate "counted bonds")))
+
+; Sniff test. Does it work?
+; (cog-execute! counted-stream)
+
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
