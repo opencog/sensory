@@ -186,6 +186,19 @@
 ; Sniff test. Does it work?
 ; (cog-execute! counted-stream)
 
+; --------------------------------------------------------
+; The demo above always shows one step at a time. In practice,
+; one will want to just run the pipeline until it completes,
+; or perhaps run it forever, if the sream is endless. This can be
+; accomplished with the DrainLink. It will loop forever, until
+; it encounters a VoidValue, or a LinkValue of zero length, and
+; the it will return.
+;
+; Like so:
+(cog-execute! (Drain counted-stream))
+
+; For an infinite stream, it can be run in it's own thread:
+(cog-execute! (Parallel (Drain counted-stream)))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
