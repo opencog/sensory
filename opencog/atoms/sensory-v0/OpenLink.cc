@@ -21,7 +21,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <opencog/atoms/core/TypeNode.h>
+#include <opencog/atoms/signature/TypeNode.h>
 #include <opencog/atoms/value/ValueFactory.h>
 #include "OpenLink.h"
 #include "OutputStream.h"

@@ -27,7 +27,7 @@
 #include <opencog/util/oc_assert.h>
 #include <opencog/atoms/base/Link.h>
 #include <opencog/atoms/base/Node.h>
-#include <opencog/atoms/core/TypeNode.h>
+#include <opencog/atoms/signature/TypeNode.h>
 #include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atoms/value/ContainerValue.h>
 #include <opencog/atoms/value/StringValue.h>
