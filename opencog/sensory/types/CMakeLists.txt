@@ -23,7 +23,7 @@ ADD_LIBRARY(sensory-types SHARED
 ADD_DEPENDENCIES(sensory-types sensory_atom_types)
 
 TARGET_LINK_LIBRARIES(sensory-types
-	${ATOMSPACE_atomtypes_LIBRARY}
+	${ATOMSPACE_LIBRARIES}
 )
 
 INSTALL (TARGETS sensory-types
