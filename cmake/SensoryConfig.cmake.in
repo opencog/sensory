@@ -17,3 +17,9 @@ set(SENSORY_DATA_DIR "@CMAKE_INSTALL_PREFIX@/share/opencog")
 set(SENSORY_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/include/")
 set(SENSORY_VERSION "@SEMANTIC_VERSION@")
 set(SENSORY_FOUND 1)
+
+MESSAGE(STATUS "Sensory version ${SENSORY_VERSION} found.")
+
+# Add make modules to the module path.
+# This is used by Guix and NIX to find cmake modules.
+list(APPEND CMAKE_MODULE_PATH "${SENSORY_DATA_DIR}/cmake")
