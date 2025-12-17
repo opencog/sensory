@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.12)
 SET(CMAKE_INSTALL_MESSAGE LAZY)
 
-PROJECT(sensory)
+PROJECT(sensory VERSION 0.5.1)
 
 # Something about path broken normalization
 IF(CMAKE_VERSION VERSION_GREATER 3.31)
@@ -14,29 +14,20 @@ SET(CMAKE_BUILD_TYPE Release)
 
 # ----------------------------------------------------------
 # Cogutil. Required prerequisite.
-FIND_PACKAGE(CogUtil 2.0.3 CONFIG REQUIRED)
-IF(COGUTIL_FOUND)
-	SET(HAVE_COGUTIL 1)
-
-	# Add the 'cmake' directory from cogutil to search path
-	list(APPEND CMAKE_MODULE_PATH  ${COGUTIL_DATA_DIR}/cmake)
-
-	# Needed to set OC_CMAKE_DIR
-	if (NOT DEFINED ATOMSPACE_DATA_DIR)
-		set (ATOMSPACE_DATA_DIR "${COGUTIL_DATA_DIR}")
-	endif (NOT DEFINED ATOMSPACE_DATA_DIR)
-
-	include(OpenCogGccOptions)
-	include(OpenCogLibOptions)
-	include(OpenCogInstallOptions)
-	include(Summary)
-
+FIND_PACKAGE(CogUtil 2.2.1 CONFIG REQUIRED)
+IF (NOT COGUTIL_FOUND)
+	MESSAGE(FATAL_ERROR "CogUtil missing: it is needed!")
 ENDIF()
 
+include(OpenCogGccOptions)
+include(OpenCogLibOptions)
+include(OpenCogInstallOptions)
+include(Summary)
+
 # AtomSpace
-FIND_PACKAGE(AtomSpace 5.0.4 CONFIG REQUIRED)
-IF(ATOMSPACE_FOUND)
-	SET(HAVE_ATOMSPACE 1)
+FIND_PACKAGE(AtomSpace 5.2.0 CONFIG REQUIRED)
+IF(NOT ATOMSPACE_FOUND)
+	MESSAGE(FATAL_ERROR "AtomSpace missing: it is needed!")
 ENDIF()
 
 # ----------------------------------------------------------
