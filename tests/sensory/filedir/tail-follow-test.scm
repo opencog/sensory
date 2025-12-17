@@ -1,3 +1,6 @@
+#! /usr/bin/env guile
+-s
+!#
 ;
 ; tail-follow-test.scm -- Test tail/follow functionality for TextFileNode
 ;

@@ -1,3 +1,6 @@
+#! /usr/bin/env guile
+-s
+!#
 ;
 ; filesys-watch-test.scm -- Test directory watching functionality for FileSysNode
 ;

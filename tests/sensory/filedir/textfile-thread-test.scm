@@ -1,3 +1,6 @@
+#! /usr/bin/env guile
+-s
+!#
 ;
 ; textfile-thread-test.scm -- Test TextFileNode thread safety
 ;
