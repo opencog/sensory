@@ -19,7 +19,7 @@ TARGET_LINK_LIBRARIES(sensory-v0-filedir
 )
 
 INSTALL (TARGETS sensory-v0-filedir EXPORT AtomSpaceTargets
-	DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
+	DESTINATION "${CMAKE_INSTALL_LIBDIR}/opencog"
 )
 
 INSTALL (FILES

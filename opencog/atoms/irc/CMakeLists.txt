@@ -21,7 +21,7 @@ TARGET_LINK_LIBRARIES(sensory-irc
 ADD_GUILE_EXTENSION(SCM_CONFIG sensory-irc "opencog-ext-path-sensory-irc")
 
 INSTALL (TARGETS sensory-irc EXPORT AtomSpaceTargets
-	DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
+	DESTINATION "${CMAKE_INSTALL_LIBDIR}/opencog"
 )
 
 INSTALL (FILES
