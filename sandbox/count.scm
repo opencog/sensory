@@ -29,4 +29,23 @@
 
 (cog-execute! get-all-queries)
 
+(define get-types
+	(Filter
+		(Rule
+			(TypedVariable (Variable "$atom") (Type 'Atom)) ; vardecl
+			(Variable "$atom") ; body - accept everything
+			(TypeOf (DontExec (Variable "$atom"))))
+		get-all-atoms))
 
+; Should work just like `get-all-types` Query above.
+(cog-execute! get-types)
+
+(define count-types
+	(Filter
+		(Rule
+			(TypedVariable (Variable "$typ") (Type 'Type)) ; vardecl
+			(Variable "$typ") ; body - accept everything
+			(IncrementValue (Variable "$typ") (Predicate "cnt") (Number 0 0 1)))
+		get-types))
+
+(cog-execute! count-types)
