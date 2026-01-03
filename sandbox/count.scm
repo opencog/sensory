@@ -49,3 +49,38 @@
 		get-types))
 
 (cog-execute! count-types)
+
+; -------------------------------------------
+(use-modules (opencog))
+
+(PipeLink
+	(Name "get-all-atoms")
+	(Meet
+		(Variable "$atom") ; vardecl
+		(Variable "$atom") ; match anything
+	))
+
+; (cog-execute! (Name "get-all-atoms"))
+
+(PipeLink
+	(Name "get-types")
+	(Filter
+		(Rule
+			(TypedVariable (Variable "$atom") (Type 'Atom)) ; vardecl
+			(Variable "$atom") ; body - accept everything
+			(TypeOf (DontExec (Variable "$atom"))))
+		(Name "get-all-atoms")))
+
+; (cog-execute! (Name "get-types"))
+
+(Pipe
+	(Name "count-types")
+	(Filter
+		(Rule
+			(TypedVariable (Variable "$typ") (Type 'Type)) ; vardecl
+			(Variable "$typ") ; body - accept everything
+			(IncrementValue (Variable "$typ") (Predicate "cnt") (Number 0 0 1)))
+		(Name "get-types")))
+
+(cog-execute! (Name "count-types"))
+
