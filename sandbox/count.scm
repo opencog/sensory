@@ -1,6 +1,8 @@
 ;
 ; count.scm
-; Attempt to count things.
+; Attempt to count things. Scratchpad.
+; Final clean version in atomspace/examples/flow/count-pipeline.scm
+;
 (use-modules (opencog))
 
 (define get-all-types
@@ -98,17 +100,20 @@
 	(Lambda
 		(VariableList (Variable "left") (Variable "right"))
 		(Not
-			(GreaterThan
+			(LessThan
 				(ElementOf (Number 2)
 					(ValueOf (Variable "left") (Predicate "cnt")))
 				(ElementOf (Number 2)
 					(ValueOf (Variable "right") (Predicate "cnt")))))))
 
-(define x
-	(SortedValue
+(Pipe
+	(Name "sorted-types")
+	(LinkSignature
+		(TypeNode 'SortedValue)
 		(DefinedPredicate "count-order")
 		(Name "unique-types")))
 
+(cog-execute! (Name "sorted-types"))
 
 ; Debug print
 (cog-execute!
@@ -119,11 +124,140 @@
 			(LinkSignature (Type 'LinkValue)
 				(Variable "$typ")
 				(ValueOf (Variable "$typ") (Predicate "cnt"))))
-		(Name "unique-types")))
+		(Name "sorted-types")))
+
+; --------------------
+(define (data-printer NAME COUNT)
+	(StringValue
+		(format #f "Usage count of type: ~A ~A"
+			(cog-value-ref COUNT 2)
+			(cog-name NAME))))
+
+; --------------------
+(cog-execute!
+	(Filter
+		(Rule
+			(TypedVariable (Variable "$typ") (Type 'Type)) ; vardecl
+			(Variable "$typ") ; body - accept everything
+			(ExecutionOutput
+				(GroundedSchema "scm:data-printer")
+				(LinkSignature (Type 'LinkValue)
+					(Variable "$typ")
+					(ValueOf (Variable "$typ") (Predicate "cnt")))))
+		(Name "sorted-types")))
+
+(cog-execute!
+	(Filter
+		(Rule
+			(TypedVariable (Variable "$typ") (Type 'Type)) ; vardecl
+			; Specify a body that rejects types without counts.
+			(And
+				(Present (Variable "$typ"))
+				(Equal
+					(Type 'FloatValue)
+					(TypeOf (ValueOf (Variable "$typ") (Predicate "cnt")))))
+			(ExecutionOutput
+				(GroundedSchema "scm:data-printer")
+				(LinkSignature (Type 'LinkValue)
+					(Variable "$typ")
+					(ValueOf (Variable "$typ") (Predicate "cnt")))))
+		(Name "sorted-types")))
+
+(cog-execute!
+	(Filter
+		(Rule
+			(TypedVariable (Variable "$typ") (Type 'Type)) ; vardecl
+			; Specify a body that rejects types without counts.
+			(And
+				(Present (Variable "$typ"))
+				(Equal
+					(Type 'FloatValue)
+					(TypeOf (ValueOf (Variable "$typ") (Predicate "cnt")))))
+			(LinkSignature (Type 'LinkValue)
+				(Node "Usage count of type: ")
+				(Variable "$typ")
+				(Node " is equal to ")
+				(ElementOf (Number 2)
+					(ValueOf (Variable "$typ") (Predicate "cnt")))))
+		(Name "sorted-types")))
+
+(cog-execute!
+	(Filter
+		(Rule
+			(TypedVariable (Variable "$typ") (Type 'Type)) ; vardecl
+			; Specify a body that rejects types without counts.
+			(And
+				(Present (Variable "$typ"))
+				(Equal
+					(Type 'FloatValue)
+					(TypeOf (ValueOf (Variable "$typ") (Predicate "cnt")))))
+			(LinkSignature (Type 'LinkValue)
+				(Node "Usage count of type: ")
+				(Variable "$typ")
+				(Node " is equal to ")
+				(ElementOf (Number 2)
+					(ValueOf (Variable "$typ") (Predicate "cnt")))))
+		(Name "sorted-types")))
 
 
 (cog-execute!
-	(CollectionOf 
-(TypeNode 'SortedValue)
-		(Name "unique-types")))
+	(CollectionOf (Type 'StringValue) (Name "list of structures")))
 
+(cog-execute!
+	(Concatenate (Type 'StringValue) (Name "list of structures")))
+
+(cog-execute!
+	(LinkSignature
+		(Signature
+			(Type 'StringValue)
+			(Type 'StringValue)
+			(Type 'StringValue)
+			(Type 'StringValue))
+		(Name "list of structures")))
+
+
+(cog-execute!
+	(Filter
+		(Rule
+			(VariableList
+				(Variable "$a")
+				(Variable "$b")
+				(Variable "$c")
+				(Variable "$d"))
+			(LinkSignature (Type 'LinkValue)
+				(Variable "$a")
+				(Variable "$b")
+				(Variable "$c")
+				(Variable "$d"))
+			(LinkSignature (Type 'LinkValue)
+				(LinkSignature (Type 'StringValue) (Variable "$a"))
+				(LinkSignature (Type 'StringValue) (Variable "$b"))
+				(LinkSignature (Type 'StringValue) (Variable "$c"))
+				(LinkSignature (Type 'StringValue) (Variable "$d"))))
+		(Name "list of structures")))
+
+
+(cog-execute!
+	(LinkSignature (Type 'StringValue) (Number 3)))
+;; ---------
+		(Rule
+			(VariableList
+				(TypedVariable (Variable "$typ") (Type 'Type))
+				(TypedVariable (Variable "$cnt") (Type 'FloatValue)) ; vardecl
+			; Specify a body that rejects types without counts.
+			(And
+				(Present (Variable "$typ"))
+				(Equal
+					(Variable "$cnt")
+					(ValueOf (Variable "$typ") (Predicate "cnt"))))
+
+GuardLink
+
+(cog-execute!
+	(Filter
+		(Equal
+			(Type 'FloatValue)
+			(TypeOf (ValueOf (Variable "$typ") (Predicate "cnt"))))
+		(Name "sorted-types")))
+
+; --------------------------
