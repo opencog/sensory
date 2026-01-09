@@ -20,7 +20,7 @@ TARGET_LINK_LIBRARIES(sensory-terminal
 ADD_GUILE_EXTENSION(SCM_CONFIG sensory-terminal "opencog-ext-path-sensory-terminal")
 
 INSTALL (TARGETS sensory-terminal EXPORT AtomSpaceTargets
-	DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
+	DESTINATION "${CMAKE_INSTALL_LIBDIR}/opencog"
 )
 
 INSTALL (FILES
