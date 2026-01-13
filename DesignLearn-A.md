@@ -107,8 +107,9 @@ jigsaw much assmble so as to build be bridge between constraints. The
 satisfiability algorithm must be fast, but also the bridge that is build
 mst be minimal or optimal in some way.
 
+### Minimization
 The words "minimal" and "optimal" make me personally think of minimal
-surfaces: soap bubbles, for instance. Geodesics in Rimannian geometry.
+surfaces: soap bubbles, for instance. Geodesics in Riemannian geometry.
 Assemblies of jigsaws do not have smooth differentiable structure, but
 still, some of the ideas carry over analogously, because there are
 several natural ideas of "minimal" for jigaw assemblies. For example:
@@ -116,6 +117,7 @@ the assembly that uses the minimal number of pieces. Or, if we weight
 each piece with e.g. log probability (i.e. "entropy" or "information")
 then minimize the sum of that.
 
+### Homtopic deformation
 The general "feel" of continutity is taken up by the Scott topology,
 where we can talk about the homotopic deformation of jigsaw aassemblies.
 There is a very easy way of understanding this if you are a software
@@ -143,6 +145,7 @@ the programmer wrote the C/C++ code to do, the machine binary will do
 the same thing. The transformation from one to the other was
 accomplished in a very long sequence of small steps.
 
+### Differentiability
 What about differentiability? Even that has an analog: finite
 differences. When collections of jigsaws can be assigned a number (e.g.
 total number of pieces; total weight; length of shortest path; total
@@ -161,6 +164,61 @@ artistic impression: when there is stuff to be minimized and maximzed,
 and when one has paths that can take you from here to there in some
 quasi-continuous fashion, then one has some local difference-type
 gradient that helps figure out how to move.
+
+### What is a priori?
+The above arguments is slippery and misleading.  Starting from "nothing"
+we arrive at some very complex and arcane notions derived by analogy
+from a huge body of work in mathematical physics to conclude "ah ha!
+Free energy! That's the Answer with a Capital A!"
+
+### Self-assembly
+But I don't want this. I want a system to self-assemble (necessairly
+a system that has moved to a critical point.) The word "critical" in
+the sense of self-assembly and avalanches for sand-piles at criticality,
+but now, for jigsaw pieces, not sand-grains.
+
+The jigsaws are generalizations of structural parts: jigsaws are the
+connectable parts of axioms, of inference rules, of lambda expressions,
+of function terms, of relation terms, of logical connectives.
+
+I want, and I think it is possible, to have a system that self-reifies:
+a self-assembly of pieces that can figure out how to reason, deduce,
+prove, use logic and discover axioms. A system that can perceive
+structure, in a "sensori-" way, and can manipulate structure, in a
+"motor" kind of way. So a sensori-motor system that percives structure,
+and acts on, manipulates that structure.
+
+### Perceiving structure
+So again, what is structure, and how is it perceived? Once again: it is
+the pairwise relationships or correlations between pairs of "things".
+The pair-wise connections form a network graph, of vertexes and edges.
+This network graph is in rough correspondence with the "external world"
+that is being perceived. A "world model" of sorts.
+
+Fix a vertex, and cut all the edges connecting to it in half. This gives
+you a jigsaw piece. For each jigsaw piece; one for each vertex.
+Categorize these: Many will be identical. The frequency (count) of
+identical ones follows a Zipf power law distribution (as experimentally
+observed, i.e. "in practice")
+
+Now, cluster them "by similarity". One of the easiest ways fo doing this
+is by cosine-similarity. Cosine similarity requires vectors; where do
+the vectors come from?  They arise entirely naturally, in many ways. For
+example, consider all jigsaws that have the label "A" for the center
+vertex; these will have a large variety of labels "p,q,r..." on the
+connectors. How many are there? Say there are `N(A | p,q,r...)` of
+these. If we hold "A" fixed, while allowing "p,q,r..." to vary, this
+forms a vector!  The ket `|p,q,r,...)` is the basis elt of the vector.
+Suppose the central vertex is labelled by "B": then `N(B | p,q,r...)`
+is another vector, and the dot product is easy:
+```
+    A . B = Sum_{p,q,r..}  N(A | p,q,r...) N(B | p,q,r...)
+```
+In practice, (i.e. experimentally measured) the dot products are
+gaussian distributed, i.e. the data is distributed uniformly on a very
+high dimensional sphere.
+
+
 
 
 pairs.
