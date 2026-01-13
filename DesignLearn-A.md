@@ -29,4 +29,22 @@ never taken, for two reasons:
   all be Atomese. Solving that problem give rise to this github repo
   that this design file is in right now.
 
-* The matri
+* The recursive step of "repeat and do it again" stumbled on the design
+  of the "matrix" code base. (Split out of the atomspace repo and now
+  located at https://github.com/opencog/matrix).  That code-base was
+  written to be quite general, so that it could handle generic
+  structures. The problem was that it was written in scheme. That means
+  it integrated poorly and awkwardly with Atomese, and did not integrate
+  at all with a sensori-motor design.
+
+  The solution to that stumbling block was to develop the concept of
+  "flows" in Atomese: of flowng data that travels through networks
+  defined declaratively in Atomese. This required lots of low-level
+  grunt-work: defining Atoms that could add, multiply, accumulate,
+  take dot-products, mask bits, transpose columns and tows, but also
+  could stream data, and also sort data... Lots of low-level grunt work,
+  mostly completed.
+
+So given that the primary issues were resolved in the two bullet points
+above, I am now ready to try again.  But, before starting, some
+critiques, some planning, some day-dreaming.
