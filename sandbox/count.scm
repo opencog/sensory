@@ -216,7 +216,7 @@
 		(Name "list of structures")))
 
 
-(cog-execute!
+(define cvt
 	(Filter
 		(Rule
 			(VariableList
@@ -229,13 +229,15 @@
 				(Variable "$b")
 				(Variable "$c")
 				(Variable "$d"))
+(TransposeColumn
 			(LinkSignature (Type 'LinkValue)
 				(LinkSignature (Type 'StringValue) (Variable "$a"))
 				(LinkSignature (Type 'StringValue) (Variable "$b"))
 				(LinkSignature (Type 'StringValue) (Variable "$c"))
-				(LinkSignature (Type 'StringValue) (Variable "$d"))))
+				(LinkSignature (Type 'StringValue) (Variable "$d")))))
 		(Name "list of structures")))
 
+cog-execute!
 
 (cog-execute!
 	(LinkSignature (Type 'StringValue) (Number 3)))
