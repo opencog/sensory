@@ -3,7 +3,7 @@ Structure Learning
 New set for notes concerning the learning of structure. Different
 chapter than the earlier notes.
 
-Start with a recap of the earlier proect for learning structure.
+Start with a recap of the earlier project for learning structure.
 
 Recap of Previous Learn Project
 -------------------------------
@@ -81,3 +81,86 @@ Status: Punt. Item C) is the aspirational goal. The code located at the
 https://github.com/opencog/atomese-simd directory is some pre-prototype
 of A) and B) and I might yet tinker with it some more. I do not yet have
 an firm road-map for getting to C).
+
+What is Structure?
+------------------
+I wish to define "structure" in some quasi-model-theoretic terms.
+"Quasi" because the goal is not to be slavish to the formal textbook
+definition, but to convert it into an artistic, sculptural impression.
+
+Structures consist of axioms, rules, n-ary function terms, relations.
+Formally, they also include the bool logical operators, but I want to
+convert those into yet more functional terms. Why? Lets take a detour
+into proof theory.
+
+Proof theory works with axioms and inference rules. We have some
+collection of axioms, asserted a priori, and some other collection of
+inference rules, also asserted a priori. A theorem prover chains these,
+forward or backward, to find "proofs" for "theorems". Instead, I want to
+think of this process as being a kind of generation, where rules and
+axioms are specific building blocks that are assembled.
+
+The rules and axioms are jigsaw pieces; theorem proving is the assembly
+of these. If it is free an unconstrained, then it is generation; if its
+constrained, then some sort of satisfiability solver is needed: the
+jigsaw much assmble so as to build be bridge between constraints. The
+satisfiability algorithm must be fast, but also the bridge that is build
+mst be minimal or optimal in some way.
+
+The words "minimal" and "optimal" make me personally think of minimal
+surfaces: soap bubbles, for instance. Geodesics in Rimannian geometry.
+Assemblies of jigsaws do not have smooth differentiable structure, but
+still, some of the ideas carry over analogously, because there are
+several natural ideas of "minimal" for jigaw assemblies. For example:
+the assembly that uses the minimal number of pieces. Or, if we weight
+each piece with e.g. log probability (i.e. "entropy" or "information")
+then minimize the sum of that.
+
+The general "feel" of continutity is taken up by the Scott topology,
+where we can talk about the homotopic deformation of jigsaw aassemblies.
+There is a very easy way of understanding this if you are a software
+programmer: a "homotopic deformation" is a "refactoring of the
+software". Any collection of small changes that can be made to a
+software program that does not alter it's function. Move if-statements
+out of loops. Unroll loops. Stuff like that. These are homotopic
+transformations: they alter the structure without altering function,
+and, when taken as small, tiny changes, can be thought of as providing
+a kind of "continuous deformation".
+
+Consider an optimizer inside a compiler: it has some assembly snippet,
+using some registers and some insns, and it can re-arrange some of the
+insns, replacing them with others, choosing different register
+assignments, thus creating more efficient, compact code without altering
+its function. The `-O2` flag on a C compiler. The optimizer does not
+work on bare assembly, but in abstract insn sets, the "intermediate
+langauge" being a way-point.
+
+But this analogy can be pushed "all the way": A compiler is a homotopic
+defomration of a C/C++ program into assembly code; an assembler is a
+further deformation (and linking!) into machine binary. A bridge between
+two different represenations that does not alter the function: Whatever
+the programmer wrote the C/C++ code to do, the machine binary will do
+the same thing. The transformation from one to the other was
+accomplished in a very long sequence of small steps.
+
+What about differentiability? Even that has an analog: finite
+differences. When collections of jigsaws can be assigned a number (e.g.
+total number of pieces; total weight; length of shortest path; total
+number of connections/connectors; width (fatness) of necks, or of
+waists... etc.) These may vary be discrete amounts, but differences can
+be taken, giving an analogy to differentiation.
+
+Can one write a finite-difference version of the Euler-Lagrange
+equations (the solution of which defines geodesics)? I don't know.
+Perhaps. People already run around claiming that one should maximize
+free energy (Gibbs free energy) or perhaps the "integrated information";
+all of these ideas imply some kind of differentiable stucture minimized
+or maximized via some Euler-Lagrange-style differentail or difference
+eqns. I don't want to get hung up on the details, but rather the
+artistic impression: when there is stuff to be minimized and maximzed,
+and when one has paths that can take you from here to there in some
+quasi-continuous fashion, then one has some local difference-type
+gradient that helps figure out how to move.
+
+
+pairs.
