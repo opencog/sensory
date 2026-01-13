@@ -135,12 +135,12 @@ insns, replacing them with others, choosing different register
 assignments, thus creating more efficient, compact code without altering
 its function. The `-O2` flag on a C compiler. The optimizer does not
 work on bare assembly, but in abstract insn sets, the "intermediate
-langauge" being a way-point.
+language" being a way-point.
 
 But this analogy can be pushed "all the way": A compiler is a homotopic
 defomration of a C/C++ program into assembly code; an assembler is a
 further deformation (and linking!) into machine binary. A bridge between
-two different represenations that does not alter the function: Whatever
+two different representations that does not alter the function: Whatever
 the programmer wrote the C/C++ code to do, the machine binary will do
 the same thing. The transformation from one to the other was
 accomplished in a very long sequence of small steps.
@@ -157,7 +157,7 @@ Can one write a finite-difference version of the Euler-Lagrange
 equations (the solution of which defines geodesics)? I don't know.
 Perhaps. People already run around claiming that one should maximize
 free energy (Gibbs free energy) or perhaps the "integrated information";
-all of these ideas imply some kind of differentiable stucture minimized
+all of these ideas imply some kind of differentiable structure minimized
 or maximized via some Euler-Lagrange-style differentail or difference
 eqns. I don't want to get hung up on the details, but rather the
 artistic impression: when there is stuff to be minimized and maximzed,
@@ -172,7 +172,7 @@ from a huge body of work in mathematical physics to conclude "ah ha!
 Free energy! That's the Answer with a Capital A!"
 
 ### Self-assembly
-But I don't want this. I want a system to self-assemble (necessairly
+But I don't want this. I want a system to self-assemble (necessarily
 a system that has moved to a critical point.) The word "critical" in
 the sense of self-assembly and avalanches for sand-piles at criticality,
 but now, for jigsaw pieces, not sand-grains.
@@ -191,7 +191,7 @@ and acts on, manipulates that structure.
 ### Perceiving structure
 So again, what is structure, and how is it perceived? Once again: it is
 the pairwise relationships or correlations between pairs of "things".
-The pair-wise connections form a network graph, of vertexes and edges.
+The pair-wise connections form a network graph, of vertices and edges.
 This network graph is in rough correspondence with the "external world"
 that is being perceived. A "world model" of sorts.
 
@@ -201,7 +201,7 @@ Categorize these: Many will be identical. The frequency (count) of
 identical ones follows a Zipf power law distribution (as experimentally
 observed, i.e. "in practice")
 
-Now, cluster them "by similarity". One of the easiest ways fo doing this
+Now, cluster them "by similarity". One of the easiest ways for doing this
 is by cosine-similarity. Cosine similarity requires vectors; where do
 the vectors come from?  They arise entirely naturally, in many ways. For
 example, consider all jigsaws that have the label $A$ for the center
@@ -263,7 +263,7 @@ GloVE, and skipgrams, even though the algo I describe above is
 ***completely different***.
 
 ### Recursion
-The jigsaw-based approach above is resursive. Once I've created
+The jigsaw-based approach above is recursive. Once I've created
 clusters of jigsaws, I can create new overlay networks (out of the
 jigsaw pieces, instead of pair-wise edges), and then repeat the process.
 The resulting pieces are more complex, more abstract. This recursive
