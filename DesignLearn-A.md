@@ -288,4 +288,86 @@ for the lay audience. ... Which is good for the audience, but bad for
 me, because I am repeating things I already know and believe, rather
 than moving forwards.)
 
-pairs.
+Sound and Vision
+----------------
+Writing the above was procrastination for writing this section. But now
+I'm so bored, I don't feel like writing this sectiion. Alas.
+
+The idea in a nutshell was to restart the jigsaw learning process, this
+time not just for natural language, but also for vision and sound.
+Perhaps for youtube video?
+
+The first few steps are easy enough. Say, vision. Create a blur filter,
+maybe $n$ pixels in diameter. Pair counting would be to just randomly
+place two such blur filters at random spots on a photograph, and compute
+correlations. Or rather, mutual info (MI) between them. To make this go
+faster, I could just create a 2D planar random network, vertices that
+are $n$ pixels apart, overlay it on the photo, compute the blur at each
+network vertex. This is trivially vectorized, as are the x,y locations
+of each vertex. Sampling pairs is then sampling pairs out of this
+vector. Can also do sampling in color space: RGB or HSV, pick one. The
+size of the blur filter is an obvious variable.
+
+Sound would work similarly: sampling in frequency, intensity, maybe
+chirp, of variable-sized windows.
+
+### Agency and lack thereof.
+So what? What does this accomplish? The trap here is that this turns
+into "training". Feed a lot of data into a processing pipeline. After a
+gazillion CPU-hours, something falls out.
+
+The problem is there is only sensori- and no -motor. I could give the
+agent some control over, say, blur-filter size. But what motivates the
+agent to experiment with blur filter size? What is it doing, except
+being forced to dream?
+
+### Rubiks
+Adam proposed somethng slightly more agentic: solving the rubiks cube.
+The agent can "see" all the facets of the cube, and the agent can apply
+any of the basic moves, and see the resulting changes. The learning task
+is to see if the agent can learn to solve the cube.
+
+How should I think of this? "Solving" is finding a set of moves that
+take it from one (predeterimined, given) location in configuration
+space to another (predetermined, requested) location in confidguration
+space. To build a bridge, a sequence of moves, from one to the other. To
+solve a certain constraint satisfaction problem.
+
+What should the agent do? I could tell it: "explore the universe of all
+possible moves, and search for shortest paths from one configuration to
+another".  It would need to remember things that it tried. How do I, as
+a programmer, encode positions? How do I give it efficient high-speed
+search of memory of prior configurations and moves to get there? This
+trns into an engineering task, where I do the difficult engineering, so
+that a small and stupid agent can rapidly solve a Rubiks cube? I don't
+think so.
+
+The original intent of posing the Rubiks problem was to see if the agent
+could discover the axiomatic rules, the "physics" of it's very small
+universe. But this does not line up with the word "axiom" as I defined
+and used it in the earlier sections. I don't even know what it "means"
+to discover the axioms of group theory in this context.
+
+The only upside, and it seems marginal, is that the agent has agency. It
+can both see, and act, in this toy universe.
+
+### Adversarial chess
+Imagine a toy universe which consists of chess pieces, and chess moves.
+Its also populated by a hostile god that plays black. The agent plays
+white. The goal of agent training is to survive as long as possible. Its
+Groundhog Day: whenever the white player dies, the chessboard resets,
+and the agent can try again to best the black evil god that is out to
+kill it.
+
+I'm not sure what to make of this variant. One obvious point: to get any
+good, it would take lots and lots and lots of training.  To get good,
+fast, puts the onus on me, to invent, devise, and encode in software
+some kind of algo that can learn chess quickly. Which puts me back into
+the seat of being the "white god": the engineer developing complex code
+that can help my guy learn to survive the onslaught of the evil black
+god. This is not the engineering I want to do.
+
+Worse: it is also obvious that chess is effectively intractable for any
+kind of naive learning algo. Most algos that you might pull out of some
+random book on machine learning will take the age of the universe to
+learn chess, and even so, so what?
