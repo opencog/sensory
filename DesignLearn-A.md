@@ -46,5 +46,38 @@ never taken, for two reasons:
   mostly completed.
 
 So given that the primary issues were resolved in the two bullet points
-above, I am now ready to try again.  But, before starting, some
-critiques, some planning, some day-dreaming.
+above, I am now ready to try again. And short-term plans include working
+with both audio and visual data, this time around. Concrete plans
+further below.  But, before starting, some critiques, some planning,
+some day-dreaming. The below will ramble a bit, because I haven't
+figured out some parts yet.
+
+Critique of Flow Design
+-----------------------
+The "flow" code and demos in the atomspace work "just fine", more or
+less. However, several big issues exposed themselves during development.
+Consider the problem of implementing the flow pipelines on GPU's. Viz.
+I want to have the declarative description to be in Atomese, but the
+processing to happen on the GPU. But how? Several answers, none
+satisfactory.
+
+A) Hard code GPU variants of `PlusLink`, `TimesLink`, etc. Yuck.  Hard
+   work, fragile, non-portable. Any such implementation would become a
+   some weird cross-over between interpreter and compiler. See below.
+
+B) Write a compiler. Here, The `PlusLink` etc. become "assembly code"
+   and the compiler turns it into CUDA code or OpenCL or whatever. Yuck.
+   Such a compiler is large, complex, non-portable. Its also a "been
+   there, done that" project: people have been writing compilers for
+   fifty years, and doing it yet again for a highly specialized use case
+   is boring and pointless.
+
+C) Define the GPU hardware in such a way that it can be "perceived" by a
+   sensori-motor agent that could "just look at it" and "use it". Yes!
+   Great! A bit too pie-in-the-sky for now; I lack the infrastructure to
+   get off the ground on this. It's an aspirational.
+
+Status: Punt. Item C) is the aspirational goal. The code located at the
+https://github.com/opencog/atomese-simd directory is some pre-prototype
+of A) and B) and I might yet tinker with it some more. I do not yet have
+an firm road-map for getting to C).
