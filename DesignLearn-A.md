@@ -204,20 +204,43 @@ observed, i.e. "in practice")
 Now, cluster them "by similarity". One of the easiest ways fo doing this
 is by cosine-similarity. Cosine similarity requires vectors; where do
 the vectors come from?  They arise entirely naturally, in many ways. For
-example, consider all jigsaws that have the label "A" for the center
-vertex; these will have a large variety of labels "p,q,r..." on the
-connectors. How many are there? Say there are `N(A | p,q,r...)` of
-these. If we hold "A" fixed, while allowing "p,q,r..." to vary, this
-forms a vector!  The ket `|p,q,r,...)` is the basis elt of the vector.
-Suppose the central vertex is labelled by "B": then `N(B | p,q,r...)`
+example, consider all jigsaws that have the label $A$ for the center
+vertex; these will have a large variety of labels $p,q,r...$ on the
+connectors. How many are there? Say there are $N(A | p,q,r...)$ of
+these. If we hold $A$ fixed, while allowing $p,q,r...$ to vary, this
+forms a vector!  The ket $|p,q,r,...)$ is the basis elt of the vector.
+Suppose the central vertex is labelled by $B$: then $N(B | p,q,r...)$
 is another vector, and the dot product is easy:
-```
+$
     A . B = Sum_{p,q,r..}  N(A | p,q,r...) N(B | p,q,r...)
-```
+$
 In practice, (i.e. experimentally measured) the dot products are
 gaussian distributed, i.e. the data is distributed uniformly on a very
 high dimensional sphere.
 
+### Clustering
+Having a bizzillion points uniformly distributed on a high dimensional
+sphere is interesting but useless. The first thing we want to do is
+dimensional reduction by clustering. There are surely 101 different
+clustering algos. Pick one; pick several.
+
+Consider K-means. Take the high-dim sphere, sprinkle K random points
+on it, and assign vectors to the closest one. Duh.  That is, each
+vertex label in the set {A, B, ...} is assigned to one of K different
+clusters.
+
+Unfortunately, this K-means clustering is horrble and ugly, because
+although it reduced the bras $(A|$ to a small number, it did not reduce
+the kets $|p,q,r...)$, of which there are still a gazzilion. Well,
+sort-of. Given that each p,q,r,... is a vertex indicator plus a sex
+label, K-means clustering of the bras will give $K^m$ kets, where $m$ is
+the mean number of connectors on a jigsaw.  In total, then, there are
+$K^{m+1}$ such collections.
+
+Whatever. There are nicer clustering algos (which are more complex) that
+can maybe do a better job. That's not the point.
+
+### Axioms!
 
 
 
