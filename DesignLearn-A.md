@@ -241,7 +241,51 @@ Whatever. There are nicer clustering algos (which are more complex) that
 can maybe do a better job. That's not the point.
 
 ### Axioms!
+The word "axiom" is a fancy way of saying "we have abstracted down our
+collection of data to a very small number of clusters, and these
+clusters, still being jigsaw-like in nature, can still be assembled to
+generate structures.
 
+For example, all of set theory can be reduced to 17 axioms. As the set
+theory textbooks all point out: "Ooops! Actually 17 axioms plus an axiom
+schema! Too bad, so sad, lets continue."
 
+So, K-means clustering, as described above, will fail to discover the
+axioms of mathematics, at least in the naive first attempt. If we start
+from raw 3D space and time, then the perceived sensory data is what
+conventional robots peceive: sight, sound, radar, sonar. Whatever.
+
+We can certainly design robots that crawl filesystems, or crawl social
+media posts, and the clustering there will be textual. Experimental
+results of actually doing this gives, to first order in clustering,
+results that are comparable to results from the early days of Word2Vec,
+GloVE, and skipgrams, even though the algo I describe above is
+***completely different***.
+
+### Recursion
+The jigsaw-based approach above is resursive. Once I've created
+clusters of jigsaws, I can create new overlay networks (out of the
+jigsaw pieces, instead of pair-wise edges), and then repeat the process.
+The resulting pieces are more complex, more abstract. This recursive
+experiment is where things stopped last time; I want to restart, here,
+and see if it is as easily as I glibly hand-wave here.
+
+It is easy to imagine that the recursive step will be difficult, and
+fail. There is a counterpoint: each layer of a deep-learning system
+is a kind-of-ish-like recursive step. We de facto know that LLM's work
+really well. My personal belief is that a recursive jig-sawing of $M$
+steps will give capabilities and results comparable to a $M$-layer deep
+neural net.
+
+But the algo is very very different. LLM's are all about gradient
+descent and weight matrices. I'm talking about sheaves and jigsaws and
+self-assembly. Critical points and thermodynamics. It is foundationally
+completely different.
+
+(Who the heck am I writing this text for? This was going to be a think
+piece for my own personal consumption, but its turned into an exposition
+for the lay audience. ... Which is good for the audience, but bad for
+me, because I am repeating things I already know and believe, rather
+than moving forwards.)
 
 pairs.
