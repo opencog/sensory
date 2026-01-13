@@ -13,15 +13,15 @@ there. However, I want to incorporate the new ideas here, and so, for
 now, this chapter is here.
 
 The language learning started with computing pair-wise MI between words,
-then uusing this to create a network between words, then breaking up the
+then using this to create a network between words, then breaking up the
 network into jigsaws. The jigsaws were then clustered, and the clusters
 then used to parse the same text, again. This all worked fine. The next
 step of the plan was to then repeat: find correlations between these
-clustered jigsaws, then tile again, etc. ad ininfinitum. That step was
+clustered jigsaws, then tile again, etc. ad infinitum. That step was
 never taken, for two reasons:
 
 * Managing the batch processing pipeline became overwhelming. The
-  propsoed solution to that was to create sensori-motor agents that
+  proposed solution to that was to create sensori-motor agents that
   could crawl the data "of their own volition"; or rather, automated
   in such a way that I could aim agents at the data and have them
   process and digest without my explicit intervention at a low level.
@@ -38,7 +38,7 @@ never taken, for two reasons:
   at all with a sensori-motor design.
 
   The solution to that stumbling block was to develop the concept of
-  "flows" in Atomese: of flowng data that travels through networks
+  "flows" in Atomese: of flowing data that travels through networks
   defined declaratively in Atomese. This required lots of low-level
   grunt-work: defining Atoms that could add, multiply, accumulate,
   take dot-products, mask bits, transpose columns and tows, but also
@@ -103,23 +103,23 @@ axioms are specific building blocks that are assembled.
 The rules and axioms are jigsaw pieces; theorem proving is the assembly
 of these. If it is free an unconstrained, then it is generation; if its
 constrained, then some sort of satisfiability solver is needed: the
-jigsaw much assmble so as to build be bridge between constraints. The
+jigsaw much assemble so as to build be bridge between constraints. The
 satisfiability algorithm must be fast, but also the bridge that is build
-mst be minimal or optimal in some way.
+must be minimal or optimal in some way.
 
 ### Minimization
 The words "minimal" and "optimal" make me personally think of minimal
 surfaces: soap bubbles, for instance. Geodesics in Riemannian geometry.
 Assemblies of jigsaws do not have smooth differentiable structure, but
 still, some of the ideas carry over analogously, because there are
-several natural ideas of "minimal" for jigaw assemblies. For example:
+several natural ideas of "minimal" for jigsaw assemblies. For example:
 the assembly that uses the minimal number of pieces. Or, if we weight
 each piece with e.g. log probability (i.e. "entropy" or "information")
 then minimize the sum of that.
 
 ### Homtopic deformation
-The general "feel" of continutity is taken up by the Scott topology,
-where we can talk about the homotopic deformation of jigsaw aassemblies.
+The general "feel" of continuity is taken up by the Scott topology,
+where we can talk about the homotopic deformation of jigsaw assemblies.
 There is a very easy way of understanding this if you are a software
 programmer: a "homotopic deformation" is a "refactoring of the
 software". Any collection of small changes that can be made to a
@@ -138,7 +138,7 @@ work on bare assembly, but in abstract insn sets, the "intermediate
 language" being a way-point.
 
 But this analogy can be pushed "all the way": A compiler is a homotopic
-defomration of a C/C++ program into assembly code; an assembler is a
+deformation of a C/C++ program into assembly code; an assembler is a
 further deformation (and linking!) into machine binary. A bridge between
 two different representations that does not alter the function: Whatever
 the programmer wrote the C/C++ code to do, the machine binary will do
@@ -158,9 +158,9 @@ equations (the solution of which defines geodesics)? I don't know.
 Perhaps. People already run around claiming that one should maximize
 free energy (Gibbs free energy) or perhaps the "integrated information";
 all of these ideas imply some kind of differentiable structure minimized
-or maximized via some Euler-Lagrange-style differentail or difference
+or maximized via some Euler-Lagrange-style differential or difference
 eqns. I don't want to get hung up on the details, but rather the
-artistic impression: when there is stuff to be minimized and maximzed,
+artistic impression: when there is stuff to be minimized and maximized,
 and when one has paths that can take you from here to there in some
 quasi-continuous fashion, then one has some local difference-type
 gradient that helps figure out how to move.
@@ -185,7 +185,7 @@ I want, and I think it is possible, to have a system that self-reifies:
 a self-assembly of pieces that can figure out how to reason, deduce,
 prove, use logic and discover axioms. A system that can perceive
 structure, in a "sensori-" way, and can manipulate structure, in a
-"motor" kind of way. So a sensori-motor system that percives structure,
+"motor" kind of way. So a sensori-motor system that perceives structure,
 and acts on, manipulates that structure.
 
 ### Perceiving structure
@@ -215,7 +215,7 @@ $
     A . B = Sum_{p,q,r..}  N(A | p,q,r...) N(B | p,q,r...)
 $
 In practice, (i.e. experimentally measured) the dot products are
-gaussian distributed, i.e. the data is distributed uniformly on a very
+Gaussian distributed, i.e. the data is distributed uniformly on a very
 high dimensional sphere.
 
 ### Clustering
@@ -229,7 +229,7 @@ on it, and assign vectors to the closest one. Duh.  That is, each
 vertex label in the set {A, B, ...} is assigned to one of K different
 clusters.
 
-Unfortunately, this K-means clustering is horrble and ugly, because
+Unfortunately, this K-means clustering is horrible and ugly, because
 although it reduced the bras $(A|$ to a small number, it did not reduce
 the kets $|p,q,r...)$, of which there are still a gazzilion. Well,
 sort-of. Given that each p,q,r,... is a vertex indicator plus a sex
@@ -253,7 +253,7 @@ schema! Too bad, so sad, lets continue."
 So, K-means clustering, as described above, will fail to discover the
 axioms of mathematics, at least in the naive first attempt. If we start
 from raw 3D space and time, then the perceived sensory data is what
-conventional robots peceive: sight, sound, radar, sonar. Whatever.
+conventional robots perceive: sight, sound, radar, sonar. Whatever.
 
 We can certainly design robots that crawl filesystems, or crawl social
 media posts, and the clustering there will be textual. Experimental
@@ -291,7 +291,7 @@ than moving forwards.)
 Sound and Vision
 ----------------
 Writing the above was procrastination for writing this section. But now
-I'm so bored, I don't feel like writing this sectiion. Alas.
+I'm so bored, I don't feel like writing this section. Alas.
 
 The idea in a nutshell was to restart the jigsaw learning process, this
 time not just for natural language, but also for vision and sound.
@@ -322,14 +322,14 @@ agent to experiment with blur filter size? What is it doing, except
 being forced to dream?
 
 ### Rubiks
-Adam proposed somethng slightly more agentic: solving the rubiks cube.
+Adam proposed something slightly more agentic: solving the rubiks cube.
 The agent can "see" all the facets of the cube, and the agent can apply
 any of the basic moves, and see the resulting changes. The learning task
 is to see if the agent can learn to solve the cube.
 
 How should I think of this? "Solving" is finding a set of moves that
-take it from one (predeterimined, given) location in configuration
-space to another (predetermined, requested) location in confidguration
+take it from one (predetermined, given) location in configuration
+space to another (predetermined, requested) location in configuration
 space. To build a bridge, a sequence of moves, from one to the other. To
 solve a certain constraint satisfaction problem.
 
@@ -338,7 +338,7 @@ possible moves, and search for shortest paths from one configuration to
 another".  It would need to remember things that it tried. How do I, as
 a programmer, encode positions? How do I give it efficient high-speed
 search of memory of prior configurations and moves to get there? This
-trns into an engineering task, where I do the difficult engineering, so
+turns into an engineering task, where I do the difficult engineering, so
 that a small and stupid agent can rapidly solve a Rubiks cube? I don't
 think so.
 
