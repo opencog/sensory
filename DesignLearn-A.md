@@ -101,10 +101,10 @@ think of this process as being a kind of generation, where rules and
 axioms are specific building blocks that are assembled.
 
 The rules and axioms are jigsaw pieces; theorem proving is the assembly
-of these. If it is free an unconstrained, then it is generation; if its
+of these. If it is free and unconstrained, then it is generation; if its
 constrained, then some sort of satisfiability solver is needed: the
-jigsaw much assemble so as to build be bridge between constraints. The
-satisfiability algorithm must be fast, but also the bridge that is build
+jigsaw must assemble so as to build a bridge between constraints. The
+satisfiability algorithm must be fast, but also the bridge that is built
 must be minimal or optimal in some way.
 
 ### Minimization
