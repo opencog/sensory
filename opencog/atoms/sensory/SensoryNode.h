@@ -42,7 +42,7 @@ class SensoryNode : public ObjectCRTP<SensoryNode>
 protected:
 	SensoryNode(Type, const std::string&&);
 
-	static constexpr const char* messages[] = {
+	static constexpr const char* _messages[] = {
 		"*-open-*",
 		"*-close-*",
 		"*-write-*",
