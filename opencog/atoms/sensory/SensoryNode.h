@@ -42,6 +42,18 @@ class SensoryNode : public ObjectCRTP<SensoryNode>
 protected:
 	SensoryNode(Type, const std::string&&);
 
+	static constexpr const char* messages[] = {
+		"*-open-*",
+		"*-close-*",
+		"*-write-*",
+		"*-barrier-*",
+		"*-follow-*",
+		"*-connected?-*",
+		"*-read-*",
+		"*-stream-*",
+		"*-monitor-*"
+	};
+
 	/**
 	 * Default API that sensory nodes must provide. Similar to
 	 * the current StorageNode API.

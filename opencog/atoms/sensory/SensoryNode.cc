@@ -38,16 +38,6 @@ SensoryNode::SensoryNode(Type t, const std::string&& uri) :
 {
 	if (not nameserver().isA(t, SENSORY_NODE))
 		throw RuntimeException(TRACE_INFO, "Bad inheritance!");
-
-	addMessage("*-open-*");
-	addMessage("*-close-*");
-	addMessage("*-write-*");
-	addMessage("*-barrier-*");
-	addMessage("*-follow-*");
-	addMessage("*-connected?-*");
-	addMessage("*-read-*");
-	addMessage("*-stream-*");
-	addMessage("*-monitor-*");
 }
 
 SensoryNode::~SensoryNode()
