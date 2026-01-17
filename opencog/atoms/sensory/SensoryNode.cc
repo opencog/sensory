@@ -27,7 +27,6 @@
 #include <opencog/atoms/value/BoolValue.h>
 #include <opencog/atoms/value/StringValue.h>
 #include <opencog/atoms/value/VoidValue.h>
-#include "DispatchHash.h"
 #include "SensoryNode.h"
 
 using namespace opencog;
@@ -35,7 +34,7 @@ using namespace opencog;
 // ====================================================================
 
 SensoryNode::SensoryNode(Type t, const std::string&& uri) :
-	Node(t, std::move(uri))
+	ObjectCRTP<SensoryNode>(t, std::move(uri))
 {
 	if (not nameserver().isA(t, SENSORY_NODE))
 		throw RuntimeException(TRACE_INFO, "Bad inheritance!");
@@ -43,11 +42,6 @@ SensoryNode::SensoryNode(Type t, const std::string&& uri) :
 
 SensoryNode::~SensoryNode()
 {
-}
-
-std::string SensoryNode::monitor(void) const
-{
-	return "This SensoryNode does not implement a monitor.";
 }
 
 void SensoryNode::barrier(AtomSpace* as)

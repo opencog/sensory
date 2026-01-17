@@ -23,7 +23,7 @@
 #ifndef _OPENCOG_SENSORY_NODE_H
 #define _OPENCOG_SENSORY_NODE_H
 
-#include <opencog/atoms/base/Node.h>
+#include <opencog/atoms/core/ObjectNode.h>
 #include <opencog/sensory/types/atom_types.h>
 
 namespace opencog
@@ -34,18 +34,13 @@ namespace opencog
 
 // Dispatcher for setValue, getValue.
 // Also, holder of URL's.
-class SensoryNode : public Node
+class SensoryNode : public ObjectCRTP<SensoryNode>
 {
 	friend class ReadStream;
 	friend class StringStream;
 
 protected:
 	SensoryNode(Type, const std::string&&);
-
-	/**
-	 * Return debug diagnostics and/or performance monitoring stats.
-	 */
-	virtual std::string monitor(void) const;
 
 	/**
 	 * Default API that sensory nodes must provide. Similar to
