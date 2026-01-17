@@ -48,7 +48,6 @@ SensoryNode::SensoryNode(Type t, const std::string&& uri) :
 	addMessage("*-read-*");
 	addMessage("*-stream-*");
 	addMessage("*-monitor-*");
-
 }
 
 SensoryNode::~SensoryNode()
