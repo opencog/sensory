@@ -32,12 +32,16 @@ namespace opencog
  *  @{
  */
 
+class SensoryNode;
+extern template class ObjectCRTP<SensoryNode>;
+
 // Dispatcher for setValue, getValue.
 // Also, holder of URL's.
 class SensoryNode : public ObjectCRTP<SensoryNode>
 {
 	friend class ReadStream;
 	friend class StringStream;
+	friend class ObjectCRTP<SensoryNode>;
 
 protected:
 	SensoryNode(Type, const std::string&&);

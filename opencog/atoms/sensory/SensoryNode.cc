@@ -33,6 +33,8 @@ using namespace opencog;
 
 // ====================================================================
 
+template class ObjectCRTP<SensoryNode>;
+
 SensoryNode::SensoryNode(Type t, const std::string&& uri) :
 	ObjectCRTP<SensoryNode>(t, std::move(uri))
 {
