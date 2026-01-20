@@ -111,4 +111,37 @@
 
 (cog-execute! (Name "bootloader"))
 
+-----------------------------------------------
+
+(use-modules (opencog) (opencog persist) (opencog persist-rocks))
+
+(AtomSpace "bootstrap" (AtomSpaceOf (Link)))
+
+(PureExec
+	(SetValue
+		(RocksStorageNode "rocks:///tmp/foo")
+		(Predicate "*-open-*")
+		(AtomSpace "bootstrap"))
+
+	(SetValue
+		(RocksStorageNode "rocks:///tmp/foo")
+		(Predicate "*-load-atomspace-*")
+		(Link))
+
+	(Name "bootloader")
+	(AtomSpace "bootstrap"))
+
+(cog-set-atomspace! (AtomSpace "bootstrap"))
+
+(define (ola) (format #t "hello baby!\n"))
+(Pipe
+	(Name "bootloader")
+	(ExecutionOutput
+		(GroundedSchema "scm:ola")
+		(List)))
+
+(cog-execute! (Name "bootloader"))
+ice-9/boot-9.scm:1676:22: In procedure raise-exception:
+Atomspace C++ exception:
+(cog-execute! Cannot find definition for atom (Name "bootloader") ; [73f0cc62c128575f][/2026-01-19 05:39:02.437092980/1] (opencog/atoms/grant/UniqueLink.cc:169)
 
