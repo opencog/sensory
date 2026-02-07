@@ -13,17 +13,23 @@
 
 ; Open connection to an IRC server.
 
-(define chatnode (IRChatNode "echobot"))
+(define (Name "IRC botname") (IRChatNode "echobot"))
+(PipeLink
+	(NameNode "IRC botname")
+	(IRChatNode "echobot"))
+
 (Trigger
-	(SetValue chatnode (Predicate "*-open-*")
+	(SetValue (NameNode "IRC botname") (Predicate "*-open-*")
 	(Concept "irc://echobot@irc.libera.chat:6667")))
 
 ; The StreamValueOf automatically unqueues one message from the stream.
-(define bot-read (StreamValueOf chatnode (Predicate "*-stream-*")))
+(Pipe
+	(Name "IRC read")
+	(StreamValueOf (NameNode "IRC botname") (Predicate "*-stream-*")))
 
 ; Individual messages can be read like so:
-(Trigger bot-read)
-(Trigger bot-read)
+(Trigger (Name "IRC read"))
+(Trigger (Name "IRC read"))
 
 ; An alternate design would be to finish setting everything up, before
 ; opening a connection. But we want to demo it's operation as we go
@@ -65,10 +71,10 @@
 				(Variable "$from")
 				(Item "you said: ")
 				(Variable "$msg")))
-		bot-read))
+		(Name "IRC read")))
 
 (define private-echo
-	(SetValue chatnode (Predicate "*-write-*") make-private-reply))
+	(SetValue (Name "IRC botname") (Predicate "*-write-*") make-private-reply))
 
 ; Try it, once
 (Trigger private-echo)
@@ -119,12 +125,12 @@
 (define (make-applier CONCLUSION)
 	(Filter
 		(make-msg-rule CONCLUSION)
-		bot-read))
+		(Name "IRC read")))
 
 ; Convenience wrapper. Reads from IRC, extracts message, rewrites
 ; it into CONCLUSION, writes out to IRC.
 (define (make-echoer CONCLUSION)
-	(SetValue chatnode (Predicate "*-write-*") (make-applier CONCLUSION)))
+	(SetValue (Name "IRC botname") (Predicate "*-write-*") (make-applier CONCLUSION)))
 
 ; Most of the demos below need the bot to know it's own name.
 (cog-set-value! (Anchor "IRC Bot")
@@ -135,11 +141,11 @@
 ; to sit on some public channel, in order to work.
 
 ; Join a channel.
-(Trigger (SetValue chatnode (Predicate "*-write-*")
+(Trigger (SetValue (Name "IRC botname") (Predicate "*-write-*")
 	(List (Concept "JOIN #opencog"))))
 
 ; Leave a channel.
-(Trigger (SetValue chatnode (Predicate "*-write-*")
+(Trigger (SetValue (Name "IRC botname") (Predicate "*-write-*")
 	(List (Concept "PART #opencog"))))
 
 ; --------
@@ -293,7 +299,7 @@
 ;; So everything written to the logfile will be an ever-expanding blob.
 (define logger
 	(SetValue irc-log-file (Predicate "*-write-*")
-		(ValueOf chatnode (Predicate "*-stream-*"))))
+		(ValueOf (Name "IRC botname") (Predicate "*-stream-*"))))
 
 ; Don't do this, unless you want the blob, explained above.
 ; (Trigger (ExecuteThreaded logger))
@@ -315,7 +321,7 @@
 				(Item " Message: ")
 				(Variable "$msg")
 				(Item "\n")))
-		(StreamValueOf chatnode (Predicate "*-stream-*"))))
+		(StreamValueOf (Name "IRC botname") (Predicate "*-stream-*"))))
 
 ; The formatter runs fine: Try it, one line at a time
 (define one-at-a-time-logger
