@@ -108,25 +108,25 @@
 ; -----------------
 ; Part one: Some generic boilerplate that all pipelines will use.
 
-; Create a message-processiong rule. Accepts any input consisting
-; of a LinkValue holding an IRC message, extracts the three parts,
-; and then inserts the list of actoms in CONCLUSION. This is just
-; sugar to avoid lots of cut-n-paste.
-(define (make-msg-rule CONCLUSION)
-	(Rule
-		(VariableList
-			(Variable "$from") (Variable "$to") (Variable "$msg"))
-		(LinkSignature (Type 'LinkValue)
-			(Variable "$from") (Variable "$to") (Variable "$msg"))
-		(LinkSignature (Type 'LinkValue)
-			CONCLUSION)))
-
 ; Convenience wrapper.
+; The RuleLink defines a message-processiong rule. The Rule accepts
+; any input consisting of a LinkValue holding an IRC message, extracts
+; the three parts, and then inserts the list of actoms in CONCLUSION.
+;
+; The Filter is designed to pull from IRC, and apply the Rule to what
+; was pulled.
+;
 ; Note that executing this will hang, waiting on input, and so you
 ; have to say something to the bot before this returns.
 (define (make-applier CONCLUSION)
 	(Filter
-		(make-msg-rule CONCLUSION)
+		(Rule
+			(VariableList
+				(Variable "$from") (Variable "$to") (Variable "$msg"))
+			(LinkSignature (Type 'LinkValue)
+				(Variable "$from") (Variable "$to") (Variable "$msg"))
+			(LinkSignature (Type 'LinkValue)
+				CONCLUSION))
 		(Name "IRC read")))
 
 ; Convenience wrapper. Reads from IRC, extracts message, rewrites
