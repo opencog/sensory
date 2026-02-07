@@ -55,29 +55,32 @@
 ;
 ; The filter below, when executed, will pull in a single message,
 ; pattern match it, and write a private reply to the sender.
-; More correctly, executing `make-private-reply` will get one message,
-; and rewrite it; but that's it it doesn't send. The private-echo
-; below will read-modify-write.
+; More correctly, there is a named pipe, the output end of which is
+; given the name `(Name "private echo")`. When this endpoint is
+; pulled from, it will cause a filter to run. This filter will pull
+; from it's input, which happens to be another named pipe, having
+; the name `(Name "IRC read")`.  And when that pipe is pulled on,
+; it will go off the IRC bot and get one line, per  pull.
 
-(define make-private-reply
-	(Filter
-		(Rule
-			(VariableList
-				(Variable "$from") (Variable "$to") (Variable "$msg"))
-			(LinkSignature (Type 'LinkValue)
-				(Variable "$from") (Variable "$to") (Variable "$msg"))
-			(LinkSignature (Type 'LinkValue)
-				(Item "PRIVMSG")
-				(Variable "$from")
-				(Item "you said: ")
-				(Variable "$msg")))
-		(Name "IRC read")))
-
-(define private-echo
-	(SetValue (Name "IRC botname") (Predicate "*-write-*") make-private-reply))
+(Pipe
+	(Name "private echo")
+	(SetValue
+		(Name "IRC botname") (Predicate "*-write-*")
+		(Filter
+			(Rule
+				(VariableList
+					(Variable "$from") (Variable "$to") (Variable "$msg"))
+				(LinkSignature (Type 'LinkValue)
+					(Variable "$from") (Variable "$to") (Variable "$msg"))
+				(LinkSignature (Type 'LinkValue)
+					(Item "PRIVMSG")
+					(Variable "$from")
+					(Item "you said: ")
+					(Variable "$msg")))
+			(Name "IRC read"))))
 
 ; Try it, once
-(Trigger private-echo)
+(Trigger (Name "private echo"))
 
 ; The above works, but is "dangerous": if the bot is placed on a public
 ; channel, it will echo every post on that channel, back to the user who
