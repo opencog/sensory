@@ -85,7 +85,7 @@
 ; The above works, but is "dangerous": if the bot is placed on a public
 ; channel, it will echo every post on that channel, back to the user who
 ; sent it. This will get annoying, fast, and get the bot kicked. Some
-; sort of more restrained ehavior is needed.
+; sort of more restrained behavior is needed.
 ;
 ; In a pure agential design, the bot might perceive the kick, and
 ; perhaps might perceive a kick as painful, and use that as a
@@ -135,10 +135,6 @@
 (define (make-echoer CONCLUSION)
 	(SetValue (Name "IRC botname") (Predicate "*-write-*") (make-applier CONCLUSION)))
 
-; Most of the demos below need the bot to know it's own name.
-(cog-set-value! (Anchor "IRC Bot")
-	(Predicate "bot-name") (StringValue "echobot"))
-
 ; --------
 ; Below are a collection of examples. Some of these need the bot
 ; to sit on some public channel, in order to work.
@@ -170,7 +166,7 @@
 (define is-pub?
 	(Cond
 		(Equal (Variable "$to")
-			(ValueOf (Anchor "IRC Bot") (Predicate "bot-name")))
+			(Name "IRC botname"))
 		(Item "private message")
 		(Item "public message")))
 (Trigger (make-applier is-pub?))
@@ -197,7 +193,7 @@
 	(Cond
 		(Equal
 			(ElementOf (Number 0) (Variable "$msg"))
-			(ValueOf (Anchor "IRC Bot") (Predicate "bot-name")))
+			(Name "IRC botname"))
 		(Item "calls out the bot")
 		(Item "is just a message")))
 
@@ -225,11 +221,11 @@
 			; Is this a private message?
 			(Equal
 				(Variable "$to")
-				(ValueOf (Anchor "IRC Bot") (Predicate "bot-name")))
+				(Name "IRC botname"))
 			; Is this a public callout?
 			(Equal
 				(ElementOf (Number 0) (Variable "$msg"))
-				(ValueOf (Anchor "IRC Bot") (Predicate "bot-name"))))
+				(Name "IRC botname")))
 
 		; Always reply privately.
 		(LinkSignature
@@ -250,7 +246,7 @@
 		; Is this a private message?
 		(Equal
 			(Variable "$to")
-			(ValueOf (Anchor "IRC Bot") (Predicate "bot-name")))
+			(Name "IRC botname"))
 
 		; Always reply privately.
 		(LinkSignature
@@ -262,7 +258,7 @@
 		; Reply only if called out.
 		(Equal
 			(ElementOf (Number 0) (Variable "$msg"))
-			(ValueOf (Anchor "IRC Bot") (Predicate "bot-name")))
+			(Name "IRC botname"))
 
 		; Reply politely. Note target is $to, not $from
 		(LinkSignature
