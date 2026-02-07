@@ -9,12 +9,12 @@
 ; See `irc-api.scm` for a tutorial on the interfaces used here.
 ; See `xterm-bridge.scm` for a simple demo of hooking input to output.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog sensory))
 
 ; Open connection to an IRC server.
 
 (define chatnode (IRChatNode "echobot"))
-(cog-execute!
+(Trigger
 	(SetValue chatnode (Predicate "*-open-*")
 	(Concept "irc://echobot@irc.libera.chat:6667")))
 
@@ -22,8 +22,8 @@
 (define bot-read (StreamValueOf chatnode (Predicate "*-stream-*")))
 
 ; Individual messages can be read like so:
-(cog-execute! bot-read)
-(cog-execute! bot-read)
+(Trigger bot-read)
+(Trigger bot-read)
 
 ; An alternate design would be to finish setting everything up, before
 ; opening a connection. But we want to demo it's operation as we go
@@ -71,7 +71,7 @@
 	(SetValue chatnode (Predicate "*-write-*") make-private-reply))
 
 ; Try it, once
-(cog-execute! private-echo)
+(Trigger private-echo)
 
 ; The above works, but is "dangerous": if the bot is placed on a public
 ; channel, it will echo every post on that channel, back to the user who
@@ -135,23 +135,23 @@
 ; to sit on some public channel, in order to work.
 
 ; Join a channel.
-(cog-execute! (SetValue chatnode (Predicate "*-write-*")
+(Trigger (SetValue chatnode (Predicate "*-write-*")
 	(List (Concept "JOIN #opencog"))))
 
 ; Leave a channel.
-(cog-execute! (SetValue chatnode (Predicate "*-write-*")
+(Trigger (SetValue chatnode (Predicate "*-write-*")
 	(List (Concept "PART #opencog"))))
 
 ; --------
 ; Example: Show message
 ; This hangs, until you say something to the bot.
 (define show (list (Variable "$from") (Variable "$to") (Variable "$msg")))
-(cog-execute! (make-applier show))
+(Trigger (make-applier show))
 
 ; --------
 ; Example: No-op. Do nothing.
 (define null-reply (list))
-(cog-execute! (make-applier null-reply))
+(Trigger (make-applier null-reply))
 
 ; --------
 ; Example: Break down message into parts.
@@ -164,7 +164,7 @@
 			(ValueOf (Anchor "IRC Bot") (Predicate "bot-name")))
 		(Item "private message")
 		(Item "public message")))
-(cog-execute! (make-applier is-pub?))
+(Trigger (make-applier is-pub?))
 
 ; Create a private reply to the sender, printing message diagnostics.
 (define id-reply
@@ -177,7 +177,7 @@
 	(Variable "$from")
 	(Item ": ")
 	(Variable "$msg")))
-(cog-execute! (make-echoer id-reply))
+(Trigger (make-echoer id-reply))
 
 ; --------
 ; Example: Is the bot being called out?
@@ -204,7 +204,7 @@
 	is-callout?
 	(Item ": ")
 	(Variable "$msg")))
-(cog-execute! (make-echoer callout-reply))
+(Trigger (make-echoer callout-reply))
 
 ; --------
 ; Example: Reply privately to all messages on a private channel,
@@ -230,7 +230,7 @@
 				(Variable "$msg"))
 		(LinkSignature (Type 'LinkValue))))
 
-(cog-execute! (make-echoer private-reply-to-callout))
+(Trigger (make-echoer private-reply-to-callout))
 
 ; --------
 ; Example: Reply privately to all messages on a private channel,
@@ -268,20 +268,20 @@
 		; Ignore
 		(VoidValue)))
 
-(cog-execute! (make-echoer reply-to-callout))
+(Trigger (make-echoer reply-to-callout))
 
 ; --------
 ; Example: listen to everything, and write it to a file. This requires
 ; opening a log-file, and then piping chat content to that file.
 
 (define irc-log-file (TextFile "file:///tmp/irc-chatlog.txt"))
-(cog-execute!
+(Trigger
 	(SetValue irc-log-file (Predicate "*-open-*") (Type 'StringValue)))
 
 (cog-set-value! irc-log-file (Predicate "*-write-*")
 	(StringValue "Start of the log file\n"))
 
-;;; (cog-execute!
+;;; (Trigger
 ;;;	(SetValue irc-log-file (Predicate "*-close-*") (Type 'StringValue)))
 
 ;; This logger will pull everything from IRC (that the bit can hear)
@@ -296,7 +296,7 @@
 		(ValueOf chatnode (Predicate "*-stream-*"))))
 
 ; Don't do this, unless you want the blob, explained above.
-; (cog-execute! (ExecuteThreaded logger))
+; (Trigger (ExecuteThreaded logger))
 
 ; Instead, write a message formatter. This picks apart the message,
 ; wraps it in some delimiters, and prints to the logfile. Much nicer!
@@ -320,7 +320,7 @@
 ; The formatter runs fine: Try it, one line at a time
 (define one-at-a-time-logger
 	(SetValue irc-log-file (Predicate "*-write-*") format-for-logger))
-(cog-execute! one-at-a-time-logger)
+(Trigger one-at-a-time-logger)
 
 ; But we don't want a one-a-a-time interface; we want this to run
 ; indefinitely.  For that, we need a promise, that can pull items
@@ -334,7 +334,7 @@
 		(CollectionOf (TypeNode 'FutureStream) (OrderedLink format-for-logger))))
 
 ; Run the logger in it's own thread.
-(cog-execute! (ExecuteThreaded logger))
+(Trigger (ExecuteThreaded logger))
 
 ; The End. That's all, folks!
 ; -------------------------------------------------------
