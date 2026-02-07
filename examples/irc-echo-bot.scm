@@ -13,19 +13,18 @@
 
 ; Open connection to an IRC server.
 
-(define (Name "IRC botname") (IRChatNode "echobot"))
 (PipeLink
-	(NameNode "IRC botname")
+	(NameNode "IRC chat object")
 	(IRChatNode "echobot"))
 
 (Trigger
-	(SetValue (NameNode "IRC botname") (Predicate "*-open-*")
+	(SetValue (NameNode "IRC chat object") (Predicate "*-open-*")
 	(Concept "irc://echobot@irc.libera.chat:6667")))
 
 ; The StreamValueOf automatically unqueues one message from the stream.
 (Pipe
 	(Name "IRC read")
-	(StreamValueOf (NameNode "IRC botname") (Predicate "*-stream-*")))
+	(StreamValueOf (NameNode "IRC chat object") (Predicate "*-stream-*")))
 
 ; Individual messages can be read like so:
 (Trigger (Name "IRC read"))
@@ -65,7 +64,7 @@
 (Pipe
 	(Name "private echo")
 	(SetValue
-		(Name "IRC botname") (Predicate "*-write-*")
+		(Name "IRC chat object") (Predicate "*-write-*")
 		(Filter
 			(Rule
 				(VariableList
@@ -133,18 +132,18 @@
 ; Convenience wrapper. Reads from IRC, extracts message, rewrites
 ; it into CONCLUSION, writes out to IRC.
 (define (make-echoer CONCLUSION)
-	(SetValue (Name "IRC botname") (Predicate "*-write-*") (make-applier CONCLUSION)))
+	(SetValue (Name "IRC chat object") (Predicate "*-write-*") (make-applier CONCLUSION)))
 
 ; --------
 ; Below are a collection of examples. Some of these need the bot
 ; to sit on some public channel, in order to work.
 
 ; Join a channel.
-(Trigger (SetValue (Name "IRC botname") (Predicate "*-write-*")
+(Trigger (SetValue (Name "IRC chat object") (Predicate "*-write-*")
 	(List (Concept "JOIN #opencog"))))
 
 ; Leave a channel.
-(Trigger (SetValue (Name "IRC botname") (Predicate "*-write-*")
+(Trigger (SetValue (Name "IRC chat object") (Predicate "*-write-*")
 	(List (Concept "PART #opencog"))))
 
 ; --------
@@ -161,12 +160,16 @@
 ; --------
 ; Example: Break down message into parts.
 
+; Return the bot name as a StringValue
+(PipeLink
+	(NameNode "IRC botname")
+	(LinkSignature (Type 'StringValue) (Name "IRC chat object")))
+
 ; Is it a public or private message?
 ; It is private if (Variable "$to") is the name of the bot.
 (define is-pub?
 	(Cond
-		(Equal (Variable "$to")
-			(Name "IRC botname"))
+		(Equal (Variable "$to") (Name "IRC botname"))
 		(Item "private message")
 		(Item "public message")))
 (Trigger (make-applier is-pub?))
