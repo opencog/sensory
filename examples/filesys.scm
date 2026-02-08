@@ -50,40 +50,30 @@
 (Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
 
 ; -----------------------------------------------------------
-; Run command-response pairs. Each pair writes a command, then reads
-; the result.
+; Run command-response pairs. Each pair writes a command, then
+; reads the result. For convenience, the pair is wrapped up into
+; a DefinedSchema that does both ops.
 
-(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
-	(Item "pwd")))
-(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
+(Define
+	(DefinedSchema "run filesys command")
+	(Lambda
+		(Variable "$cmd")
+		(PureExec
+			(SetValue (NameNode "fsnode") (Predicate "*-write-*")
+				(Variable "$cmd"))
+			(ValueOf (NameNode "fsnode") (Predicate "*-read-*")))))
 
-(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
-	(Item "ls")))
-(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
 
-(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
-	(Item "special")))
-(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
+(Trigger (Put (DefinedSchema "run filesys command") (Item "pwd")))
+(Trigger (Put (DefinedSchema "run filesys command") (Item "ls")))
+(Trigger (Put (DefinedSchema "run filesys command") (Item "special")))
+(Trigger (Put (DefinedSchema "run filesys command") (Item "btime")))
+(Trigger (Put (DefinedSchema "run filesys command") (Item "mtime")))
+(Trigger (Put (DefinedSchema "run filesys command") (Item "filesize")))
 
-(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
-	(Item "btime")))
-(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
-
-(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
-	(Item "mtime")))
-(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
-
-(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
-	(Item "filesize")))
-(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
-
-(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
+(Trigger (Put (DefinedSchema "run filesys command")
 	(List (Item "cd") (Item "file:///home"))))
-(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
-
-(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
-	(Item "ls")))
-(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
+(Trigger (Put (DefinedSchema "run filesys command") (Item "ls")))
 
 ; --------------------------------------------------------
 ; Directories can also be watched for file additions, removals and
