@@ -4,91 +4,113 @@
 ; Demo of the basic IRC interface. The API offers a simple way to
 ; connect to IRC and exchange messages.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+; See `irc-echo-bot.scm` for a more complex demo that builds on
+; these basic concepts.
+;
+; HINT: The demo below makes use of NameNodes and DefinedSchemas.
+; These can only be defined once, ever. Attempting a redefinition will
+; throw an exception. So if you want to experiment, you will need to
+; erase these. You can do this with (DeleteRecursive (Name "whatever"))
+; or (DeleteRecursive (DefinedSchemaNode "stuffs")).
+;
+(use-modules (opencog) (opencog sensory))
 
 ; --------------------------------------------------------
 ; Basic demo: Open a connection to an IRC node. The connection
 ; is given by a URL of the form
 ; irc://nick[:pass]@host[:port]
 ;
-(define chatnode (IRChatNode "blondie"))
-(cog-set-value! chatnode (Predicate "*-open-*")
-	(StringValue "irc://blondie@irc.libera.chat:6667"))
+; The NameNode is just a handy handle that we can use in the
+; Atomese code, so that the chatbot name is not hard-coded
+; further on in this demo.
+(PipeLink
+	(NameNode "IRC chat object")
+	(IRChatNode "blondie"))
 
-; Repeated references to the stream will return single lines from
-; the file.
-(cog-execute! (ValueOf chatnode (Predicate "*-read-*")))
+; Open the connection.
+(Trigger
+	(SetValue (NameNode "IRC chat object") (Predicate "*-open-*")
+	(Concept "irc://blondie@irc.libera.chat:6667")))
+
+; Repeated references to the read predicate will return single lines
+; from the server.
+(Trigger (ValueOf (NameNode "IRC chat object") (Predicate "*-read-*")))
 
 ; Join an IRC channel
-(cog-set-value! chatnode (Predicate "*-write-*")
-	(List (Concept "JOIN") (Concept "#opencog")))
+(Trigger (SetValue (NameNode "IRC chat object") (Predicate "*-write-*")
+	(List (Concept "JOIN") (Concept "#opencog"))))
 
 ; Say something on that channel
-(cog-set-value! chatnode (Predicate "*-write-*")
+(Trigger (SetValue (NameNode "IRC chat object") (Predicate "*-write-*")
 	(List (Concept "PRIVMSG") (Concept "#opencog")
-		(Concept "Here's a bunch of words I want to say")))
+		(Concept "Here's a bunch of words I want to say"))))
 
 ; ------------------------------------------------------------
 ; The above explicitly provides IRC commands and text as Atoms.
 ; For agents, it is more convenient to flow these as a stream.
-; For this purpose, create a WriteLink that, when executed, will
-; copy from the input stream to the IRC stream.
-(define writer
+; For this purpose, create a SetValue that, when executed, will
+; copy from the input key to the IRC stream.
+(Define
+	(DefinedSchema "writer")
 	(SetValue
-		chatnode (Predicate "*-write-*")
+		(NameNode "IRC chat object") (Predicate "*-write-*")
 		(ValueOf (Anchor "Stuff to say") (Predicate "say key"))))
 
 ; From this point on, commands are streamed by placing them
 ; onto the input key, and then executing the writer.
-; This time, the stream is a StringValue vector, instead of the
-; ConceptNodes above.
 
 ; Specify a channel to join
-(cog-set-value!
+(Trigger (SetValue
 	(Anchor "Stuff to say") (Predicate "say key")
-	(StringValue "JOIN" "#opencog"))
+	(List (Concept "JOIN") (Concept "#opencog"))))
 
 ; Join that channel
-(cog-execute! writer)
+(Trigger (DefinedSchema "writer"))
 
 ; Specify something to say.
-(cog-set-value!
+(Trigger (SetValue
 	(Anchor "Stuff to say") (Predicate "say key")
-	(StringValue "PRIVMSG" "#opencog" "I have something to say"))
+	(List (Concept "PRIVMSG") (Concept "#opencog")
+		(Concept "I have something to say"))))
 
 ; Say something
-(cog-execute! writer)
+(Trigger (DefinedSchema "writer"))
 
 ; ------------------------------------------------------------
 
 ; Low-level command: change a nick.
-(cog-set-value! chatnode (Predicate "*-write-*")
-	(List (Concept "NICK dorkbot")))
+(Trigger (SetValue (NameNode "IRC chat object") (Predicate "*-write-*")
+	(List (Concept "NICK dorkbot"))))
 
 ; Low-level command: list all channels w/ channel info
-(cog-set-value! chatnode (Predicate "*-write-*")
-	(List (Concept "LIST")))
+(Trigger (SetValue (NameNode "IRC chat object") (Predicate "*-write-*")
+	(List (Concept "LIST"))))
 
 ; Low-level command: list details about one channel
-(cog-set-value! chatnode (Predicate "*-write-*")
-	(List (Concept "LIST #opencog")))
+(Trigger (SetValue (NameNode "IRC chat object") (Predicate "*-write-*")
+	(List (Concept "LIST #opencog"))))
 
 ; Low-level command: all channels w/nicks in the channel
-(cog-set-value! chatnode (Predicate "*-write-*")
-	(List (Concept "NAMES")))
+(Trigger (SetValue (NameNode "IRC chat object") (Predicate "*-write-*")
+	(List (Concept "NAMES"))))
 
 ; Low-level command: nicks of users in a channel
-(cog-set-value! chatnode (Predicate "*-write-*")
-	(List (Concept "NAMES #opencog")))
+(Trigger (SetValue (NameNode "IRC chat object") (Predicate "*-write-*")
+	(List (Concept "NAMES #opencog"))))
 
 ; Low-level command: set channel topic.
-(cog-set-value! chatnode (Predicate "*-write-*")
-	(List (Concept "TOPIC #opencog Who's an operator now")))
+(Trigger (SetValue (NameNode "IRC chat object") (Predicate "*-write-*")
+	(List (Concept "TOPIC #opencog Who's an operator now"))))
 
-(cog-set-value! chatnode (Predicate "*-write-*")
-	(List (Concept "HELP")))
+(Trigger (SetValue (NameNode "IRC chat object") (Predicate "*-write-*")
+	(List (Concept "HELP"))))
 
 ; HELP is one of the IRC server commands.
+
+; --------------------------------------------------------
+; Close the connection, and exit.
+(Trigger
+	(SetValue (NameNode "IRC chat object") (Predicate "*-close-*")))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
