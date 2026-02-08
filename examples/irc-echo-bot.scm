@@ -178,8 +178,8 @@
 	(DefinedSchema "is public?")
 	(Cond
 		(Equal (Variable "$to") (Name "IRC botname"))
-		(Item "Got a private message")
-		(Item "Adressed on a public channel")))
+		(Item "private message")
+		(Item "public message")))
 
 ; As before, this will hang until a message is sent to the bot.
 (Trigger
@@ -187,26 +187,47 @@
 		(DefinedSchema "message rewriter")
 		(DefinedSchema "is public?")))
 
-; Create a private reply to the sender, printing message diagnostics.
-(define id-reply
-	(list (Item "PRIVMSG") (Variable "$from")
-	(Item "Message to ")
-	(Variable "$to")
-	(Item " is a ")
-	is-pub?
-	(Item " from ")
-	(Variable "$from")
-	(Item ": ")
-	(Variable "$msg")))
-(Trigger (make-echoer id-reply))
-
 ; --------
-; Building on the above
-; Convenience wrapper. Reads from IRC, extracts message, rewrites
-; it into CONCLUSION, writes out to IRC.
-(define (make-echoer CONCLUSION)
-	(SetValue (Name "IRC chat object") (Predicate "*-write-*")
-		(LinkSignature (Type 'LinkValue) (make-applier CONCLUSION))))
+; Define a message responder. Much like the previously defined
+; (DefinedSchema "message rewriter"), this is a generic function
+; that will push the rewrite back out to IRC. Whether the response
+; shows as a private message, or a public message depends on the
+; specific rewrite. Both will be demoed below.
+;
+(Define
+	(DefinedSchema "responder")
+	(Lambda
+		(Variable "rewrite of message")
+		(SetValue (Name "IRC chat object") (Predicate "*-write-*")
+			(LinkSignature (Type 'LinkValue)
+				(Put
+					(DefinedSchema "message rewriter")
+					(Variable "rewrite of message"))))))
+
+
+; Create a private reply to the sender, printing message diagnostics.
+(Define
+	(DefinedSchema "private reply")
+	(LinkSignature (Type 'LinkValue)
+		(Item "PRIVMSG")
+		(Variable "$from")
+		(Item "Message to ")
+		(Variable "$to")
+		(Item " is a ")
+		(DefinedSchema "is public?")
+		(Item " from ")
+		(Variable "$from")
+		(Item ": ")
+		(Variable "$msg")))
+
+; Run the above. This requires two triggers, an artifact of using
+; two nested PutLinks instead of one. The first trigger assembles
+; the message handler; the second runs it.
+(Trigger (Trigger
+	(Put
+		(DefinedSchema "responder")
+		(DefinedSchema "private reply"))))
+
 
 ; --------
 ; Example: Is the bot being called out?
