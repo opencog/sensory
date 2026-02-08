@@ -348,33 +348,41 @@
 ; Example: listen to everything, and write it to a file. This requires
 ; opening a log-file, and then piping chat content to that file.
 
-(define irc-log-file (TextFile "file:///tmp/irc-chatlog.txt"))
-(Trigger
-	(SetValue irc-log-file (Predicate "*-open-*") (Type 'StringValue)))
+(Pipe
+	(Name "irc log file")
+	(TextFile "file:///tmp/irc-chatlog.txt"))
 
-(cog-set-value! irc-log-file (Predicate "*-write-*")
-	(StringValue "Start of the log file\n"))
+(Trigger
+	(SetValue (Name "irc log file") (Predicate "*-open-*")
+	(Type 'StringValue)))
+
+(Trigger
+	(SetValue (Name "irc log file") (Predicate "*-write-*")
+	(Item "Start of the log file\n")))
 
 ;;; (Trigger
-;;;	(SetValue irc-log-file (Predicate "*-close-*") (Type 'StringValue)))
+;;;	(SetValue (Name "irc log file") (Predicate "*-close-*")))
 
-;; This logger will pull everything from IRC (that the bit can hear)
+;; This logger will pull everything from IRC (that the bot can hear)
 ;; and will write it to the logfile. It will do this forever, i.e.
-;; it's an infini9te loop, so it needs to be run in it's own thread.
+;; it's an infinite loop, so it needs to be run in it's own thread.
 ;;
 ;; It works, except that there's a small problem: There are no newlines
-;; at the end of messages, and the send & recipient are not demarcated.
+;; at the end of messages, and the sender & recipient are not demarcated.
 ;; So everything written to the logfile will be an ever-expanding blob.
-(define logger
-	(SetValue irc-log-file (Predicate "*-write-*")
-		(ValueOf (Name "IRC botname") (Predicate "*-stream-*"))))
+(Define
+	(DefinedSchema "IRC logger")
+	(SetValue (Name "irc log file") (Predicate "*-write-*")
+		(ValueOf (Name "IRC chat object") (Predicate "*-stream-*"))))
 
 ; Don't do this, unless you want the blob, explained above.
-; (Trigger (ExecuteThreaded logger))
+; (Really. Don't.)
+; (Trigger (ExecuteThreaded (DefinedSchema "IRC logger")))
 
 ; Instead, write a message formatter. This picks apart the message,
 ; wraps it in some delimiters, and prints to the logfile. Much nicer!
-(define format-for-logger
+(Define
+	(DefinedSchema "IRC formatted logger")
 	(Filter
 		(Rule
 			(VariableList
@@ -389,12 +397,15 @@
 				(Item " Message: ")
 				(Variable "$msg")
 				(Item "\n")))
-		(StreamValueOf (Name "IRC botname") (Predicate "*-stream-*"))))
+		(StreamValueOf (Name "IRC chat object") (Predicate "*-stream-*"))))
 
 ; The formatter runs fine: Try it, one line at a time
-(define one-at-a-time-logger
-	(SetValue irc-log-file (Predicate "*-write-*") format-for-logger))
-(Trigger one-at-a-time-logger)
+(Define
+	(DefinedSchema "One at a time logger")
+	(SetValue (Name "irc log file") (Predicate "*-write-*")
+		(DefinedSchema "IRC formatted logger")))
+
+(Trigger (DefinedSchema "One at a time logger"))
 
 ; But we don't want a one-a-a-time interface; we want this to run
 ; indefinitely.  For that, we need a promise, that can pull items
