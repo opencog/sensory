@@ -23,6 +23,7 @@
 #include <opencog/util/exceptions.h>
 #include <opencog/util/oc_assert.h>
 #include <opencog/atoms/base/Node.h>
+#include <opencog/atoms/value/BoolValue.h>
 #include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atoms/value/StringValue.h>
 #include <opencog/atoms/value/VoidValue.h>
@@ -54,18 +55,7 @@ IRChatNode::IRChatNode(const std::string&& str) :
 
 IRChatNode::~IRChatNode()
 {
-	if (nullptr == _conn) return;
-	_cancel = true;
-
-	// We can send a quit, but then we never actually
-	// wait for the quit reply. So .. whatever.
-	_conn->quit("Adios");
-	_conn->disconnect();
-
-	_loop->join();
-	delete _loop;
-
-	_qvp = nullptr;
+	close(nullptr);
 }
 
 // ==================================================================
@@ -186,8 +176,24 @@ void IRChatNode::open(const ValuePtr& vurl)
 
 void IRChatNode::close(const ValuePtr& ignore)
 {
-	_qvp = nullptr;
 	printf("Called IRChatNode::close\n");
+
+	if (nullptr == _conn) return;
+	_cancel = true;
+
+	// We can send a quit, but then we never actually
+	// wait for the quit reply. So .. whatever.
+	_conn->quit("Adios");
+	_conn->disconnect();
+
+	_loop->join();
+	delete _loop;
+	_loop = nullptr;
+
+	delete _conn;
+	_conn = nullptr;
+
+	_qvp = nullptr;
 }
 
 bool IRChatNode::connected(void) const
@@ -470,13 +476,23 @@ void IRChatNode::write_one(const ValuePtr& command_data)
 			if (vp->is_node())
 				cmd.push_back(HandleCast(vp)->get_name());
 
-			// FalseLink is the result of a no-op. So do nothing.
-			else if (FALSE_LINK == vp->get_type())
+			// Zero-sized messages are no-ops. They might be explicit
+			// VoidValue, or an empty LinkValue or empty FalseLink, etc.
+			else if (0 == vp->size())
+				return;
+
+			// (BoolValue #f) is also used to denote no-message...
+			else if (vp->is_type(BOOL_VALUE) and
+			         1 == vp->size() and
+			         0 == BoolValueCast(vp)->get_bit(0))
 				return;
 
 			else
-				throw RuntimeException(TRACE_INFO,
-					"Expecting node or string; got %s\n", vp->to_string().c_str());
+				// Well, we culd throw, but, for debugging, it is
+				// useful to just print the raw Atomese. So print, instead.
+				// throw RuntimeException(TRACE_INFO,
+				//	"Expecting node or string; got %s\n", vp->to_string().c_str());
+				cmd.push_back(vp->to_string().c_str());
 		}
 		run_cmd(cmd);
 		return;
