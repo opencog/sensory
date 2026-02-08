@@ -65,9 +65,9 @@
 ; all dataflows in Atomese, as graphs, and not in scheme/python/etc.
 
 (define (b-to-a-loop)
-	(cog-execute! (DefinedSchema "copy one b to a")) (b-to-a-loop))
+	(Trigger (DefinedSchema "copy one b to a")) (b-to-a-loop))
 (define (a-to-b-loop)
-	(cog-execute! (DefinedSchema "copy one a to b")) (a-to-b-loop))
+	(Trigger (DefinedSchema "copy one a to b")) (a-to-b-loop))
 
 ; Because we want to run both loops at the same time, they each need to
 ; go into their own threads.
