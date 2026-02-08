@@ -449,5 +449,9 @@
 (Trigger (ExecuteThreaded
 	(DrainLink (DefinedSchema "the echoer")))
 
+; We can leave the above going forever. Or we can quit.
+(Trigger
+	(SetValue (NameNode "IRC chat object") (Predicate "*-close-*")))
+
 ; The End. That's all, folks!
 ; -------------------------------------------------------
