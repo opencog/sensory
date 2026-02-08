@@ -55,7 +55,6 @@ IRChatNode::IRChatNode(const std::string&& str) :
 
 IRChatNode::~IRChatNode()
 {
-	if (nullptr == _conn) return;
 	close(nullptr);
 }
 
@@ -178,6 +177,8 @@ void IRChatNode::open(const ValuePtr& vurl)
 void IRChatNode::close(const ValuePtr& ignore)
 {
 	printf("Called IRChatNode::close\n");
+
+	if (nullptr == _conn) return;
 	_cancel = true;
 
 	// We can send a quit, but then we never actually
@@ -187,10 +188,12 @@ void IRChatNode::close(const ValuePtr& ignore)
 
 	_loop->join();
 	delete _loop;
-
 	_loop = nullptr;
-	_qvp = nullptr;
+
+	delete _conn;
 	_conn = nullptr;
+
+	_qvp = nullptr;
 }
 
 bool IRChatNode::connected(void) const
