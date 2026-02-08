@@ -25,7 +25,7 @@
 ; Count the number of word-pairs, and compute the MI between them,
 ; using nothing but a pure Atomese pipeline, continuing the below.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog sensory))
 (use-modules (opencog lg))
 
 ; Before running this demo, copy `demo.txt` to the /tmp directory.
@@ -34,50 +34,57 @@
 ; --------------------------------------------------------
 ; Set up the text source.
 
-(define file-node (TextFile "file:///tmp/demo.txt"))
-(define opener
-	(SetValue file-node (Predicate "*-open-*") (Type 'StringValue)))
-(cog-execute! opener)
+(PipeLink (NameNode "file node") (TextFile "file:///tmp/demo.txt"))
+
+(Define
+	(DefinedSchema "opener")
+	(SetValue (NameNode "file node") (Predicate "*-open-*")
+		(Type 'StringValue)))
+
+(Trigger (DefinedSchema "opener"))
 
 ; Create initial source anchor.
-(cog-execute!
+(Trigger
 	(SetValue (Anchor "parse pipe") (Predicate "text source")
-		(DontExec (ValueOf file-node (Predicate "*-stream-*")))))
+		(DontExec (ValueOf (NameNode "file node") (Predicate "*-stream-*")))))
 
 ; Anchor reference
-(define txt-stream
+(Pipe
+	(Name "txt stream")
 	(ValueOf (Anchor "parse pipe") (Predicate "text source")))
 
 ; Sniff test: does it work?
-; (cog-execute! txt-stream)
+; (Trigger (Name "txt stream"))
 
 ; --------------------------------------------------------
 ; A rule to parse text using the (old) LG English parser.
 ; Output is a pair of LinkValues: one containing the words
 ; in the sentence, and another with the links.
-(define parser
+(Define
+	(DefinedSchema "parser")
 	(Filter
 		(Rule
 			(TypedVariable (Variable "$x") (Type 'StringStream))
 			; (Variable "$x") ; Use this for the untyped vardecl
 			(Variable "$x")
 			(LgParseBonds (Variable "$x") (LgDict "en") (Number 4)))
-		txt-stream))
+		(Name "txt stream")))
 
 ; Sniff test. Does it work?
-; (cog-execute! parser)
+; (Trigger (DefinedSchema "parser"))
 
 ; Create the anchor for the parsed text.
-(cog-execute!
+(Trigger
 	(SetValue (Anchor "parse pipe") (Predicate "parsed text")
-		(DontExec parser)))
+		(DontExec (DefinedSchema "parser"))))
 
 ; Anchor reference
-(define parse-stream
+(Pipe
+	(Name "parse stream")
 	(ValueOf (Anchor "parse pipe") (Predicate "parsed text")))
 
 ; Sniff test. Does it work?
-; (cog-execute! parse-stream)
+; (Trigger (Name "parse stream"))
 
 ; --------------------------------------------------------
 ; The parser above was configured to generate four linkages (parses)
@@ -92,25 +99,27 @@
 ; The declaration is simple: just promise to apply the flattener
 ; to the parse stream. Well, the flattener striped off one too
 ; many layers, so the LinkSignature puts one layer back.
-(define linker
+(Define
+	(DefinedSchema "linker")
 	(LinkSignature (Type 'LinkValue)
 		(CollectionOfLink (Type 'FlatStream)
-			(OrderedLink parse-stream))))
+			(OrderedLink (Name "parse stream")))))
 
 ; Sniff test. Does it work?
-; (cog-execute! linker)
+; (Trigger (DefinedSchema "linker"))
 
 ; Just like the above. Create the anchor for the linkages.
-(cog-execute!
+(Trigger
 	(SetValue (Anchor "parse pipe") (Predicate "linkage stream")
-		linker))
+		(DefinedSchema "linker")))
 
 ; Just as before: the Anchor reference to the stream of linkages.
-(define linkage-stream
+(Pipe
+	(Name "linkage stream")
 	(ValueOf (Anchor "parse pipe") (Predicate "linkage stream")))
 
 ; Sniff test. Does it work?
-; (cog-execute! linkage-stream)
+; (Trigger (Name "linkage stream"))
 
 ; --------------------------------------------------------
 ; Each linkage has two parts: a word-list, and a list of linkages
@@ -120,7 +129,8 @@
 ; we want to access only the bond list. The filer below will extract
 ; this.
 
-(define bonder
+(Define
+	(DefinedSchema "bonder")
 	(Filter
 		(Rule
 			(VariableList
@@ -130,37 +140,40 @@
 				(Variable "$words")
 				(Variable "$bonds"))
 			(Variable "$bonds"))
-		linkage-stream))
+		(Name "linkage stream")))
 
 ; Sniff test. Does it work?
-; (cog-execute! bonder)
+; (Trigger (DefinedSchema "bonder"))
 
 ; The above creates a double-wrapped list. Peel off one layer.
-(define unwrapper
+(Define
+	(DefinedSchema "unwrapper")
 	(CollectionOfLink (Type 'FlatStream)
-			(OrderedLink bonder)))
+		(OrderedLink (DefinedSchema "bonder"))))
 
 ; Sniff test. Does it work?
-; (cog-value->list (cog-execute! unwrapper))
+; (cog-value->list (Trigger (DefinedSchema "unwrapper")))
 
 ; Create the anchor for the word bonds
-(cog-execute!
+(Trigger
 	(SetValue (Anchor "parse pipe") (Predicate "word bonds")
-		(DontExec unwrapper)))
+		(DontExec (DefinedSchema "unwrapper"))))
 
 ; Anchor reference
-(define bond-stream
+(Pipe
+	(Name "bond stream")
 	(ValueOf (Anchor "parse pipe") (Predicate "word bonds")))
 
 ; Sniff test. Does it work?
-; (cog-execute! bond-stream)
+; (Trigger (Name "bond stream"))
 
 ; --------------------------------------------------------
 ; With the bonds between word-pairs available, one may now begin
 ; statistical analysis. A good place to begin is simply counting
 ; word-pairs.
 
-(define counter
+(Define
+	(DefinedSchema "counter")
 	(Filter
 		(Rule
 			(TypedVariable (Variable "$edge") (Type 'Edge))
@@ -169,22 +182,23 @@
 				(Variable "$edge")
 				(Predicate ":edge-count:")
 				(Number 1)))
-		bond-stream))
+		(Name "bond stream")))
 
 ; Sniff test. Does it work?
-; (cog-execute! counter)
+; (Trigger (DefinedSchema "counter"))
 
 ; Create the anchor for the word bonds
-(cog-execute!
+(Trigger
 	(SetValue (Anchor "parse pipe") (Predicate "counted bonds")
-		(DontExec counter)))
+		(DontExec (DefinedSchema "counter"))))
 
 ; Anchor reference
-(define counted-stream
+(Pipe
+	(Name "counted stream")
 	(ValueOf (Anchor "parse pipe") (Predicate "counted bonds")))
 
 ; Sniff test. Does it work?
-; (cog-execute! counted-stream)
+; (Trigger (Name "counted stream"))
 
 ; --------------------------------------------------------
 ; The demo above always shows one step at a time. In practice,
@@ -195,10 +209,10 @@
 ; the it will return.
 ;
 ; Like so:
-(cog-execute! (Drain counted-stream))
+(Trigger (Drain (Name "counted stream")))
 
 ; For an infinite stream, it can be run in it's own thread:
-(cog-execute! (Parallel (Drain counted-stream)))
+(Trigger (ExecuteThreaded (Drain (Name "counted stream"))))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
