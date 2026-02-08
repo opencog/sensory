@@ -164,21 +164,28 @@
 	(List (Concept "PART #opencog"))))
 
 ; --------
-; Example: Break down message into parts.
+; Example: Determine if the bot is being addressed on public channel,
+; or if it is in a private chat.
 
-; Return the bot name as a StringValue
+; Utility: Return the bot name as a StringValue
 (PipeLink
 	(NameNode "IRC botname")
 	(LinkSignature (Type 'StringValue) (Name "IRC chat object")))
 
 ; Is it a public or private message?
 ; It is private if (Variable "$to") is the name of the bot.
-(define is-pub?
+(Define
+	(DefinedSchema "is public?")
 	(Cond
 		(Equal (Variable "$to") (Name "IRC botname"))
-		(Item "private message")
-		(Item "public message")))
-(Trigger (make-applier is-pub?))
+		(Item "Got a private message")
+		(Item "Adressed on a public channel")))
+
+; As before, this will hang until a message is sent to the bot.
+(Trigger
+	(Put
+		(DefinedSchema "message rewriter")
+		(DefinedSchema "is public?")))
 
 ; Create a private reply to the sender, printing message diagnostics.
 (define id-reply
