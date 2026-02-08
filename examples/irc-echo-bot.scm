@@ -11,12 +11,15 @@
 ;
 (use-modules (opencog) (opencog sensory))
 
-; Open connection to an IRC server.
-
+; The chatbot will be called "echobot" on IRC.
+; The NameNode is just a handy handle that we can use in the
+; Atomese code, so that the chatbot name is not hard-coded
+; further on in this demo.
 (PipeLink
 	(NameNode "IRC chat object")
 	(IRChatNode "echobot"))
 
+; Open connection to an IRC server.
 (Trigger
 	(SetValue (NameNode "IRC chat object") (Predicate "*-open-*")
 	(Concept "irc://echobot@irc.libera.chat:6667")))
@@ -125,14 +128,14 @@
 				(Variable "$from") (Variable "$to") (Variable "$msg"))
 			(LinkSignature (Type 'LinkValue)
 				(Variable "$from") (Variable "$to") (Variable "$msg"))
-			(LinkSignature (Type 'LinkValue)
-				CONCLUSION))
+			CONCLUSION)
 		(Name "IRC read")))
 
 ; Convenience wrapper. Reads from IRC, extracts message, rewrites
 ; it into CONCLUSION, writes out to IRC.
 (define (make-echoer CONCLUSION)
-	(SetValue (Name "IRC chat object") (Predicate "*-write-*") (make-applier CONCLUSION)))
+	(SetValue (Name "IRC chat object") (Predicate "*-write-*")
+		(LinkSignature (Type 'LinkValue) (make-applier CONCLUSION))))
 
 ; --------
 ; Below are a collection of examples. Some of these need the bot
