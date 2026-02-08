@@ -4,7 +4,7 @@
 ; Demo of writing Atoms and Values to a text file. This includes
 ; streaming to a file.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog sensory))
 
 ; --------------------------------------------------------
 ; Basic demo: Open a file for writing, and place some text into it.
@@ -15,19 +15,20 @@
 ;
 ; Upon opening, the file is created, if it does not exist.
 ; The cursor is positioned at the end of the file (for appending).
-(define text-file (TextFile "file:///tmp/foobar.txt"))
+(PipeLink (NameNode "text file") (TextFile "file:///tmp/foobar.txt"))
 
-(cog-execute!
-	(SetValue text-file (Predicate "*-open-*") (Type 'StringValue)))
+(Trigger
+	(SetValue (NameNode "text file") (Predicate "*-open-*")
+		(Type 'StringValue)))
 
 ; Perform `ls -la /tmp/foo*` and you should see a file of zero length.
 
 ; Write some text to the file.
-(cog-set-value! text-file
-	(Predicate "*-write-*") (StringValue "Hello there!\n"))
+(Trigger (SetValue (NameNode "text file")
+	(Predicate "*-write-*") (Item "Hello there!\n")))
 
-(cog-set-value! (TextFile "file:///tmp/foobar.txt")
-	(Predicate "*-write-*") (StringValue "How are you?\n"))
+(Trigger (SetValue (TextFile "file:///tmp/foobar.txt")
+	(Predicate "*-write-*") (Item "How are you?\n")))
 
 ; --------------------------------------------------------
 ; Demo: Perform indirect streaming. The text to write will be placed as
@@ -42,14 +43,15 @@
 		"Goodbye!\n"))
 
 ; Define a writer, that, when executed, will write to the file.
-(define writer
-	(SetValue text-file (Predicate "*-write-*")
+(Define
+	(DefinedSchema "writer")
+	(SetValue (NameNode "text file") (Predicate "*-write-*")
 		(ValueOf (Concept "source") (Predicate "key"))))
 
 ; Write it out.
-(cog-execute! writer)
-(cog-execute! writer)
-(cog-execute! writer)
+(Trigger (DefinedSchema "writer"))
+(Trigger (DefinedSchema "writer"))
+(Trigger (DefinedSchema "writer"))
 
 ; Verify that it was written: `cat /tmp/foobar.txt`
 
@@ -64,36 +66,38 @@
 ; we replace that text with a file reader stream. Thus, when the
 ; writer is executed, it will suck text out of this stream, and
 ; write it to the output file.
-(define input-text-file (TextFile "file:///tmp/demo.txt"))
-(cog-execute!
+(PipeLink (NameNode "input text file") (TextFile "file:///tmp/demo.txt"))
+(Trigger
 	(SetValue
 		(Concept "source") (Predicate "key")
-		(ValueOf input-text-file (Predicate "*-stream-*"))))
+		(ValueOf (NameNode "input text file") (Predicate "*-stream-*"))))
 
 ; Open it before we do anything else.
-(define please-be-kind-rewind
-   (SetValue input-text-file (Predicate "*-open-*") (Type 'StringValue)))
+(Define
+	(DefinedSchema "please be kind rewind")
+	(SetValue (NameNode "input text file") (Predicate "*-open-*")
+		(Type 'StringValue)))
 
-(cog-execute! please-be-kind-rewind)
+(Trigger (DefinedSchema "please be kind rewind"))
 
 ; Running the writer will enter a loop (infinite loop), pulling one
 ; line at a time from the input file, and writing it to the output file.
 ; The loop exits when end-of-file is reached.
-(cog-execute! writer)
+(Trigger (DefinedSchema "writer"))
 
 ; Verify that it was written: `cat /tmp/foobar.txt`
 
 ; Try it again. Note that nothing will happen, because the input
 ; file iterator is now sitting at the end-of-file. Verify that there
 ; were no changes: `cat /tmp/foobar.txt`
-(cog-execute! writer)
+(Trigger (DefinedSchema "writer"))
 
 ; Get a fresh input stream. Each execution of SetValue will create
 ; a new stream.
-(cog-execute! please-be-kind-rewind)
+(Trigger (DefinedSchema "please be kind rewind"))
 
 ; And now write again:
-(cog-execute! writer)
+(Trigger (DefinedSchema "writer"))
 
 ; Verify that a second copy was written: `cat /tmp/foobar.txt`
 
@@ -102,10 +106,10 @@
 ; processing, and then write the processed data out.
 
 ; Create a new file iterator for reading the demo text file.
-(cog-execute!
+(Trigger
 	(SetValue
 		(Concept "source") (Predicate "raw file input key")
-		(ValueOf input-text-file (Predicate "*-stream-*"))))
+		(ValueOf (NameNode "input text file") (Predicate "*-stream-*"))))
 
 ; Define a rule that will take each line of input text, and
 ; process it in some way. In this case, it will just make
@@ -116,7 +120,8 @@
 ; Note that the `ValueOfLink` below behaves as a kind of promise:
 ; when executed, it promises to get the current value. In this case,
 ; it will be the next line of the input file.
-(define rule-applier
+(Define
+	(DefinedSchema "rule applier")
 	(Filter
 		(Rule
 			(TypedVariable (Variable "$x") (Type 'StringValue))
@@ -130,38 +135,41 @@
 				(Item "====\n")))
 		(ValueOf (Concept "source") (Predicate "raw file input key"))))
 
-; If we were to just `(cog-execute! rule-applier)`, we'd get exactly
-; one line of the input file processed. This was already demoed in the
-; `file-read.scm` demo. (If you're adventurous, you can try again here.
-; Just remember to reset the input file iterator, when done.)
+; If we were to just `(Trigger (DefinedSchema "rule applier"))`, we'd
+; get exactly one line of the input file processed. This was already
+; demoed in the `file-read.scm` demo. (If you're adventurous, you can
+; try again here. Just remember to reset the input file iterator,
+; when done.)
 ;
 ; We don't want to do just one line: we want to process the entire
 ; stream, until end-of-file. For that, create a promise to do that,
 ; when executed.
-(define promise
-	(CollectionOf (TypeNode 'FutureStream) (OrderedLink rule-applier)))
 
 ; Designate the promise as the source of data for the file writer.
-(cog-execute!
-	(SetValue (Concept "source") (Predicate "key") promise))
+(Trigger
+	(SetValue (Concept "source") (Predicate "key")
+		(CollectionOf (TypeNode 'FutureStream)
+			(OrderedLink (DefinedSchema "rule applier")))))
 
 ; Run the file-writer. This uses exactly the same definition as before.
 ; Be sure to `ls -la /tmp/foobar.txt` before and after running this,
 ; or just `cat` it, to see the output file contents change.
-(cog-execute! please-be-kind-rewind)
-(cog-execute! writer)
+(Trigger (DefinedSchema "please be kind rewind"))
+(Trigger (DefinedSchema "writer"))
 
 ; Do it again. Nothing happens, because the input file cursor is at
 ; the end of file.
-(cog-execute! writer)
+(Trigger (DefinedSchema "writer"))
 
 ; Rewind, and try again.
-(cog-execute! please-be-kind-rewind)
-(cog-execute! writer)
+(Trigger (DefinedSchema "please be kind rewind"))
+(Trigger (DefinedSchema "writer"))
 
 ; If unclear about the promise, you can explore it several ways.
 ; One is to do this: (Be sure to reset the input file, first.)
-;    (cog-value->list (cog-execute! promise))
+;    (cog-value->list (cog-execute!
+;        (CollectionOf (TypeNode 'FutureStream)
+;            (OrderedLink (DefinedSchema "rule applier")))))
 ; This will process one line at a time.
 ;
 ; Equivalently, use ValueOf to get the value:
