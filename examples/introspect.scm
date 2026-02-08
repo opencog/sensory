@@ -27,14 +27,15 @@
 ;
 ; Anyway, that's the general plan. The details remain obscure.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog sensory))
 
 ; -----------------------------------------------------------
 ; Preliminary setup.
 
 ; Open the filesystem node.
-(define fsnode (FileSysNode "file:///tmp"))
-(cog-set-value! fsnode (Predicate "*-open-*") (Type 'StringValue))
+(PipeLink (NameNode "fsnode") (FileSysNode "file:///tmp"))
+(Trigger
+	(SetValue (NameNode "fsnode") (Predicate "*-open-*") (Type 'StringValue)))
 
 ; In principle, the agent should do the above after discovery.
 ; For now, for this demo, just hard-code it, as above.
@@ -55,15 +56,16 @@
 ;;; possible design.
 
 ; Get the description of what this sensory device provides.
-(define fsys-descr
-	(cog-execute! (Lookat (Type 'FileSysStream))))
+(Pipe
+	(Name "fsys descr")
+	(Lookat (Type 'FileSysStream)))
 
 ; Print it. It should be a ChoiceLink of a bunch of sections.
-fsys-descr
+(Trigger (Name "fsys descr"))
 
 ; Brute-force; just get the first choice. It's a Section with
 ; a ConnectorSeq on it.
-(define some-cmd-descr (cog-value-ref fsys-descr 0))
+(define some-cmd-descr (cog-value-ref (cog-execute! (Name "fsys descr")) 0))
 
 ; Take a look at what it is.
 some-cmd-descr
@@ -112,12 +114,12 @@ some-cmd
 ; Under construction, broken.
 
 ; Lets take a look at the landscape, again
-(cog-execute! (Lookat (Type 'FileSysStream)))
+(Trigger (Lookat (Type 'FileSysStream)))
 
 ; The landscape arrives as a ChoiceLink, of possible things to do.
 ; This makes it awkward for later processing stages, so unwrap the
 ; ChoiceLink and discard it.
-(cog-execute!
+(Trigger
 	(Filter
 		(LinkSignature (Type 'Choice) (Glob "$x"))
 		(Lookat (Type 'FileSysStream))))
@@ -125,7 +127,7 @@ some-cmd
 ; Extract the command, and it's argument, and then the rest.
 ; The result is a simplified form of the description. We need
 ; the simplified form to built the processing pipe.
-(cog-execute!
+(Trigger
 	(Filter
 		(Section
 			(Type 'Item)  ; Ignore whatever text is here.
@@ -144,7 +146,7 @@ some-cmd
 			(Lookat (Type 'FileSysStream)))))
 
 ; Look for commands that do not require any additional arguments.
-(cog-execute!
+(Trigger
 	(Filter
 		(Section
 			(Type 'Item)
@@ -172,7 +174,7 @@ some-cmd
 ; --------------------------------------------------------
 
 ; Throws because wrong number of args. XXX FIXME
-(cog-execute! (Lookat (Type 'TextFileStream)))
+(Trigger (Lookat (Type 'TextFileStream)))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
