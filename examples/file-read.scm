@@ -4,7 +4,7 @@
 ; Demo opening a file and streaming the contents into a processing
 ; pipeline.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog sensory))
 
 ; Before running this demo, copy `demo.txt` to the /tmp directory.
 ; This is a text file, it will be read and processed in this demo.
@@ -16,29 +16,29 @@
 ; the (TextFile "file:///tmp/demo.txt") object will cause one line
 ; to be read from the file, and returned as a StringValue.
 
-;; Memoize the TextFileNode in scheme. This does two things:
-;; 1) Avoids typing, below.
-;; 2) Avoids hitting the AtomSpace repeatedly.
-(define file-node (TextFile "file:///tmp/demo.txt"))
+;; The NameNode is a handy handle for the TextFileNode, so that the
+;; filename is not hard-coded further on in this demo.
+(PipeLink (NameNode "file node") (TextFile "file:///tmp/demo.txt"))
 
 ;; Reading the file will return strings. But we have a choice of what
 ;; kind of strings we want: StringValue, or perhaps some kind of Node.
 ;; This time, we'll try out the StringValue.
-(cog-execute!
-	(SetValue file-node (Predicate "*-open-*") (Type 'StringValue)))
+(Trigger
+	(SetValue (NameNode "file node") (Predicate "*-open-*")
+		(Type 'StringValue)))
 
 ; Read one line of text from the file. Do this by sending the *-read-*
 ; message to the file object.
-(cog-execute! (ValueOf file-node (Predicate "*-read-*")))
+(Trigger (ValueOf (NameNode "file node") (Predicate "*-read-*")))
 
 ; Do it again and again. Keep doing it to EOF is reached.
-(cog-execute! (ValueOf file-node (Predicate "*-read-*")))
-(cog-execute! (ValueOf file-node (Predicate "*-read-*")))
-(cog-execute! (ValueOf file-node (Predicate "*-read-*")))
-(cog-execute! (ValueOf file-node (Predicate "*-read-*")))
+(Trigger (ValueOf (NameNode "file node") (Predicate "*-read-*")))
+(Trigger (ValueOf (NameNode "file node") (Predicate "*-read-*")))
+(Trigger (ValueOf (NameNode "file node") (Predicate "*-read-*")))
+(Trigger (ValueOf (NameNode "file node") (Predicate "*-read-*")))
 
 ; --------------------------------------------------------
-; Convert the line-by-line reder into a streaming reader. Working with
+; Convert the line-by-line reader into a streaming reader. Working with
 ; StreamValues simplifies processing pipelines. StreamValues will
 ; deliver more data with each reference, avoiding the need to loop
 ; over the *-read-* message.
@@ -48,40 +48,41 @@
 
 ; But first, let's rewind to the beginning. And change the return type,
 ; just for grins.
-(cog-execute!
-	(SetValue file-node (Predicate "*-open-*") (Type 'Concept)))
+(Trigger
+	(SetValue (NameNode "file node") (Predicate "*-open-*")
+		(Type 'Concept)))
 
-; Wrap the TextFileNode with the stream reader.
-(define txt-stream (ReadStream file-node))
+; The StreamValueOf automatically dequeues one item from the stream.
+; The Pipe/Name sets up a named handle for convenient access.
+(Pipe
+	(Name "txt stream")
+	(StreamValueOf (NameNode "file node") (Predicate "*-stream-*")))
 
 ; Repeated references to the stream will return single lines from
 ; the file.
-txt-stream
-txt-stream
-txt-stream
-txt-stream
-txt-stream
+(Trigger (Name "txt stream"))
+(Trigger (Name "txt stream"))
+(Trigger (Name "txt stream"))
+(Trigger (Name "txt stream"))
+(Trigger (Name "txt stream"))
 
 ; Eventually, this will return the EOF marker.
 
 ; --------------------------------------------------------
-; The section above wraps the TextFileNode with a ReadStreamValue
-; "by hand"; by creating the Value in scheme. But Values cannot be
-; stored in the Atomspace, and it would be better to be able to get
-; that stream directly. This is done with the *-stream-* message.
+; The StreamValueOf used above accesses the stream directly. It can
+; also be installed at some Atom, where it can be found by later
+; pipeline stages.
 
 ; Again, let's rewind to the beginning.
-(cog-execute!
-	(SetValue file-node (Predicate "*-open-*") (Type 'Item)))
-
-(define txt-stream
-	(cog-execute! (ValueOf file-node (Predicate "*-stream-*"))))
+(Trigger
+	(SetValue (NameNode "file node") (Predicate "*-open-*")
+		(Type 'Item)))
 
 ; Repeated references to the stream will return single lines from
 ; the file.
-txt-stream
-txt-stream
-txt-stream
+(Trigger (Name "txt stream"))
+(Trigger (Name "txt stream"))
+(Trigger (Name "txt stream"))
 
 ; --------------------------------------------------------
 ; Demo: Perform indirect streaming. The text-stream will be placed
@@ -92,24 +93,25 @@ txt-stream
 ; without touching the stream during installation. Without it, the
 ; ValueOf would have been executed, and the file pointer would have
 ; been off by one.
-(cog-execute!
+(Trigger
 	(SetValue (Concept "foo") (Predicate "some place")
-		(DontExec (ValueOf file-node (Predicate "*-stream-*")))))
+		(DontExec (ValueOf (NameNode "file node") (Predicate "*-stream-*")))))
 
 ; The stream can be accessed by just fetching it from "some place",
 ; the location it is anchored at.
-(define txt-stream-gen
+(Pipe
+	(Name "txt stream gen")
 	(ValueOf (Concept "foo") (Predicate "some place")))
 
 ; Like all Atomese, the ValueOf is just a declaration: it doesn't
 ; "do anything"; it just "sits there", passively. To actually access
 ; the text stream, it needs to be executed. Each execution advances
 ; the stream pointer, getting the next line in the file.
-(cog-execute! txt-stream-gen)
-(cog-execute! txt-stream-gen)
-(cog-execute! txt-stream-gen)
-(cog-execute! txt-stream-gen)
-(cog-execute! txt-stream-gen)
+(Trigger (Name "txt stream gen"))
+(Trigger (Name "txt stream gen"))
+(Trigger (Name "txt stream gen"))
+(Trigger (Name "txt stream gen"))
+(Trigger (Name "txt stream gen"))
 
 ; --------------------------------------------------------
 ; Demo: Perform processing on the stream. For each line of the
@@ -118,7 +120,8 @@ txt-stream
 ; This rule just makes two copies of each input line, interleaving
 ; it with other text. It is built with the same ValueOf promise, as
 ; above.
-(define rule-applier
+(Define
+	(DefinedSchema "rule applier")
 	; When a filter is executed, it applies the first argument
 	; to the second. The first argument here is a Rule, the
 	; second is the text file stream.
@@ -147,24 +150,25 @@ txt-stream
 				(Variable "$x")
 				(Item "yo the second\n")
 				(Item "====\n")))
-		txt-stream-gen))
+		(Name "txt stream gen")))
 
 ; The previous demo ran the input file to end-of-file;
 ; restart at the beginning. Be sure to set the item type to
 ; StringValue, because that is what the filter expects.
-(cog-execute!
-	(SetValue file-node (Predicate "*-open-*") (Type 'StringValue)))
+(Trigger
+	(SetValue (NameNode "file node") (Predicate "*-open-*")
+		(Type 'StringValue)))
 
 ; Run the rule, once.
-(cog-execute! rule-applier)
+(Trigger (DefinedSchema "rule applier"))
 
 ; Repeat it again, over and over, till the end-of-file.
-(cog-execute! rule-applier)
-(cog-execute! rule-applier)
-(cog-execute! rule-applier)
-(cog-execute! rule-applier)
-(cog-execute! rule-applier)
-(cog-execute! rule-applier)
+(Trigger (DefinedSchema "rule applier"))
+(Trigger (DefinedSchema "rule applier"))
+(Trigger (DefinedSchema "rule applier"))
+(Trigger (DefinedSchema "rule applier"))
+(Trigger (DefinedSchema "rule applier"))
+(Trigger (DefinedSchema "rule applier"))
 
 ; --------------------------------------------------------
 ; Demo: Perform processing on the stream. In this case, parse the
@@ -173,19 +177,16 @@ txt-stream
 (use-modules (opencog lg))
 
 ; As above: rewind the stream to the beginning:
-(cog-execute!
-	(SetValue file-node (Predicate "*-open-*") (Type 'StringValue)))
-
-; Gentle reminder of how to fetch this:
-(define txt-stream-gen
-	(ValueOf (Concept "foo") (Predicate "some place")))
+(Trigger
+	(SetValue (NameNode "file node") (Predicate "*-open-*")
+		(Type 'StringValue)))
 
 ; Parse the file contents, one line at a time. The "any" dict generates
 ; random word-pairs. The (Number 1) asks for only one parse per
 ; sentence.
-(cog-execute! (LgParseBonds txt-stream-gen (LgDict "any") (Number 1)))
-(cog-execute! (LgParseBonds txt-stream-gen (LgDict "any") (Number 1)))
-(cog-execute! (LgParseBonds txt-stream-gen (LgDict "any") (Number 1)))
+(Trigger (LgParseBonds (Name "txt stream gen") (LgDict "any") (Number 1)))
+(Trigger (LgParseBonds (Name "txt stream gen") (LgDict "any") (Number 1)))
+(Trigger (LgParseBonds (Name "txt stream gen") (LgDict "any") (Number 1)))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
