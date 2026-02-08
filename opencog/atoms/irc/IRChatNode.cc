@@ -23,6 +23,7 @@
 #include <opencog/util/exceptions.h>
 #include <opencog/util/oc_assert.h>
 #include <opencog/atoms/base/Node.h>
+#include <opencog/atoms/value/BoolValue.h>
 #include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atoms/value/StringValue.h>
 #include <opencog/atoms/value/VoidValue.h>
@@ -473,6 +474,12 @@ void IRChatNode::write_one(const ValuePtr& command_data)
 			// Zero-sized messages are no-ops. They might be explicit
 			// VoidValue, or an empty LinkValue or empty FalseLink, etc.
 			else if (0 == vp->size())
+				return;
+
+			// (BoolValue #f) is also used to denote no-message...
+			else if (vp->is_type(BOOL_VALUE) and
+			         1 == vp->size() and
+			         0 == BoolValueCast(vp)->get_bit(0))
 				return;
 
 			else

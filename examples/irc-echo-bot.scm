@@ -292,6 +292,8 @@
 				(Item "PRIVMSG") (Variable "$from")
 				(Item "It seems that you said: ")
 				(Variable "$msg"))
+
+		; Empty reply
 		(LinkSignature (Type 'LinkValue))))
 
 (Trigger (Trigger
