@@ -470,8 +470,9 @@ void IRChatNode::write_one(const ValuePtr& command_data)
 			if (vp->is_node())
 				cmd.push_back(HandleCast(vp)->get_name());
 
-			// FalseLink is the result of a no-op. So do nothing.
-			else if (FALSE_LINK == vp->get_type())
+			// Zero-sized messages are no-ops. They might be explicit
+			// VoidValue, or an empty LinkValue or empty FalseLink, etc.
+			else if (0 == vp->size())
 				return;
 
 			else
