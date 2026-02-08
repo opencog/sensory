@@ -437,12 +437,17 @@
 			(DefinedSchema "responder")
 			(DefinedSchema "reply to all"))))
 
-(Define
-	(DefinedSchema "echo loop")
-	(CollectionOf (TypeNode 'FutureStream) (OrderedLink
-			(DefinedSchema "the echoer"))))
+; Verify that the line-at-a-time echoer works:
+(Trigger (DefinedSchema "the echoer"))
+(Trigger (DefinedSchema "the echoer"))
 
-(Trigger (ExecuteThreaded (DefinedSchema "echo loop")))
+; The DrainLink runs an infinite loop. Because of this, we really
+; want to run it in it's own thread, as it won't return to caller
+; until it's input stream closes. In this case, it  won't return
+; until the bot is stopped. (The logger could have been  done this
+; way, too.)
+(Trigger (ExecuteThreaded
+	(DrainLink (DefinedSchema "the echoer")))
 
 ; The End. That's all, folks!
 ; -------------------------------------------------------
