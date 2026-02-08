@@ -34,3 +34,6 @@ I_R_CHAT_NODE <- TEXT_STREAM_NODE
 
 // Navigate file system
 FILE_SYS_NODE <- TEXT_STREAM_NODE
+
+// Chat with Ollama
+OLLAMA_NODE <- TEXT_STREAM_NODE
