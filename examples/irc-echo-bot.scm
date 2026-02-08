@@ -275,25 +275,24 @@
 
 (Define
 	(DefinedSchema "private callout reply")
-	(LinkSignature (Type 'LinkValue)
-		(Cond
-			(Or
-				; Is this a private message?
-				(Equal
-					(Variable "$to")
-					(Name "IRC botname"))
-				; Is this a public callout?
-				(Equal
-					(ElementOf (Number 0) (Variable "$msg"))
-					(Name "IRC botname")))
+	(Cond
+		(Or
+			; Is this a private message?
+			(Equal
+				(Variable "$to")
+				(Name "IRC botname"))
+			; Is this a public callout?
+			(Equal
+				(ElementOf (Number 0) (Variable "$msg"))
+				(Name "IRC botname")))
 
-			; Always reply privately.
-			(LinkSignature
-				(Type 'LinkValue)
-					(Item "PRIVMSG") (Variable "$from")
-					(Item "It seems that you said: ")
-					(Variable "$msg"))
-			(LinkSignature (Type 'LinkValue)))))
+		; Always reply privately.
+		(LinkSignature
+			(Type 'LinkValue)
+				(Item "PRIVMSG") (Variable "$from")
+				(Item "It seems that you said: ")
+				(Variable "$msg"))
+		(LinkSignature (Type 'LinkValue))))
 
 (Trigger (Trigger
 	(Put
@@ -304,7 +303,8 @@
 ; Example: Reply privately to all messages on a private channel,
 ; and publicly to callout messages on a public channel.
 
-(define reply-to-callout
+(Define
+	(DefinedSchema "reply to all")
 	(Cond
 		; Is this a private message?
 		(Equal
@@ -336,7 +336,11 @@
 		; Ignore
 		(VoidValue)))
 
-(Trigger (make-echoer reply-to-callout))
+(Trigger (Trigger
+	(Put
+		(DefinedSchema "responder")
+		(DefinedSchema "reply to all"))))
+
 
 ; --------
 ; Example: listen to everything, and write it to a file. This requires
