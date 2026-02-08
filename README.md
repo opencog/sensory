@@ -596,6 +596,9 @@ Version Zero and Version Half both provide:
 * A basic Filesystem navigation stream.
 * A prototype IRC chatbot stream.
 
+Version Half provides:
+* A prototype Ollama chatbot stream.
+
 Version Zero also provided object interface descriptions aka "jigsaws"
 that are meant to allow gluing, using some appropriate gluing
 algorithm. These have not yet been ported to Version Half.
@@ -676,6 +679,9 @@ conventions used in other OpenCog/AtomSpace projects. This cannot be
 compiled before installing the prerequisite
 [AtomSpace](https://github.com/opencog/atomspace). So build and
 install that first.
+
+This repo has the additional requirement of `libcpp-httplib-dev`.
+On Debian-based systems, `apt install libcpp-httplib-dev`.
 
 Then:
 ```
