@@ -428,5 +428,21 @@
 ;;; (Trigger
 ;;;	(SetValue (Name "irc log file") (Predicate "*-close-*")))
 ;
+; --------
+; Example: listen to everything, and echo when appropriate.
+(Define
+	(DefinedSchema "the echoer")
+	(Trigger
+		(Put
+			(DefinedSchema "responder")
+			(DefinedSchema "reply to all"))))
+
+(Define
+	(DefinedSchema "echo loop")
+	(CollectionOf (TypeNode 'FutureStream) (OrderedLink
+			(DefinedSchema "the echoer"))))
+
+(Trigger (ExecuteThreaded (DefinedSchema "echo loop")))
+
 ; The End. That's all, folks!
 ; -------------------------------------------------------
