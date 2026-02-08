@@ -423,5 +423,10 @@
 ; Run the logger in it's own thread.
 (Trigger (ExecuteThreaded (DefinedSchema "Stream logger")))
 
+; The logging will stop, and the thread will exit if the file is closed.
+;
+;;; (Trigger
+;;;	(SetValue (Name "irc log file") (Predicate "*-close-*")))
+;
 ; The End. That's all, folks!
 ; -------------------------------------------------------
