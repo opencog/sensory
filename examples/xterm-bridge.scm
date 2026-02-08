@@ -22,29 +22,31 @@
 ; /dev/pts pipes. Not worth debugging, since this is not a critical
 ; component. So, just FYI. See `fgets_unlocked` in the source for more.
 
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog sensory))
 
 ; --------------------------------------------------------
 ; Create a pair of xterms; open them for reading and writing.
 
-(define axterm (TerminalNode "term A"))
-(define bxterm (TerminalNode "term B"))
+(PipeLink (NameNode "axterm") (TerminalNode "term A"))
+(PipeLink (NameNode "bxterm") (TerminalNode "term B"))
 
-(cog-execute!
-	(SetValue axterm (Predicate "*-open-*") (Type 'StringValue)))
-(cog-execute!
-	(SetValue bxterm (Predicate "*-open-*") (Type 'StringValue)))
+(Trigger
+	(SetValue (NameNode "axterm") (Predicate "*-open-*") (Type 'StringValue)))
+(Trigger
+	(SetValue (NameNode "bxterm") (Predicate "*-open-*") (Type 'StringValue)))
 
 ; Create two copiers. Executing each of these once will copy exactly
 ; one message from one terminal to the other.
 
-(define copy-one-b-to-a
-	(SetValue axterm (Predicate "*-write-*")
-		(ValueOf bxterm (Predicate "*-read-*"))))
+(Define
+	(DefinedSchema "copy one b to a")
+	(SetValue (NameNode "axterm") (Predicate "*-write-*")
+		(ValueOf (NameNode "bxterm") (Predicate "*-read-*"))))
 
-(define copy-one-a-to-b
-	(SetValue bxterm (Predicate "*-write-*")
-		(ValueOf axterm (Predicate "*-read-*"))))
+(Define
+	(DefinedSchema "copy one a to b")
+	(SetValue (NameNode "bxterm") (Predicate "*-write-*")
+		(ValueOf (NameNode "axterm") (Predicate "*-read-*"))))
 
 ; --------------------------------------------------------
 ; The current xterm reader API is NOT streaming, it is line-at-a-time.
@@ -62,8 +64,10 @@
 ; everything should be done in Atomese. The goal, as always, is to write
 ; all dataflows in Atomese, as graphs, and not in scheme/python/etc.
 
-(define (b-to-a-loop) (cog-execute! copy-one-b-to-a) (b-to-a-loop))
-(define (a-to-b-loop) (cog-execute! copy-one-a-to-b) (a-to-b-loop))
+(define (b-to-a-loop)
+	(cog-execute! (DefinedSchema "copy one b to a")) (b-to-a-loop))
+(define (a-to-b-loop)
+	(cog-execute! (DefinedSchema "copy one a to b")) (a-to-b-loop))
 
 ; Because we want to run both loops at the same time, they each need to
 ; go into their own threads.
@@ -73,8 +77,8 @@
 ; That's it! Try it! Anything typee in one terminal will now be echoed
 ; in the other. The threads will run forever. To stop things, you have
 ; to close the terminals:
-(cog-set-value! axterm (Predicate "*-close-*") (VoidValue))
-(cog-set-value! bxterm (Predicate "*-close-*") (VoidValue))
+(Trigger (SetValue (NameNode "axterm") (Predicate "*-close-*")))
+(Trigger (SetValue (NameNode "bxterm") (Predicate "*-close-*")))
 
 ; Sometimes, when switching from one terminal to the other, you
 ; might see the echoed text duplicated. This is a bug. It's due to
@@ -90,29 +94,33 @@
 ; scratch AtomSpace.
 (Define
 	(DefinedProcedure "b-to-a-tail")
-	(PureExec (cog-atomspace) copy-one-b-to-a (DefinedProcedure "b-to-a-tail")))
+	(PureExec (cog-atomspace)
+		(DefinedSchema "copy one b to a")
+		(DefinedProcedure "b-to-a-tail")))
 
 (Define
 	(DefinedProcedure "a-to-b-tail")
-	(PureExec (cog-atomspace) copy-one-a-to-b (DefinedProcedure "a-to-b-tail")))
+	(PureExec (cog-atomspace)
+		(DefinedSchema "copy one a to b")
+		(DefinedProcedure "a-to-b-tail")))
 
 ; If you mess with the above, you will discover that redefines are not
 ; allowed. To work around that, extract the definition, like so:
-;    (cog-extract-recursive! (DefinedProcedure "b-to-a-tail"))
+;    (DeleteRecursive (DefinedProcedure "b-to-a-tail"))
 
 ; One infinite loop at a time can be run like so:
-;    (cog-execute! (DefinedProcedure "b-to-a-tail"))
+;    (Trigger (DefinedProcedure "b-to-a-tail"))
 ; but we want to run both at once. Do this by running them in two
 ; threads
-(cog-execute! (ExecuteThreaded
+(Trigger (ExecuteThreaded
 	(DefinedProcedure "b-to-a-tail")
 	(DefinedProcedure "a-to-b-tail")))
 
 ; That's it! Try it! Anything typee in one terminal will now be echoed
 ; in the other, just as before. Closing the terminals will also end
 ; the threads they are running in.
-(cog-set-value! axterm (Predicate "*-close-*") (VoidValue))
-(cog-set-value! bxterm (Predicate "*-close-*") (VoidValue))
+(Trigger (SetValue (NameNode "axterm") (Predicate "*-close-*")))
+(Trigger (SetValue (NameNode "bxterm") (Predicate "*-close-*")))
 
 ; --------------------------------------------------------
 ; Option 3) Convert the line-by-line reader to a stream, and then
@@ -122,61 +130,44 @@
 
 ; Wrap the terminal with a reader stream.  Each read from the stream
 ; will cause a *-read-* message to the sent to the terminal object.
-; The ReadStream value is generic: it will work with *any* Sensory
+; The StreamValueOf is generic: it will work with *any* Sensory
 ; object (since all SensoryNode objects support *-read-* messages).
-(define areader (ReadStream axterm))
+(Pipe
+	(Name "areader")
+	(StreamValueOf (NameNode "axterm") (Predicate "*-stream-*")))
 
 ; Try it. Each reference returns one line from the xterm. If there's
 ; nothing to return, the reference will hang, until you type something
 ; at the xterm, and hit enter.
-areader
-areader
-areader
-areader
-areader
-
-; In analogoy to copy-a-to-b, we would like to be able to declare
-;
-;    (SetValue bxterm (Predicate "*-write-*")
-;        (ReadStream axterm))
-;
-; so that everything streamed from A goes to B. But the above expression
-; is not valid: ReadStream is a Value, not an Atom. What's needed is an
-; Atom that constructs ReadStreams. Well, there is one: the StreamNode.
-; Sending it the *-stream-* message will return a ReadStream that wraps
-; the *-read-* message on the same object. Anything inheriting from
-; StreamNode gets this wrapper "for free". This includes the
-; TextStreamNode, from which the TerminalNode is derived. In short, the
-; TerminalNode has this built in.
-;
-; It can be used in the same way as in the file reader stream demo:
-(define txt-stream-gen (ValueOf axterm (Predicate "*-stream-*")))
-
-; Note that each call blocks, until something is typed into terminal A.
-(cog-execute! txt-stream-gen)
-(cog-execute! txt-stream-gen)
-(cog-execute! txt-stream-gen)
-(cog-execute! txt-stream-gen)
+(Trigger (Name "areader"))
+(Trigger (Name "areader"))
+(Trigger (Name "areader"))
+(Trigger (Name "areader"))
+(Trigger (Name "areader"))
 
 ; The bridge is now straight-forward: Take the copy-one pattern,
 ; and replace *-read-* by *-stream-*
-(define stream-b-to-a
-	(SetValue axterm (Predicate "*-write-*")
-		(ValueOf bxterm (Predicate "*-stream-*"))))
+(Define
+	(DefinedSchema "stream b to a")
+	(SetValue (NameNode "axterm") (Predicate "*-write-*")
+		(ValueOf (NameNode "bxterm") (Predicate "*-stream-*"))))
 
-(define stream-a-to-b
-	(SetValue bxterm (Predicate "*-write-*")
-		(ValueOf axterm (Predicate "*-stream-*"))))
+(Define
+	(DefinedSchema "stream a to b")
+	(SetValue (NameNode "bxterm") (Predicate "*-write-*")
+		(ValueOf (NameNode "axterm") (Predicate "*-stream-*"))))
 
 ; Either of the above, set in motion, will run forever, copying from
 ; source to destination. This is done with an infinite loop in the
 ; StreamNode::write() method.
 ;
-: As these are both inf loops, they will not return to the caller
+; As these are both inf loops, they will not return to the caller
 ; until the corresponding input stream terminates. To run both loops
 ; at the same time, put them in different threads:
 
-(cog-execute! (ExecuteThreaded stream-b-to-a stream-a-to-b))
+(Trigger (ExecuteThreaded
+	(DefinedSchema "stream b to a")
+	(DefinedSchema "stream a to b")))
 
 ; That's it. Text typed into either terminal is sent to the other.
 
