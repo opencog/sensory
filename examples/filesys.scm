@@ -7,7 +7,7 @@
 ; and so have skipped over the discovery step. See the discovery
 ; demo at `introspection.scm` for how to discover an object API.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog sensory))
 
 ; -----------------------------------------------------------
 ; Open the filesystem node. The URL must be of the form
@@ -20,8 +20,9 @@
 ; XXX TODO: maybe change design to return VoidValue, instead of
 ; throwing?
 
-(define fsnode (FileSysNode "file:///tmp"))
-(cog-set-value! fsnode (Predicate "*-open-*") (Type 'StringValue))
+(PipeLink (NameNode "fsnode") (FileSysNode "file:///tmp"))
+(Trigger
+	(SetValue (NameNode "fsnode") (Predicate "*-open-*") (Type 'StringValue)))
 
 ; In principle, the agent should do the above after discovery.
 ; For now, for this demo, just hard-code it, as above.
@@ -42,27 +43,47 @@
 ; have been warned.
 
 ; First example: `pwd` -- where are we?
-(cog-execute! (SetValue fsnode (Predicate "*-write-*")
+(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
 	(Item "pwd")))
 
 ; The result of doing the pwd is obtained with a read.
-(cog-execute! (ValueOf fsnode (Predicate "*-read-*")))
+(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
 
 ; -----------------------------------------------------------
-; A scheme utility to run command-response pairs.
-(define (run-fs-cmd CMD)
-	(cog-execute! (SetValue fsnode (Predicate "*-write-*") CMD))
-	(cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
+; Run command-response pairs. Each pair writes a command, then reads
+; the result.
 
-(run-fs-cmd (Item "pwd"))
-(run-fs-cmd (Item "ls"))
-(run-fs-cmd (Item "special"))  ;; special files
-(run-fs-cmd (Item "btime"))    ;; birth time
-(run-fs-cmd (Item "mtime"))    ;; modification time
-(run-fs-cmd (Item "filesize")) ;; filesize
+(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
+	(Item "pwd")))
+(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
 
-(run-fs-cmd (List (Item "cd") (Item "file:///home")))
-(run-fs-cmd (Item "ls"))
+(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
+	(Item "ls")))
+(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
+
+(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
+	(Item "special")))
+(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
+
+(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
+	(Item "btime")))
+(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
+
+(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
+	(Item "mtime")))
+(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
+
+(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
+	(Item "filesize")))
+(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
+
+(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
+	(List (Item "cd") (Item "file:///home"))))
+(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
+
+(Trigger (SetValue (NameNode "fsnode") (Predicate "*-write-*")
+	(Item "ls")))
+(Trigger (ValueOf (NameNode "fsnode") (Predicate "*-read-*")))
 
 ; --------------------------------------------------------
 ; Directories can also be watched for file additions, removals and
@@ -78,9 +99,11 @@
 ; To keep things distinct, the demo will use a different demo directory.
 
 (mkdir "/tmp/demo-watch")
-(define watchnode (FileSysNode "file:///tmp/demo-watch"))
-(cog-set-value! watchnode (Predicate "*-open-*") (Type 'StringValue))
-(cog-set-value! watchnode (Predicate "*-write-*") (StringValue "watch"))
+(PipeLink (NameNode "watchnode") (FileSysNode "file:///tmp/demo-watch"))
+(Trigger
+	(SetValue (NameNode "watchnode") (Predicate "*-open-*") (Type 'StringValue)))
+(Trigger
+	(SetValue (NameNode "watchnode") (Predicate "*-write-*") (Item "watch")))
 
 ; The stream can be accessed two different ways: by reading events,
 ; one at a time, from the event queue, or by streaming. The
@@ -94,7 +117,7 @@
 ; some file in the `/tmp/demo-watch` directory.  Note that this
 ; will hang, until there is some change. Repeated calls will return
 ; those changes, one at a time.
-(cog-execute! (ValueOf watchnode (Predicate "*-read-*")))
+(Trigger (ValueOf (NameNode "watchnode") (Predicate "*-read-*")))
 
 ; The `StreamValueOf` link behaves similarly, taking one sample from
 ; the stream each time that it is executed. CAUTION: Do NOT attempt
@@ -104,7 +127,7 @@
 ; the stream closes. With some cleverness, it can be closed from a
 ; different thread, if you've arranged for that thread in advance.
 ; If not, you will hard-hang.
-(cog-execute! (StreamValueOf watchnode (Predicate "*-stream-*")))
+(Trigger (StreamValueOf (NameNode "watchnode") (Predicate "*-stream-*")))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
