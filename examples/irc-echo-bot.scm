@@ -9,6 +9,12 @@
 ; See `irc-api.scm` for a tutorial on the interfaces used here.
 ; See `xterm-bridge.scm` for a simple demo of hooking input to output.
 ;
+; HINT: The demo below makes heave use of NameNodes and DefinedSchemas.
+; These can only be defined once, ever. Attempting a redefinition will
+; throw an exception. So if you want to experiment, you will need to
+; erase these. You can do this with (DeleteRecursive (Name "whatever"))
+; or (DeleteRecursive (DefinedSchemaNode "stuffs")).
+;
 (use-modules (opencog) (opencog sensory))
 
 ; The chatbot will be called "echobot" on IRC.
@@ -267,27 +273,32 @@
 ; Example: Reply privately to all messages on a private channel,
 ; and only those messages on a public channel that call out the bot.
 
-(define private-reply-to-callout
-	(Cond
-		(Or
-			; Is this a private message?
-			(Equal
-				(Variable "$to")
-				(Name "IRC botname"))
-			; Is this a public callout?
-			(Equal
-				(ElementOf (Number 0) (Variable "$msg"))
-				(Name "IRC botname")))
+(Define
+	(DefinedSchema "private callout reply")
+	(LinkSignature (Type 'LinkValue)
+		(Cond
+			(Or
+				; Is this a private message?
+				(Equal
+					(Variable "$to")
+					(Name "IRC botname"))
+				; Is this a public callout?
+				(Equal
+					(ElementOf (Number 0) (Variable "$msg"))
+					(Name "IRC botname")))
 
-		; Always reply privately.
-		(LinkSignature
-			(Type 'LinkValue)
-				(Item "PRIVMSG") (Variable "$from")
-				(Item "It seems that you said: ")
-				(Variable "$msg"))
-		(LinkSignature (Type 'LinkValue))))
+			; Always reply privately.
+			(LinkSignature
+				(Type 'LinkValue)
+					(Item "PRIVMSG") (Variable "$from")
+					(Item "It seems that you said: ")
+					(Variable "$msg"))
+			(LinkSignature (Type 'LinkValue)))))
 
-(Trigger (make-echoer private-reply-to-callout))
+(Trigger (Trigger
+	(Put
+		(DefinedSchema "responder")
+		(DefinedSchema "private callout reply"))))
 
 ; --------
 ; Example: Reply privately to all messages on a private channel,
