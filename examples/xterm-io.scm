@@ -19,7 +19,7 @@
 ; Review the `xterm-bridge.scm` demo next. It builds a pipeline
 ; connecting two xterms.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog sensory))
 
 ; --------------------------------------------------------
 ; Create an xterm for direct I/O. Sending the TerminalNode object the
@@ -27,21 +27,21 @@
 ; read from the terminal, and sent to the terminal.
 ;
 ; Be sure that xterm is installed, else this won't work!
-(define xterm (TerminalNode "foo"))
-(cog-execute!
-	(SetValue xterm (Predicate "*-open-*") (Type 'StringValue)))
+(PipeLink (NameNode "xterm") (TerminalNode "foo"))
+(Trigger
+	(SetValue (NameNode "xterm") (Predicate "*-open-*") (Type 'StringValue)))
 
 ; Sending the *-read-* message to the object will read a single line of
 ; text from the xterm window. Each call will block (appear to hang),
 ; until something is typed into the terminal, followed by a carriage
 ; return. The interface is line-oriented, you have to hit enter to
 ; unblock and sent the text.
-(define reader (ValueOf xterm (Predicate "*-read-*")))
-(cog-execute! reader)
-(cog-execute! reader)
-(cog-execute! reader)
-(cog-execute! reader)
-(cog-execute! reader)
+(Pipe (Name "reader") (ValueOf (NameNode "xterm") (Predicate "*-read-*")))
+(Trigger (Name "reader"))
+(Trigger (Name "reader"))
+(Trigger (Name "reader"))
+(Trigger (Name "reader"))
+(Trigger (Name "reader"))
 
 ; Typing a ctrl-D into the terminal will close it, returning an empty
 ; stream. (aka "end of file")
@@ -57,8 +57,8 @@
 ; each line.
 
 ; Writing proceeds in a manner similar to the TextFileNode.
-(cog-set-value! xterm (Predicate "*-write-*")
-	(StringValue "Hello there!\n"))
+(Trigger (SetValue (NameNode "xterm") (Predicate "*-write-*")
+	(Item "Hello there!\n")))
 
 ; --------------------------------------------------------
 ; Demo: Perform indirect streaming. The text to write will be placed as
@@ -73,14 +73,15 @@
 		"Goodbye!\n"))
 
 ; Define the writer.
-(define writer
-	(SetValue xterm (Predicate "*-write-*")
+(Define
+	(DefinedSchema "writer")
+	(SetValue (NameNode "xterm") (Predicate "*-write-*")
 		(ValueOf (Concept "source") (Predicate "key"))))
 
 ; Write it out.
-(cog-execute! writer)
-(cog-execute! writer)
-(cog-execute! writer)
+(Trigger (DefinedSchema "writer"))
+(Trigger (DefinedSchema "writer"))
+(Trigger (DefinedSchema "writer"))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
