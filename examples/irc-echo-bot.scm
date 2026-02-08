@@ -204,7 +204,6 @@
 					(DefinedSchema "message rewriter")
 					(Variable "rewrite of message"))))))
 
-
 ; Create a private reply to the sender, printing message diagnostics.
 (Define
 	(DefinedSchema "private reply")
@@ -234,7 +233,8 @@
 ; A "callout" is a string that starts with the botname, followed
 ; by a colon. This is an IRC convention, and nothing more.
 
-(define is-callout?
+(Define
+	(DefinedSchema "is callout?")
 	(Cond
 		(Equal
 			(ElementOf (Number 0) (Variable "$msg"))
@@ -242,19 +242,26 @@
 		(Item "calls out the bot")
 		(Item "is just a message")))
 
-(define callout-reply
-	(list (Item "PRIVMSG") (Variable "$from")
-	(Item "Message to ")
-	(Variable "$to")
-	(Item " is a ")
-	is-pub?
-	(Item " from ")
-	(Variable "$from")
-	(Item " that ")
-	is-callout?
-	(Item ": ")
-	(Variable "$msg")))
-(Trigger (make-echoer callout-reply))
+(Define
+	(DefinedSchema "callout reply")
+	(LinkSignature (Type 'LinkValue)
+		(Item "PRIVMSG") (Variable "$from")
+		(Item "Message to ")
+		(Variable "$to")
+		(Item " is a ")
+		(DefinedSchema "is public?")
+		(Item " from ")
+		(Variable "$from")
+		(Item " that ")
+		(DefinedSchema "is callout?")
+		(Item ": ")
+		(Variable "$msg")))
+
+(Trigger (Trigger
+	(Put
+		(DefinedSchema "responder")
+		(DefinedSchema "callout reply"))))
+
 
 ; --------
 ; Example: Reply privately to all messages on a private channel,
