@@ -23,6 +23,7 @@
 #ifndef _OPENCOG_I_R_CHAT_NODE_H
 #define _OPENCOG_I_R_CHAT_NODE_H
 
+#include <atomic>
 #include <thread>
 #include <opencog/atoms/value/QueueValue.h>
 #include <opencog/atoms/sensory/TextStreamNode.h>
@@ -47,7 +48,7 @@ class IRChatNode
 private:
 	IRC* _conn;
 	std::thread* _loop;
-	bool _cancel;
+	std::atomic<bool> _cancel;
 	void looper(void);
 
 	static int xend_of_motd(const char*, irc_reply_data*, void*);
