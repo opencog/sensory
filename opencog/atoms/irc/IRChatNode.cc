@@ -475,8 +475,11 @@ void IRChatNode::write_one(const ValuePtr& command_data)
 				return;
 
 			else
-				throw RuntimeException(TRACE_INFO,
-					"Expecting node or string; got %s\n", vp->to_string().c_str());
+				// Well, we culd throw, but, for debugging, it is
+				// useful to just print the raw Atomese. So print, instead.
+				// throw RuntimeException(TRACE_INFO,
+				//	"Expecting node or string; got %s\n", vp->to_string().c_str());
+				cmd.push_back(vp->to_string().c_str());
 		}
 		run_cmd(cmd);
 		return;
