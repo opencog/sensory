@@ -134,28 +134,26 @@
 (Define
 	(DefinedSchema "display mesg")
 	(LinkSignature (Type 'LinkValue)
-		(Concept "From: ")
+		(Concept "Get a message from: ")
 		(Variable "$from")
 		(Concept "To: ")
 		(Variable "$to")
 		(Concept "The message: ")
 		(Variable "$msg")))
 
-; This will hang, until you say something to the bot.
+; This places the rewrite (DefinedSchema "display mesg") into
+; the (DefinedSchema "message rewriter") and then runs the combo.
+;
+; This will hang, until you say something to the bot. Once you do.
+; it will show what was received.
 (Trigger
 	(Put
 		(DefinedSchema "message rewriter")
 		(DefinedSchema "display mesg")))
 
-; Convenience wrapper. Reads from IRC, extracts message, rewrites
-; it into CONCLUSION, writes out to IRC.
-(define (make-echoer CONCLUSION)
-	(SetValue (Name "IRC chat object") (Predicate "*-write-*")
-		(LinkSignature (Type 'LinkValue) (make-applier CONCLUSION))))
-
 ; --------
-; Below are a collection of examples. Some of these need the bot
-; to sit on some public channel, in order to work.
+; It's time to join a public channel; the remaining demos show how to
+; use the bot on a pubic channel.
 
 ; Join a channel.
 (Trigger (SetValue (Name "IRC chat object") (Predicate "*-write-*")
@@ -164,11 +162,6 @@
 ; Leave a channel.
 (Trigger (SetValue (Name "IRC chat object") (Predicate "*-write-*")
 	(List (Concept "PART #opencog"))))
-
-; --------
-; Example: No-op. Do nothing.
-(define null-reply (list))
-(Trigger (make-applier null-reply))
 
 ; --------
 ; Example: Break down message into parts.
@@ -199,6 +192,14 @@
 	(Item ": ")
 	(Variable "$msg")))
 (Trigger (make-echoer id-reply))
+
+; --------
+; Building on the above
+; Convenience wrapper. Reads from IRC, extracts message, rewrites
+; it into CONCLUSION, writes out to IRC.
+(define (make-echoer CONCLUSION)
+	(SetValue (Name "IRC chat object") (Predicate "*-write-*")
+		(LinkSignature (Type 'LinkValue) (make-applier CONCLUSION))))
 
 ; --------
 ; Example: Is the bot being called out?
