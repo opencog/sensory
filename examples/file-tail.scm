@@ -7,29 +7,30 @@
 ; Please review file-read.scm first; this demo expands on some of the
 ; techniques there.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog sensory))
 
 ; --------------------------------------------------------
 ; Open a file, and follw the changes being made to it.
 
-(define file-node (TextFile "file:///tmp/tail.txt"))
+(PipeLink (NameNode "tail file") (TextFile "file:///tmp/tail.txt"))
 
-(cog-execute!
-	(SetValue file-node (Predicate "*-open-*") (Type 'StringValue)))
+(Trigger
+	(SetValue (NameNode "tail file") (Predicate "*-open-*")
+		(Type 'StringValue)))
 
-(cog-set-value!  file-node (Predicate "*-follow-*") (BoolValue #t))
+(cog-set-value! (NameNode "tail file") (Predicate "*-follow-*") (BoolValue #t))
 
 ; Read one line of text from the file. Do this by sending the *-read-*
 ; message to the file object.
-(cog-execute! (ValueOf file-node (Predicate "*-read-*")))
+(Trigger (ValueOf (NameNode "tail file") (Predicate "*-read-*")))
 
 ; Do it again and again. Keep doing it untile one of these blocks.
 ; When it blocks, it will wait until more text is appended to the file.
 ; Thus: `echo "gaba gaba hey" >> /tmp/tail.txt` will unstick it.
-(cog-execute! (ValueOf file-node (Predicate "*-read-*")))
-(cog-execute! (ValueOf file-node (Predicate "*-read-*")))
-(cog-execute! (ValueOf file-node (Predicate "*-read-*")))
-(cog-execute! (ValueOf file-node (Predicate "*-read-*")))
+(Trigger (ValueOf (NameNode "tail file") (Predicate "*-read-*")))
+(Trigger (ValueOf (NameNode "tail file") (Predicate "*-read-*")))
+(Trigger (ValueOf (NameNode "tail file") (Predicate "*-read-*")))
+(Trigger (ValueOf (NameNode "tail file") (Predicate "*-read-*")))
 
 ; --------------------------------------------------------
 ; The *-stream-* message will return a handle to a StreamValue
@@ -37,14 +38,15 @@
 ; stream will dequeue them one at a time, again blocking when
 ; there's nothing there.
 
-(define txt-stream
-	(cog-execute! (ValueOf file-node (Predicate "*-stream-*"))))
+(Pipe
+	(Name "tail stream")
+	(StreamValueOf (NameNode "tail file") (Predicate "*-stream-*")))
 
 ; Repeated references to the stream will return single lines from
 ; the file. Remember to `echo First rule is ... >> /tmp/tail.txt`
-txt-stream
-txt-stream
-txt-stream
+(Trigger (Name "tail stream"))
+(Trigger (Name "tail stream"))
+(Trigger (Name "tail stream"))
 
 ; --------------------------------------------------------
 ; Demo: Perform processing on the stream. For each line of the
@@ -54,17 +56,19 @@ txt-stream
 ; needs to placed somewhere, where it can be found.  Notice a trick
 ; used here: the `DontExec` link shelters the `ValueOf`, and prevents
 ; it from being executed while the SetValue is running.
-(cog-execute!
+(Trigger
 	(SetValue (Concept "foo") (Predicate "some place")
-		(DontExec (ValueOf file-node (Predicate "*-stream-*")))))
+		(DontExec (ValueOf (NameNode "tail file") (Predicate "*-stream-*")))))
 
 ; Access to the stream.
-(define txt-stream-gen
+(Pipe
+	(Name "tail stream gen")
 	(ValueOf (Concept "foo") (Predicate "some place")))
 
 ; This rule just makes two copies of each input line, interleaving
 ; it with other text. The `txt-stream-gen` is the source of input.
-(define rule-applier
+(Define
+	(DefinedSchema "tail rule applier")
 	(Filter
 		(Rule
 			(TypedVariable (Variable "$x") (Type 'StringValue))
@@ -76,21 +80,21 @@ txt-stream
 				(Variable "$x")
 				(Item "yo the second\n")
 				(Item "====\n")))
-		txt-stream-gen))
+		(Name "tail stream gen")))
 
 ; Run the rule, once.
-(cog-execute! rule-applier)
+(Trigger (DefinedSchema "tail rule applier"))
 
 ; Repeat it again, over and over. This will block, unless the
 ; file is appended to. This will continue, until the text stream
 ; is sent the `*-close-*` message. If blocked, then the `*-close-*`
 ; has to be sent from another thread.
-(cog-execute! rule-applier)
-(cog-execute! rule-applier)
-(cog-execute! rule-applier)
-(cog-execute! rule-applier)
-(cog-execute! rule-applier)
-(cog-execute! rule-applier)
+(Trigger (DefinedSchema "tail rule applier"))
+(Trigger (DefinedSchema "tail rule applier"))
+(Trigger (DefinedSchema "tail rule applier"))
+(Trigger (DefinedSchema "tail rule applier"))
+(Trigger (DefinedSchema "tail rule applier"))
+(Trigger (DefinedSchema "tail rule applier"))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
