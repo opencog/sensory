@@ -99,37 +99,53 @@
 ; of this demo continues to focus on pipeline processing.
 
 ; -------------------------------------------------------
-; How about a reply on a public channel?
+; So how can we reply on a public channel?
 ;
 ; As noted above, DO NOT join a public channel while the private-echo
 ; agent is running (in the inf-loop, at bottom). It's incessant replies
 ; will get it kicked. So we want a message processing pipeline that is
 ; aware of being on a public channel, and replies only when spoken to.
 
-; To accomplish this, a sequence of increasingly complex pipelines
-; are developed below.
+; To accomplish good  citizen behavor on public channels, a sequence of
+; increasingly complex pipelines are developed below.
 ; -----------------
-; Part one: Some generic boilerplate that all pipelines will use.
+; Part one: Define some generic boilerplate that all pipelines will use.
 
-; Convenience wrapper.
-; The RuleLink defines a message-processiong rule. The Rule accepts
-; any input consisting of a LinkValue holding an IRC message, extracts
-; the three parts, and then inserts the list of actoms in CONCLUSION.
+; Define a convenience utility. This is a Filter that will pull from
+; IRC, and apply a RuleLink to each message. The RuleLink will unwrap
+; each message into three variables, and then pass the variables to the
+; "conclusion", which is some rewrite template on these three variables.
 ;
-; The Filter is designed to pull from IRC, and apply the Rule to what
-; was pulled.
-;
-; Note that executing this will hang, waiting on input, and so you
-; have to say something to the bot before this returns.
-(define (make-applier CONCLUSION)
-	(Filter
-		(Rule
-			(VariableList
-				(Variable "$from") (Variable "$to") (Variable "$msg"))
-			(LinkSignature (Type 'LinkValue)
-				(Variable "$from") (Variable "$to") (Variable "$msg"))
-			CONCLUSION)
-		(Name "IRC read")))
+(Define
+	(DefinedSchema "message rewriter")
+	(Lambda
+		(Variable "rewrite of message")
+		(Filter
+			(Rule
+				(VariableList
+					(Variable "$from") (Variable "$to") (Variable "$msg"))
+				(LinkSignature (Type 'LinkValue)
+					(Variable "$from") (Variable "$to") (Variable "$msg"))
+				(Variable "rewrite of message"))
+		(Name "IRC read"))))
+
+; --------
+; Example of using the above: Show a message
+(Define
+	(DefinedSchema "display mesg")
+	(LinkSignature (Type 'LinkValue)
+		(Concept "From: ")
+		(Variable "$from")
+		(Concept "To: ")
+		(Variable "$to")
+		(Concept "The message: ")
+		(Variable "$msg")))
+
+; This will hang, until you say something to the bot.
+(Trigger
+	(Put
+		(DefinedSchema "message rewriter")
+		(DefinedSchema "display mesg")))
 
 ; Convenience wrapper. Reads from IRC, extracts message, rewrites
 ; it into CONCLUSION, writes out to IRC.
@@ -148,12 +164,6 @@
 ; Leave a channel.
 (Trigger (SetValue (Name "IRC chat object") (Predicate "*-write-*")
 	(List (Concept "PART #opencog"))))
-
-; --------
-; Example: Show message
-; This hangs, until you say something to the bot.
-(define show (list (Variable "$from") (Variable "$to") (Variable "$msg")))
-(Trigger (make-applier show))
 
 ; --------
 ; Example: No-op. Do nothing.
