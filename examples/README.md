@@ -39,6 +39,7 @@ Examples that demonstrate how the API works, and the most basic usage.
 * `xterm-io.scm` -- Stream Atoms/Values from/to an interactive terminal.
 * `irc-api.scm` -- Demo of connecting to IRC and interacting.
 * `filesys.scm` -- Navigate and explore the filesystem.
+* `ollama.scm` -- Send and receive messages from Ollama.
 
 ### Agent demos
 Examples showing how prototype agents can be built up in Atomese.
