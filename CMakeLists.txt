@@ -42,6 +42,15 @@ INCLUDE(OpenCogGuile)
 INCLUDE(OpenCogCython)
 
 # ----------------------------------------------------------
+# Optional: cpp-httplib for Ollama LLM interface
+INCLUDE(FindPkgConfig)
+PKG_CHECK_MODULES(HTTPLIB cpp-httplib)
+IF (HTTPLIB_FOUND)
+	SET(HAVE_HTTPLIB 1)
+	ADD_DEFINITIONS(-DHAVE_HTTPLIB)
+ENDIF (HTTPLIB_FOUND)
+
+# ----------------------------------------------------------
 ADD_SUBDIRECTORY (opencog)
 ADD_SUBDIRECTORY (cmake)
 
@@ -52,5 +61,6 @@ OPENCOG_SETUP_TESTING()
 # ===================================================================
 # Show a summary of what we found, what we will do.
 
+SUMMARY_ADD("Ollama" "Ollama LLM interface" HAVE_HTTPLIB)
 SUMMARY_ADD("Python bindings" "Python (cython) bindings" HAVE_CYTHON)
 SUMMARY_SHOW()
