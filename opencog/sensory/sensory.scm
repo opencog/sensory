@@ -24,6 +24,10 @@
 	"opencog_sensory_irc_init")
 
 (load-extension
+	(string-append opencog-ext-path-sensory-ollama "libsensory-ollama")
+	"opencog_sensory_ollama_init")
+
+(load-extension
 	(string-append opencog-ext-path-sensory-terminal "libsensory-terminal")
 	"opencog_sensory_terminal_init")
 
