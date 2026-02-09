@@ -39,7 +39,7 @@ Examples that demonstrate how the API works, and the most basic usage.
 * `xterm-io.scm` -- Stream Atoms/Values from/to an interactive terminal.
 * `irc-api.scm` -- Demo of connecting to IRC and interacting.
 * `filesys.scm` -- Navigate and explore the filesystem.
-* `ollama.scm` -- Send and receive messages from Ollama.
+* `ollama-api.scm` -- Send and receive messages from Ollama.
 
 ### Agent demos
 Examples showing how prototype agents can be built up in Atomese.
@@ -48,7 +48,8 @@ processing pipelines to build crude stimulus-response agents.
 
 * `xterm-bridge.scm` -- Copying text between two xterms
 * `irc-echo-bot.scm` -- IRC echo bot demo.
-* `parse-pipeline.scm` -- A comlicated pipeline processing demo.
+* `ollama-bot.scm` -- Ollama responds to IRC messages.
+* `parse-pipeline.scm` -- A complicated pipeline processing demo.
 * `introspect.scm` -- (Under construction; broken)
 
 The ultimate design goal is to replace the crude hand-crafted
