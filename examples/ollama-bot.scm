@@ -56,34 +56,23 @@
 	(NameNode "IRC botname")
 	(LinkSignature (Type 'StringValue) (Name "IRC chat object")))
 
-; Generic message rewriter: a Lambda that takes a rewrite template,
-; pulls one message from IRC, unpacks it into $from/$to/$msg, and
-; applies the template.
-(Define
-	(DefinedSchema "message rewriter")
-	(Lambda
-		(Variable "rewrite of message")
-		(Filter
-			(Rule
-				(VariableList
-					(Variable "$from") (Variable "$to") (Variable "$msg"))
-				(LinkSignature (Type 'LinkValue)
-					(Variable "$from") (Variable "$to") (Variable "$msg"))
-				(Variable "rewrite of message"))
-			(Name "IRC read"))))
-
 ; Generic responder: a Lambda that takes a rewrite template, applies
 ; it to the next IRC message via the message rewriter, and writes
 ; the result back to IRC.
 (Define
 	(DefinedSchema "responder")
 	(Lambda
-		(Variable "rewrite of message")
-		(SetValue (Name "IRC chat object") (Predicate "*-write-*")
+		(Variable "$rewrite")
 			(LinkSignature (Type 'LinkValue)
-				(Put
-					(DefinedSchema "message rewriter")
-					(Variable "rewrite of message"))))))
+		(Filter
+			(Rule
+				(VariableList
+					(Variable "$from") (Variable "$to") (Variable "$msg"))
+				(LinkSignature (Type 'LinkValue)
+					(Variable "$from") (Variable "$to") (Variable "$msg"))
+				(SetValue (Name "IRC chat object") (Predicate "*-write-*")
+					(Variable "$rewrite")))
+			(Name "IRC read")))))
 
 ; --------------------------------------------------------
 ; Part 3: The Ollama-powered reply logic.
