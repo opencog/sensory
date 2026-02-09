@@ -40,6 +40,13 @@ namespace opencog
  *
  * Writing a plain string sends a /api/generate request.
  * Writing a LinkValue of role/content pairs sends a /api/chat request.
+ *
+ * XXX FIXME: See the README for criticism. This is a bit disappointing,
+ * as this is just a cheap and cheesy FFI wrapper around Ollama, and
+ * utterly fails to explore the nature of interfaces. And, as such,
+ * it fails to conform to the project goals. But, for now, its usable.
+ * It fulfils some basic needs. So Caveat Emptor: You can use this,
+ * but its not really going in the correct long-term direction.
  */
 class OllamaNode
 	: public TextStreamNode
