@@ -23,9 +23,11 @@
 	(string-append opencog-ext-path-sensory-irc "libsensory-irc")
 	"opencog_sensory_irc_init")
 
-(load-extension
-	(string-append opencog-ext-path-sensory-ollama "libsensory-ollama")
-	"opencog_sensory_ollama_init")
+; The Ollama module is optional; it requires cpp-httplib to build.
+(if (defined? 'opencog-ext-path-sensory-ollama)
+	(load-extension
+		(string-append opencog-ext-path-sensory-ollama "libsensory-ollama")
+		"opencog_sensory_ollama_init"))
 
 (load-extension
 	(string-append opencog-ext-path-sensory-terminal "libsensory-terminal")
