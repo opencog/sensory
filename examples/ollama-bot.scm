@@ -39,7 +39,8 @@
 	(Name "IRC read")
 	(StreamValueOf (NameNode "IRC chat object") (Predicate "*-stream-*")))
 
-; Read a couple of server startup messages.
+; The IRC server will send us exacly two startup messages.
+; Clear these out of the way; we don't want to sent these to Ollama.
 (Trigger (Name "IRC read"))
 (Trigger (Name "IRC read"))
 
@@ -49,12 +50,7 @@
 
 ; --------------------------------------------------------
 ; Part 2: Set up the message processing pipeline.
-; This reuses the same generic utilities from irc-echo-bot.scm.
-
-; Utility: return the bot name as a StringValue.
-(PipeLink
-	(NameNode "IRC botname")
-	(LinkSignature (Type 'StringValue) (Name "IRC chat object")))
+; This is a simplified version of what is in irc-echo-bot.scm.
 
 ; Generic responder: a Lambda that takes a rewrite template, applies
 ; it to the next IRC message via the message rewriter, and writes
@@ -73,6 +69,11 @@
 				(SetValue (Name "IRC chat object") (Predicate "*-write-*")
 					(Variable "$rewrite")))
 			(Name "IRC read")))))
+
+; Utility: return the bot name as a StringValue.
+(PipeLink
+	(NameNode "IRC botname")
+	(LinkSignature (Type 'StringValue) (Name "IRC chat object")))
 
 ; --------------------------------------------------------
 ; Part 3: The Ollama-powered reply logic.
