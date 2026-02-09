@@ -335,8 +335,8 @@
 				(Variable "$msg")
 				(Item "\"?"))
 
-		; Ignore
-		(VoidValue)))
+		; Empty reply
+		(LinkSignature (Type 'LinkValue))))
 
 (Trigger (Trigger
 	(Put
