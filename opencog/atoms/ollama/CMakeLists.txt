@@ -11,6 +11,7 @@ ADD_LIBRARY (sensory-ollama SHARED
 ADD_DEPENDENCIES(sensory-ollama sensory_atom_types)
 
 TARGET_INCLUDE_DIRECTORIES(sensory-ollama PRIVATE ${HTTPLIB_INCLUDE_DIRS})
+TARGET_COMPILE_OPTIONS(sensory-ollama PRIVATE ${HTTPLIB_CFLAGS_OTHER})
 
 TARGET_LINK_LIBRARIES(sensory-ollama
 	sensory
