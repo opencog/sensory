@@ -210,6 +210,53 @@ static std::string json_escape(const std::string& s)
 	return result;
 }
 
+// Decode a JSON \uXXXX escape sequence (and surrogate pairs for
+// characters above U+FFFF) into UTF-8. `pos` should point at the
+// first hex digit after the 'u'. On return, `pos` is advanced past
+// the consumed hex digits (and past the low surrogate, if any).
+static inline void json_decode_uXXXX(const std::string& json,
+                                     size_t& pos, std::string& result)
+{
+	if (pos + 4 > json.size()) return;
+	uint32_t cp = std::stoul(json.substr(pos, 4), nullptr, 16);
+	pos += 4;
+
+	// Handle UTF-16 surrogate pairs for U+10000 and above.
+	if (0xD800 <= cp and cp <= 0xDBFF and
+	    pos + 6 <= json.size() and
+	    json[pos] == '\\' and json[pos + 1] == 'u')
+	{
+		uint32_t lo = std::stoul(json.substr(pos + 2, 4), nullptr, 16);
+		if (0xDC00 <= lo and lo <= 0xDFFF)
+		{
+			cp = 0x10000 + (cp - 0xD800) * 0x400 + (lo - 0xDC00);
+			pos += 6;
+		}
+	}
+
+	// Encode code point as UTF-8.
+	if (cp < 0x80)
+		result += (char) cp;
+	else if (cp < 0x800)
+	{
+		result += (char)(0xC0 | (cp >> 6));
+		result += (char)(0x80 | (cp & 0x3F));
+	}
+	else if (cp < 0x10000)
+	{
+		result += (char)(0xE0 | (cp >> 12));
+		result += (char)(0x80 | ((cp >> 6) & 0x3F));
+		result += (char)(0x80 | (cp & 0x3F));
+	}
+	else
+	{
+		result += (char)(0xF0 | (cp >> 18));
+		result += (char)(0x80 | ((cp >> 12) & 0x3F));
+		result += (char)(0x80 | ((cp >> 6) & 0x3F));
+		result += (char)(0x80 | (cp & 0x3F));
+	}
+}
+
 // Extract a string value for a given key from a JSON object string.
 // Looks for "key":"value" and returns value (with JSON escapes decoded).
 // Returns empty string if key not found.
@@ -236,19 +283,25 @@ static std::string json_get_string(const std::string& json,
 			pos++;
 			switch (json[pos])
 			{
-				case '"':  result += '"'; break;
-				case '\\': result += '\\'; break;
-				case 'n':  result += '\n'; break;
-				case 'r':  result += '\r'; break;
-				case 't':  result += '\t'; break;
-				default:   result += json[pos]; break;
+				case '"':  result += '"'; pos++; break;
+				case '\\': result += '\\'; pos++; break;
+				case 'n':  result += '\n'; pos++; break;
+				case 'r':  result += '\r'; pos++; break;
+				case 't':  result += '\t'; pos++; break;
+				case 'u':
+					// \uXXXX unicode escape; pos is advanced
+					// past all consumed hex digits by the callee.
+					pos++;
+					json_decode_uXXXX(json, pos, result);
+					break;
+				default:   result += json[pos]; pos++; break;
 			}
 		}
 		else
 		{
 			result += json[pos];
+			pos++;
 		}
-		pos++;
 	}
 	return result;
 }
