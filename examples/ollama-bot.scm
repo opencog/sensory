@@ -165,7 +165,8 @@
 ; Cleanup (when done).
 ; (Trigger
 ;	(SetValue (NameNode "IRC chat object") (Predicate "*-close-*")))
-; (SetValue (OllamaNode "my-llm") (Predicate "*-close-*"))
+; (Trigger
+;	(SetValue (OllamaNode "my-llm") (Predicate "*-close-*")))
 
 ; --------------------------------------------------------
 ; The End! That's All, Folks!
