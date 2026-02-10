@@ -56,7 +56,7 @@
 ; it to the next IRC message via the message rewriter, and writes
 ; the result back to IRC.
 (Define
-	(DefinedSchema "responder")
+	(DefinedSchema "IRC responder")
 	(Lambda
 		(Variable "$rewrite")
 			(LinkSignature (Type 'LinkValue)
@@ -151,7 +151,7 @@
 	(DefinedSchema "the ollama bot")
 	(Trigger
 		(Put
-			(DefinedSchema "responder")
+			(DefinedSchema "IRC responder")
 			(DefinedSchema "ollama reply"))))
 
 ; Try it once. This blocks until someone sends a message.
