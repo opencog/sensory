@@ -149,10 +149,9 @@
 ; The bot handler: read one IRC message, process it, reply.
 (Define
 	(DefinedSchema "the ollama bot")
-	(Trigger
-		(Put
-			(DefinedSchema "IRC responder")
-			(DefinedSchema "ollama reply"))))
+	(Put
+		(DefinedSchema "IRC responder")
+		(DefinedSchema "ollama reply")))
 
 ; Try it once. This blocks until someone sends a message.
 (Trigger (DefinedSchema "the ollama bot"))
