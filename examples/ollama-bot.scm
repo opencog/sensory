@@ -78,14 +78,33 @@
 ; --------------------------------------------------------
 ; Part 3: The Ollama-powered reply logic.
 ;
-; The key trick:
-;    (ValueOf (SetValue ollama *-write-* text) *-read-*)
+; The current Atomese design does not provide any easy way to control
+; return values from multi-pipeline steps. The current OllamaNode API
+; requires two steps: one to send text to Ollama, and a second to get
+; Ollama's reply. These two steps need to be combined into one, so that
+; only the Ollama reply is sent to IRC. This is accomplished with a bit
+; of a cheesy hack. (There might be a better deisgn in the future, but
+; this is what we've got, right now.)
 ;
-; SetValue, when executed, writes to Ollama and returns the OllamaNode.
+; The trick is that
+;    (SetValueOn obj msg val)
+; returns the obj. This can be used to chain calls:
+;    (ValueOf (SetValueOn obj msg val) another-msg)
+; which, in the present case, would be
+;    (ValueOf (SetValueOn (Ollama...) *-write-* text) *-read-*)
+;
+; SetValueOn, when executed, writes to Ollama and returns the OllamaNode.
 ; ValueOf then reads from that same node, blocking until the LLM
 ; finishes generating. This chains the write-then-read in a single
 ; expression.
 ;
+; Thus, for example:
+(Trigger
+	(ValueOf
+		(SetValueOn (Ollama "my-llm") (Predicate "*-write-*")
+			(Item "Explain lambda calculus in three sentences."))
+		(Predicate "*-read-*")))
+
 ; IRC messages arrive as:
 ;    (LinkValue (StringValue "nick") (StringValue "#chan") (StringValue "text"))
 ;
@@ -103,7 +122,7 @@
 		(LinkSignature (Type 'LinkValue)
 			(Item "PRIVMSG") (Variable "$from")
 			(ValueOf
-				(SetValue (OllamaNode "my-llm") (Predicate "*-write-*")
+				(SetValueOn (OllamaNode "my-llm") (Predicate "*-write-*")
 					(Variable "$msg"))
 				(Predicate "*-read-*")))
 
@@ -117,7 +136,7 @@
 		(LinkSignature (Type 'LinkValue)
 			(Item "PRIVMSG") (Variable "$to")
 			(ValueOf
-				(SetValue (OllamaNode "my-llm") (Predicate "*-write-*")
+				(SetValueOn (OllamaNode "my-llm") (Predicate "*-write-*")
 					(ElementOf (Number 1) (Variable "$msg")))
 				(Predicate "*-read-*")))
 
