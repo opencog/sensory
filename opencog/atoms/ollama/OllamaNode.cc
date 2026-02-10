@@ -15,6 +15,7 @@
  * GNU General Public License for more details.
  */
 
+#include <algorithm>
 #include <httplib.h>
 
 #include <opencog/util/exceptions.h>
@@ -335,6 +336,12 @@ void OllamaNode::looper(void)
 				response = do_generate(strs[0]);
 			else
 				continue;
+
+			// Replace newlines with spaces. LLM responses are
+			// typically multi-line, but most consumers (e.g. IRC)
+			// expect single-line strings.
+			std::replace(response.begin(), response.end(), '\n', ' ');
+			std::replace(response.begin(), response.end(), '\r', ' ');
 
 			if (not _cancel and _qvp)
 				_qvp->add(createStringValue(std::move(response)));
