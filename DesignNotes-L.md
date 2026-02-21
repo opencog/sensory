@@ -34,7 +34,7 @@ A list of the obvious issues:
   available from OpenAI and Google, but these have the drawback of being
   commercial.
 * I need a vector DB. There are two possibilities: (1) create an Atomese
-  wrapper around Faise, the open source facebook vector DB, (2) create a
+  wrapper around Faiss, the open source facebook vector DB, (2) create a
   pure-atomese implementation of a vector DB, or (3) do both.
 
 Option (3) above is the interesting one. This creates a pure atomese
@@ -42,6 +42,12 @@ description of what a vector DB should do. In essence, the Atomese can
 be thought of as pseudo-code, except that its a bit more precise, since
 Atomese is directly executable (with questionable performance, as well
 as having other issues, like an unclear API specification).
+
+FWIW, the pure-Atomese version needs to also implement the search algo.
+Claude mentions HNSW, IVF and more:
+* ColBERT -- vectorize tokes, sum max tokens
+* (Others that seem not relevant here)
+
 
 Jigsaw API's
 ------------
@@ -65,3 +71,14 @@ The idea of using an LLM to provide text embeddings coupled to symbolic
 systems, in a triple of (text, embedding, symbols) is that perhaps the
 LLM can be used to smooth over the above issues. Maybe. I have an
 inkling, here, the challenge is to work out the details.
+
+Storyboard
+----------
+How might this work? At the simplest level, it looks like "skills":
+there's an English-language paragraph that says "To find all files with
+filename X, run the following query." and then there is the actual
+Atomese, stored as the third part of that triple.
+
+The first stumbling block is how to plug in the value for X into the
+Atomese.
+
