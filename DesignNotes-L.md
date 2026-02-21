@@ -101,3 +101,17 @@ are.
 
 Few-shot prompting, giving examples, is more effective.
 
+Three Design Tasks
+------------------
+The following comes up:
+* Can I generate sheaf sections from Atomese, i.e. create the IDL
+  section for a dot-product, given the Atomese expression for the
+  dot-product? (or rather, can I trick Claude into doing this?)
+* I need to (initially, at least) pair the Atomese expression, e.g.
+  for a dot product, with a verbal description. This pairing is already
+  avaiable as a demo.scm file somewhere, but it is informal. A more
+  direct, formalized pairing seems desirable ... but how?
+* I need a way of composing jigsaws, mediating in English.  I can
+  verify formal compositionality by running them through LG or perhaps
+  some simpler formal system...
+
