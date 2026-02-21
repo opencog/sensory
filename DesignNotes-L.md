@@ -8,12 +8,19 @@ can then be associated with matching structural (symbolic) entities. It
 might offer a simple way forward past some earlier design blockages
 encountered in this project.
 
-In this perspective, the LLM is treated as a natural language API into
-non-verbal systems; the "thinking" happens non-verbally, while the text
-LLM provides a way of manipulating, controlling and working with th
-non-verbal elements. The idea is to build on the concept of RAG
-(retreival-augumented generation) or semantic search, by building
-triples of (text, vector-embedding-of-text, symbolic-structure).
+The perspective is that of "semantic routing": the LLM is treated as a
+natural language API into non-verbal systems; the "thinking" happens
+non-verbally, while the text LLM provides a way of manipulating,
+controlling and working with the non-verbal elements. The idea is to
+build on the concept of RAG (retreival-augumented generation), semantic
+search or semantic routing, by building triples of
+```
+   (text, vector-embedding-of-text, symbolic-structure).
+```
+This is a pre-MCP conception of the interface, in part because Ollama
+does not have MCP support, and in part because MCP does not do what I
+want it to do; and so I'm exploring some more basic technologies.
+
 
 A "memory" architecture
 -----------------------
@@ -47,6 +54,12 @@ FWIW, the pure-Atomese version needs to also implement the search algo.
 Claude mentions HNSW, IVF and more:
 * ColBERT -- vectorize tokes, sum max tokens
 * (Others that seem not relevant here)
+
+Off-the-shelf
+-------------
+Some existing systems:
+* LangChain and LlamaIndex provide MCP-like API's
+* Gorilla LLM -- specifically trained for tool calling.
 
 
 Jigsaw API's
