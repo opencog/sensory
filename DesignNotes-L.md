@@ -93,5 +93,11 @@ filename X, run the following query." and then there is the actual
 Atomese, stored as the third part of that triple.
 
 The first stumbling block is how to plug in the value for X into the
-Atomese.
+Atomese. The standard solution is "prompt-based tool calling", where I
+have an extra paragraph explaining to ollama how to extract filenames
+from user text. This solution is fragile: as complexity grows, the LLM
+is increasingly confused about what is going on, where the paramters
+are.
+
+Few-shot prompting, giving examples, is more effective.
 
