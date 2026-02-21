@@ -5,7 +5,7 @@ Two needs arise: the ability to tail a file as it is being written by
 some external writer, and the ability to watch directory contents, as
 they are being manipulted by some external agent.
 
-I gave these tasks to Clause, which seems to be coding up what I asked
+I gave these tasks to Claude, which seems to be coding up what I asked
 for in a literal manner, but Claude is mindless and unthinking, and
 like the wish-granting genie, isn't quite delivering what was wanted.
 
