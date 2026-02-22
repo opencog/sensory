@@ -115,3 +115,44 @@ The following comes up:
   verify formal compositionality by running them through LG or perhaps
   some simpler formal system...
 
+Clauding
+--------
+I wrote the below for Claude:
+
+I have a demo file, called dot-product.scm  that is written to be an
+example tutorial for human readers. It shows how to compute the dot
+product of two vectors, in pure Atomese. It is annotated in such a way
+as to explain exactly what is going on. But it is also entirely
+stand-alone -- it inpcludes boilerplate to set things up, and print
+statements that print to stdout -- it assumes that a human will be
+cutting and pasting from that file to a guile REPL prompt.  I need this
+converted to a lexical entry, which will be stored in the AtomSpace.
+This lexical entry will consist of one or more blobs of text (a vector
+of blobs of text!) that explain the Atomese for a dot-product.
+Associated with this blob is the actual code for the dot product. Next,
+there needs to be a precise jigsaw definition of the inputs and outputs,
+and finally a blob of text that describes the jigsaw.
+
+So this is a four-vector: a verbal description of the code, the code
+itself, the IDL of the code, and a verbal description of the IDL. The
+precise IDL exists because I have tools that can explicitly verify the
+syntactic correctness of the attachment of any two connectors.
+
+I will be asking a sophisticated LLM, such as you, Claude,  to help
+create this four-vector. However, I would like to have a simpler system,
+such as ollama, work with the actual assembly of the jigsaws into more
+complex subsystems.  For this last part, this four-vector can be
+extended with additional floating-point vectors that are embeddings of
+the text.  This is the general idea. The overall design remains a bit
+vague, as do the precise usage patterns.
+
+And what did Claude say in response? "This is a genuinely novel
+architecture". Fuck me. Every time I try something novel with Claude,
+I get a ball of spaghetti code, and I am trying to figure out how to
+avoid that, here.
+
+Basically, Claude echoed back what I said above, then asked a bunch of
+shallow, inane questions that reveal it does not understand the big
+picture, but is quite eager to get lost in the details. That is how
+spaghetti code is born: the urge to write code, before understanding teh
+problem. Hmm.
