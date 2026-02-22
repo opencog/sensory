@@ -23,8 +23,21 @@ STREAM_NODE <- SENSORY_NODE
 // Further specialization, for text (utf-8) strings
 TEXT_STREAM_NODE <- STREAM_NODE
 
+// ----------------------------------------------------
+// File system interactions
 // Read text file, one line at a time. Write (append) to text file.
 TEXT_FILE_NODE <- TEXT_STREAM_NODE
+
+// Navigate file system
+FILE_SYS_NODE <- TEXT_STREAM_NODE
+
+// ----------------------------------------------------
+// Text chat interactions
+// Read and write to an Unix Domain Socket
+UNIX_SOCKET_NODE <- TEXT_STREAM_NODE
+
+// TODO Same as above, but for TCP/IP
+// TCP_SOCKET_NODE <- TEXT_STREAM_NODE
 
 // Read and write to an xterm
 TERMINAL_NODE <- TEXT_STREAM_NODE
@@ -32,8 +45,7 @@ TERMINAL_NODE <- TEXT_STREAM_NODE
 // Interact with IRC
 I_R_CHAT_NODE <- TEXT_STREAM_NODE
 
-// Navigate file system
-FILE_SYS_NODE <- TEXT_STREAM_NODE
-
+// ----------------------------------------------------
+// LLM API's
 // Chat with Ollama
 OLLAMA_NODE <- TEXT_STREAM_NODE
