@@ -35,7 +35,7 @@ using namespace opencog;
 
 UnixSocketNode::UnixSocketNode(Type t, const std::string&& url) :
 	TextStreamNode(t, std::move(url)),
-	_fh(nullptr),
+	_client_fd(-1),
 	_listen_fd(-1)
 {
 	OC_ASSERT(nameserver().isA(_type, UNIX_SOCKET_NODE),
@@ -44,7 +44,7 @@ UnixSocketNode::UnixSocketNode(Type t, const std::string&& url) :
 
 UnixSocketNode::UnixSocketNode(const std::string&& url) :
 	TextStreamNode(UNIX_SOCKET_NODE, std::move(url)),
-	_fh(nullptr),
+	_client_fd(-1),
 	_listen_fd(-1)
 {
 }
@@ -52,9 +52,9 @@ UnixSocketNode::UnixSocketNode(const std::string&& url) :
 UnixSocketNode::~UnixSocketNode()
 {
 	// Clean up, if not already done.
-	if (_fh)
-		fclose(_fh);
-	_fh = nullptr;
+	if (0 <= _client_fd)
+		::close(_client_fd);
+	_client_fd = -1;
 
 	if (0 <= _listen_fd)
 		::close(_listen_fd);
@@ -81,7 +81,7 @@ void UnixSocketNode::open(const ValuePtr& vty)
 	TextStreamNode::open(vty);
 
 	// If already listening or connected, do nothing.
-	if (_fh or 0 <= _listen_fd) return;
+	if (0 <= _client_fd or 0 <= _listen_fd) return;
 
 	const std::string& url = get_name();
 
@@ -148,14 +148,14 @@ void UnixSocketNode::open(const ValuePtr& vty)
 
 /// Accept a client connection, if one has not yet been accepted.
 /// This blocks until a client connects. Called lazily from do_read()
-/// and do_write().
+/// and do_write(). Caller must hold _mtx.
 void UnixSocketNode::do_accept(void) const
 {
-	if (_fh) return;
+	if (0 <= _client_fd) return;
 	if (0 > _listen_fd) return;
 
-	int client_fd = accept(_listen_fd, nullptr, nullptr);
-	if (0 > client_fd)
+	int cfd = accept(_listen_fd, nullptr, nullptr);
+	if (0 > cfd)
 	{
 		int norr = errno;
 		throw RuntimeException(TRACE_INFO,
@@ -164,34 +164,22 @@ void UnixSocketNode::do_accept(void) const
 	}
 
 	printf("Client connected on %s\n", _sock_path.c_str());
-
-	// Wrap the client fd in a FILE* for line-oriented I/O.
-	_fh = fdopen(client_fd, "r+");
-	if (nullptr == _fh)
-	{
-		int norr = errno;
-		::close(client_fd);
-		throw RuntimeException(TRACE_INFO,
-			"Unable to fdopen client socket: (%d) %s\n",
-			norr, strerror(norr));
-	}
-
-	// Use line buffering so that writes ending in newline are
-	// flushed immediately. This is important for interactive use.
-	setvbuf(_fh, nullptr, _IOLBF, 0);
+	_client_fd = cfd;
 }
 
 void UnixSocketNode::close(const ValuePtr&)
 {
 	std::lock_guard<std::mutex> lock(_mtx);
 
-	if (_fh)
-		fclose(_fh);
-	_fh = nullptr;
+	if (0 <= _client_fd)
+		::close(_client_fd);
+	_client_fd = -1;
 
 	if (0 <= _listen_fd)
 		::close(_listen_fd);
 	_listen_fd = -1;
+
+	_read_buf.clear();
 
 	// Remove the socket file.
 	if (not _sock_path.empty())
@@ -203,13 +191,12 @@ void UnixSocketNode::close(const ValuePtr&)
 
 void UnixSocketNode::barrier(AtomSpace* ignore)
 {
-	if (_fh)
-		fflush(_fh);
+	// Raw fd I/O has no user-space buffer to flush.
 }
 
 bool UnixSocketNode::connected(void) const
 {
-	return (nullptr != _fh) or (0 <= _listen_fd);
+	return (0 <= _client_fd) or (0 <= _listen_fd);
 }
 
 // ==============================================================
@@ -219,42 +206,67 @@ bool UnixSocketNode::connected(void) const
 // This blocks, waiting for input, if there is no input.
 // On the first call, this will also block waiting for a client
 // to connect (via accept()).
+//
+// Uses raw read() instead of fgets/FILE* to avoid stdio buffering
+// issues on socket file descriptors.
 std::string UnixSocketNode::do_read(void) const
 {
 	static const std::string empty_string;
 
 	// If no client yet, accept one (blocks until a client connects).
-	if (nullptr == _fh)
 	{
 		std::lock_guard<std::mutex> lock(_mtx);
-		do_accept();
-		if (nullptr == _fh) return empty_string;
+		if (0 > _client_fd)
+		{
+			do_accept();
+			if (0 > _client_fd) return empty_string;
+		}
 	}
 
-#define BUFSZ 4096
-	std::string str(BUFSZ, 0);
-	char* buff = str.data();
-
-	// Read one line. No lock; fgets is thread-safe for different files.
-	// XXX FIXME Someday we should do something about lines
-	// that are longer than BUFSZ, but not today.
-	FILE* fh_copy;
+	// Check if the read buffer already contains a complete line.
+	size_t nl = _read_buf.find('\n');
+	if (nl != std::string::npos)
 	{
-		std::lock_guard<std::mutex> lock(_mtx);
-		if (nullptr == _fh) return empty_string;
-		fh_copy = _fh;
+		std::string line = _read_buf.substr(0, nl + 1);
+		_read_buf.erase(0, nl + 1);
+		return line;
 	}
 
-	char* rd = fgets(buff, BUFSZ, fh_copy);
+	// Read from the socket until we get a newline or EOF.
+	char buf[4096];
+	while (true)
+	{
+		int cfd;
+		{
+			std::lock_guard<std::mutex> lock(_mtx);
+			cfd = _client_fd;
+		}
+		if (0 > cfd) return empty_string;
 
-	// nullptr is EOF (client disconnected)
-	if (nullptr == rd)
-		return empty_string;
+		ssize_t nr = ::read(cfd, buf, sizeof(buf));
+		if (0 >= nr)
+		{
+			// EOF or error. Return whatever partial line we have,
+			// or empty string if nothing buffered.
+			if (_read_buf.empty())
+				return empty_string;
 
-	// We used str.data() as buff to avoid copying ...
-	// but now the length is wrong. So resize.
-	str.resize(strlen(buff));
-	return str;
+			std::string line;
+			line.swap(_read_buf);
+			return line;
+		}
+
+		_read_buf.append(buf, nr);
+
+		// Check for a complete line.
+		nl = _read_buf.find('\n');
+		if (nl != std::string::npos)
+		{
+			std::string line = _read_buf.substr(0, nl + 1);
+			_read_buf.erase(0, nl + 1);
+			return line;
+		}
+	}
 }
 
 // ==============================================================
@@ -263,20 +275,33 @@ std::string UnixSocketNode::do_read(void) const
 void UnixSocketNode::do_write(const std::string& str)
 {
 	// If no client yet, accept one (blocks until a client connects).
-	if (nullptr == _fh)
 	{
 		std::lock_guard<std::mutex> lock(_mtx);
-		do_accept();
+		if (0 > _client_fd)
+			do_accept();
 	}
 
-	if (nullptr == _fh)
+	if (0 > _client_fd)
 		throw RuntimeException(TRACE_INFO,
 			"UnixSocket not open: URI \"%s\"\n", _name.c_str());
 
-	fprintf(_fh, "%s", str.c_str());
-
-	// Flush immediately so the client sees the data right away.
-	fflush(_fh);
+	// Write the entire string.
+	const char* data = str.c_str();
+	size_t remaining = str.length();
+	while (0 < remaining)
+	{
+		ssize_t nw = ::write(_client_fd, data, remaining);
+		if (0 > nw)
+		{
+			int norr = errno;
+			if (EINTR == norr) continue;
+			throw RuntimeException(TRACE_INFO,
+				"Write error on socket \"%s\": (%d) %s\n",
+				_sock_path.c_str(), norr, strerror(norr));
+		}
+		data += nw;
+		remaining -= nw;
+	}
 }
 
 // ==============================================================

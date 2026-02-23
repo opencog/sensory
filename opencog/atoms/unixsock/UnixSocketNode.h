@@ -18,7 +18,6 @@
 #ifndef _OPENCOG_UNIX_SOCKET_NODE_H
 #define _OPENCOG_UNIX_SOCKET_NODE_H
 
-#include <stdio.h>
 #include <mutex>
 #include <opencog/atoms/sensory/TextStreamNode.h>
 
@@ -55,10 +54,11 @@ class UnixSocketNode
 	: public TextStreamNode
 {
 protected:
-	mutable std::mutex _mtx;  // Protects _fh and coordinates close/read
-	mutable FILE* _fh;        // FILE* for the accepted client connection
+	mutable std::mutex _mtx;  // Protects _client_fd and coordinates close/read
+	mutable int _client_fd;   // Accepted client connection fd
 	mutable int _listen_fd;   // Listening socket file descriptor
 	std::string _sock_path;   // Filesystem path to the socket
+	mutable std::string _read_buf; // Partial-line read buffer
 
 	void do_accept(void) const;
 	virtual void do_write(const std::string&);
