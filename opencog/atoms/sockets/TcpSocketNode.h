@@ -1,5 +1,5 @@
 /*
- * opencog/atoms/sensory/UnixSocketNode.h
+ * opencog/atoms/tcpsock/TcpSocketNode.h
  *
  * Copyright (C) 2026 BrainyBlaze Dynamics LLC
  * All Rights Reserved
@@ -15,8 +15,8 @@
  * GNU General Public License for more details.
  */
 
-#ifndef _OPENCOG_UNIX_SOCKET_NODE_H
-#define _OPENCOG_UNIX_SOCKET_NODE_H
+#ifndef _OPENCOG_TCP_SOCKET_NODE_H
+#define _OPENCOG_TCP_SOCKET_NODE_H
 
 #include <mutex>
 #include <opencog/atoms/sensory/TextStreamNode.h>
@@ -29,10 +29,10 @@ namespace opencog
  */
 
 /**
- * UnixSocketNodes provide a stream of StringValues read from a Unix
- * domain socket, and written to it. This allows interactive text I/O
- * with an external process, e.g. a human user running `socat` to
- * attach to the socket.
+ * TcpSocketNodes provide a stream of StringValues read from a TCP
+ * socket, and written to it. This allows interactive text I/O
+ * with an external process over a network (or localhost), e.g. a
+ * human user running `socat` to connect to the socket.
  *
  * The node acts as a server: on open, it creates, binds, and listens
  * on the socket. The accept is deferred to the first read or write,
@@ -43,7 +43,7 @@ namespace opencog
  * out of a blocking read in one thread is to call close() from a
  * different thread.
  *
- * URI format: unix:///path/to/socket
+ * URI format: tcp://host:port (e.g. tcp://0.0.0.0:5000)
  *
  * This is experimental.
  * Unsolved issues:
@@ -52,14 +52,14 @@ namespace opencog
  *    accept only one connection at a time) This seems like a
  *    reasonable limitation at this time.
  */
-class UnixSocketNode
+class TcpSocketNode
 	: public TextStreamNode
 {
 protected:
 	mutable std::mutex _mtx;  // Protects _client_fd and coordinates close/read
 	mutable int _client_fd;   // Accepted client connection fd
 	mutable int _listen_fd;   // Listening socket file descriptor
-	std::string _sock_path;   // Filesystem path to the socket
+	int _port;                // TCP port number
 	mutable std::string _read_buf; // Partial-line read buffer
 
 	void do_accept(void) const;
@@ -73,21 +73,18 @@ protected:
 	virtual std::string do_read(void) const;
 
 public:
-	UnixSocketNode(const std::string&&);
-	UnixSocketNode(Type t, const std::string&&);
-	virtual ~UnixSocketNode();
+	TcpSocketNode(const std::string&&);
+	TcpSocketNode(Type t, const std::string&&);
+	virtual ~TcpSocketNode();
 
 	static Handle factory(const Handle&);
 };
 
-NODE_PTR_DECL(UnixSocketNode)
-#define createUnixSocketNode CREATE_DECL(UnixSocketNode)
+NODE_PTR_DECL(TcpSocketNode)
+#define createTcpSocketNode CREATE_DECL(TcpSocketNode)
 
 /** @}*/
 } // namespace opencog
 
-extern "C" {
-void opencog_sensory_unixsock_init(void);
-};
 
-#endif // _OPENCOG_UNIX_SOCKET_NODE_H
+#endif // _OPENCOG_TCP_SOCKET_NODE_H

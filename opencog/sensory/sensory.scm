@@ -34,7 +34,7 @@
 	"opencog_sensory_terminal_init")
 
 (load-extension
-	(string-append opencog-ext-path-sensory-unixsock "libsensory-unixsock")
-	"opencog_sensory_unixsock_init")
+	(string-append opencog-ext-path-sensory-sockets "libsensory-sockets")
+	"opencog_sensory_sockets_init")
 
 (include-from-path "opencog/sensory/types/sensory_types.scm")
