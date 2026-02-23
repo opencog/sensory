@@ -41,6 +41,7 @@ OllamaNode::OllamaNode(Type t, const std::string&& str) :
 {
 	OC_ASSERT(nameserver().isA(_type, OLLAMA_NODE),
 		"Bad OllamaNode constructor!");
+	addMessage("*-embedding-*");
 }
 
 OllamaNode::OllamaNode(const std::string&& str) :
@@ -48,6 +49,7 @@ OllamaNode::OllamaNode(const std::string&& str) :
 	_loop(nullptr),
 	_port(11434)
 {
+	addMessage("*-embedding-*");
 }
 
 OllamaNode::~OllamaNode()
@@ -624,36 +626,49 @@ ValuePtr OllamaNode::stream(void) const
 }
 
 // ====================================================================
-// Embedding method. Synchronous -- blocks until result is ready.
+// Override setValue to intercept the *-embedding-* message.
+// This is an OllamaNode-specific message, not a generic SensoryNode one.
 
-void OllamaNode::embedding(const ValuePtr& value)
+void OllamaNode::setValue(const Handle& key, const ValuePtr& value)
 {
-	if (nullptr == _loop)
-		throw RuntimeException(TRACE_INFO,
-			"OllamaNode not connected; call open first.\n");
-
-	// Extract the text to embed.
-	std::string text;
-	if (value->is_type(STRING_VALUE))
+	// Only intercept PredicateNode keys.
+	if (PREDICATE_NODE == key->get_type())
 	{
-		StringValuePtr svp(StringValueCast(value));
-		text = svp->value()[0];
-	}
-	else if (value->is_type(NODE))
-	{
-		text = HandleCast(value)->get_name();
-	}
-	else
-		throw RuntimeException(TRACE_INFO,
-			"OllamaNode: embedding expects StringValue or Node; got %s\n",
-			value->to_string().c_str());
+		static constexpr uint32_t p_embedding =
+			dispatch_hash("*-embedding-*");
 
-	// Call Ollama synchronously.
-	std::vector<float> vec = do_embed(text);
+		const std::string& pred = key->get_name();
+		if (dispatch_hash(pred.c_str()) == p_embedding)
+		{
+			if (nullptr == _loop)
+				throw RuntimeException(TRACE_INFO,
+					"OllamaNode not connected; call open first.\n");
 
-	// Store the result at the *-embedding-* key on this Atom.
-	Handle key = createNode(PREDICATE_NODE, "*-embedding-*");
-	Atom::setValue(key, createFloat32Value(std::move(vec)));
+			// Extract the text to embed.
+			std::string text;
+			if (value->is_type(STRING_VALUE))
+			{
+				StringValuePtr svp(StringValueCast(value));
+				text = svp->value()[0];
+			}
+			else if (value->is_type(NODE))
+			{
+				text = HandleCast(value)->get_name();
+			}
+			else
+				throw RuntimeException(TRACE_INFO,
+					"OllamaNode: embedding expects StringValue or Node;"
+					" got %s\n", value->to_string().c_str());
+
+			// Call Ollama synchronously; store the result.
+			std::vector<float> vec = do_embed(text);
+			Atom::setValue(key, createFloat32Value(std::move(vec)));
+			return;
+		}
+	}
+
+	// Everything else goes to the base class.
+	SensoryNode::setValue(key, value);
 }
 
 // ====================================================================

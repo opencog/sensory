@@ -75,7 +75,6 @@ protected:
 	virtual void close(const ValuePtr&);
 	virtual void write_one(const ValuePtr&);
 	virtual void do_write(const std::string&);
-	virtual void embedding(const ValuePtr&);
 	virtual bool connected(void) const;
 	virtual ValuePtr read(void) const;
 	virtual ValuePtr stream(void) const;
@@ -84,6 +83,8 @@ public:
 	OllamaNode(const std::string&&);
 	OllamaNode(Type, const std::string&&);
 	virtual ~OllamaNode();
+
+	virtual void setValue(const Handle& key, const ValuePtr& value);
 
 	static Handle factory(const Handle&);
 };
