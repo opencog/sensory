@@ -87,7 +87,7 @@ NODE_PTR_DECL(UnixSocketNode)
 } // namespace opencog
 
 extern "C" {
-void opencog_sensory_unixsock_init(void);
+void opencog_sensory_sockets_init(void);
 };
 
 #endif // _OPENCOG_UNIX_SOCKET_NODE_H

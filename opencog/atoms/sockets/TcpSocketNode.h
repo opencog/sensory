@@ -86,8 +86,5 @@ NODE_PTR_DECL(TcpSocketNode)
 /** @}*/
 } // namespace opencog
 
-extern "C" {
-void opencog_sensory_tcpsock_init(void);
-};
 
 #endif // _OPENCOG_TCP_SOCKET_NODE_H

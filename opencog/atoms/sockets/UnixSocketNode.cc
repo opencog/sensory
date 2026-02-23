@@ -311,7 +311,7 @@ DEFINE_NODE_FACTORY(UnixSocketNode, UNIX_SOCKET_NODE);
 
 // ====================================================================
 
-void opencog_sensory_unixsock_init(void)
+void opencog_sensory_sockets_init(void)
 {
    // Force shared lib ctors to run
 };

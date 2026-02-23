@@ -318,10 +318,3 @@ void TcpSocketNode::do_write(const std::string& str)
 
 // Adds factory when library is loaded.
 DEFINE_NODE_FACTORY(TcpSocketNode, TCP_SOCKET_NODE);
-
-// ====================================================================
-
-void opencog_sensory_tcpsock_init(void)
-{
-   // Force shared lib ctors to run
-};
