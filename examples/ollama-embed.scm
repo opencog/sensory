@@ -6,10 +6,11 @@
 ; nomic-embed-text or mxbai-embed-large.
 ;
 ; Prerequisites:
-;   ollama pull nomic-embed-text
 ;   ollama serve
+;   ollama pull nomic-embed-text
 ;
 (use-modules (opencog) (opencog sensory))
+(use-modules (srfi srfi-1))
 
 ; --------------------------------------------------------
 ; Open a connection to Ollama with an embedding model.
