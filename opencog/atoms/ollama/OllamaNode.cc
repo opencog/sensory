@@ -22,6 +22,7 @@
 #include <opencog/util/oc_assert.h>
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/value/BoolValue.h>
+#include <opencog/atoms/value/Float32Value.h>
 #include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atoms/value/StringValue.h>
 #include <opencog/atoms/value/VoidValue.h>
@@ -306,6 +307,53 @@ static std::string json_get_string(const std::string& json,
 	return result;
 }
 
+// Extract an array of floats from the "embeddings" key in a JSON response.
+// The Ollama /api/embed response has the form:
+//   {"model":"...","embeddings":[[0.123,-0.456,...]]}
+// We extract the first (inner) array of floats.
+static std::vector<float> json_get_float_array(const std::string& json)
+{
+	std::vector<float> result;
+
+	// Find the "embeddings" key.
+	size_t pos = json.find("\"embeddings\"");
+	if (std::string::npos == pos) return result;
+
+	// Skip to the first '[' (the outer array).
+	pos = json.find('[', pos);
+	if (std::string::npos == pos) return result;
+
+	// Skip to the second '[' (the inner array for the first embedding).
+	pos = json.find('[', pos + 1);
+	if (std::string::npos == pos) return result;
+	pos++; // skip '['
+
+	// Parse comma-separated floats until ']'.
+	while (pos < json.size())
+	{
+		// Skip whitespace.
+		while (pos < json.size() and
+		       (json[pos] == ' ' or json[pos] == '\n' or
+		        json[pos] == '\r' or json[pos] == '\t'))
+			pos++;
+
+		if (pos >= json.size() or json[pos] == ']') break;
+
+		// Parse one float.
+		size_t end = 0;
+		float val = std::stof(json.substr(pos), &end);
+		result.push_back(val);
+		pos += end;
+
+		// Skip comma.
+		while (pos < json.size() and
+		       (json[pos] == ' ' or json[pos] == ','))
+			pos++;
+	}
+
+	return result;
+}
+
 // ====================================================================
 // HTTP request methods. These run in the looper thread.
 
@@ -351,6 +399,33 @@ std::string OllamaNode::do_chat(const std::string& json_messages)
 	// The chat response has {"message":{"role":"assistant","content":"..."}}
 	// We need to find "content" inside the "message" object.
 	return json_get_string(res->body, "content");
+}
+
+std::vector<float> OllamaNode::do_embed(const std::string& text)
+{
+	std::string body =
+		"{\"model\":\"" + json_escape(_model) + "\","
+		"\"input\":\"" + json_escape(text) + "\"}";
+
+	httplib::Client cli(_host, _port);
+	cli.set_read_timeout(60);
+	cli.set_write_timeout(10);
+
+	auto res = cli.Post("/api/embed", body, "application/json");
+	if (not res)
+		throw RuntimeException(TRACE_INFO,
+			"OllamaNode: no response from server for embedding\n");
+
+	if (200 != res->status)
+		throw RuntimeException(TRACE_INFO,
+			"OllamaNode: embedding HTTP error %d\n", res->status);
+
+	std::vector<float> vec = json_get_float_array(res->body);
+	if (vec.empty())
+		throw RuntimeException(TRACE_INFO,
+			"OllamaNode: empty embedding returned\n");
+
+	return vec;
 }
 
 // ====================================================================
@@ -546,6 +621,39 @@ ValuePtr OllamaNode::stream(void) const
 	if (nullptr == _loop) return createVoidValue();
 
 	return _qvp;
+}
+
+// ====================================================================
+// Embedding method. Synchronous -- blocks until result is ready.
+
+void OllamaNode::embedding(const ValuePtr& value)
+{
+	if (nullptr == _loop)
+		throw RuntimeException(TRACE_INFO,
+			"OllamaNode not connected; call open first.\n");
+
+	// Extract the text to embed.
+	std::string text;
+	if (value->is_type(STRING_VALUE))
+	{
+		StringValuePtr svp(StringValueCast(value));
+		text = svp->value()[0];
+	}
+	else if (value->is_type(NODE))
+	{
+		text = HandleCast(value)->get_name();
+	}
+	else
+		throw RuntimeException(TRACE_INFO,
+			"OllamaNode: embedding expects StringValue or Node; got %s\n",
+			value->to_string().c_str());
+
+	// Call Ollama synchronously.
+	std::vector<float> vec = do_embed(text);
+
+	// Store the result at the *-embedding-* key on this Atom.
+	Handle key = createNode(PREDICATE_NODE, "*-embedding-*");
+	Atom::setValue(key, createFloat32Value(std::move(vec)));
 }
 
 // ====================================================================

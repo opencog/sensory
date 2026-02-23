@@ -66,6 +66,7 @@ private:
 	void looper(void);
 	std::string do_generate(const std::string& prompt);
 	std::string do_chat(const std::string& json_messages);
+	std::vector<float> do_embed(const std::string& text);
 
 protected:
 	QueueValuePtr _qvp;
@@ -74,6 +75,7 @@ protected:
 	virtual void close(const ValuePtr&);
 	virtual void write_one(const ValuePtr&);
 	virtual void do_write(const std::string&);
+	virtual void embedding(const ValuePtr&);
 	virtual bool connected(void) const;
 	virtual ValuePtr read(void) const;
 	virtual ValuePtr stream(void) const;
