@@ -65,23 +65,23 @@ UnixSocketNode::~UnixSocketNode()
 		unlink(_sock_path.c_str());
 }
 
-/// Open a Unix domain socket and listen for a client connection.
+/// Open a Unix domain socket and start listening for connections.
 ///
 /// The URI format is:
 /// unix:///path/to/socket
 ///
-/// This creates the socket, binds to the given path, listens with a
-/// backlog of 1, and then blocks in accept() waiting for a client to
-/// connect. This is intentionally blocking: the expected usage is that
-/// the user will run `socat - UNIX-CONNECT:/path/to/socket` in another
-/// terminal to attach.
+/// This creates the socket, binds to the given path, and starts
+/// listening with a backlog of 1. It does NOT block waiting for a
+/// client to connect; the accept() is deferred to the first call
+/// to do_read() or do_write(). This allows the user to see the
+/// socket file on disk and connect with socat at their leisure.
 ///
 void UnixSocketNode::open(const ValuePtr& vty)
 {
 	TextStreamNode::open(vty);
 
-	// If already open, do nothing.
-	if (_fh) return;
+	// If already listening or connected, do nothing.
+	if (_fh or 0 <= _listen_fd) return;
 
 	const std::string& url = get_name();
 
@@ -144,15 +144,20 @@ void UnixSocketNode::open(const ValuePtr& vty)
 
 	printf("Listening on %s\n", _sock_path.c_str());
 	printf("Connect with: socat - UNIX-CONNECT:%s\n", _sock_path.c_str());
+}
 
-	// Block here until a client connects.
+/// Accept a client connection, if one has not yet been accepted.
+/// This blocks until a client connects. Called lazily from do_read()
+/// and do_write().
+void UnixSocketNode::do_accept(void) const
+{
+	if (_fh) return;
+	if (0 > _listen_fd) return;
+
 	int client_fd = accept(_listen_fd, nullptr, nullptr);
 	if (0 > client_fd)
 	{
 		int norr = errno;
-		::close(_listen_fd);
-		_listen_fd = -1;
-		unlink(_sock_path.c_str());
 		throw RuntimeException(TRACE_INFO,
 			"Unable to accept connection on \"%s\": (%d) %s\n",
 			_sock_path.c_str(), norr, strerror(norr));
@@ -161,18 +166,19 @@ void UnixSocketNode::open(const ValuePtr& vty)
 	printf("Client connected on %s\n", _sock_path.c_str());
 
 	// Wrap the client fd in a FILE* for line-oriented I/O.
-	_fh = fdopen(client_fd, "a+");
+	_fh = fdopen(client_fd, "r+");
 	if (nullptr == _fh)
 	{
 		int norr = errno;
 		::close(client_fd);
-		::close(_listen_fd);
-		_listen_fd = -1;
-		unlink(_sock_path.c_str());
 		throw RuntimeException(TRACE_INFO,
 			"Unable to fdopen client socket: (%d) %s\n",
 			norr, strerror(norr));
 	}
+
+	// Use line buffering so that writes ending in newline are
+	// flushed immediately. This is important for interactive use.
+	setvbuf(_fh, nullptr, _IOLBF, 0);
 }
 
 void UnixSocketNode::close(const ValuePtr&)
@@ -203,7 +209,7 @@ void UnixSocketNode::barrier(AtomSpace* ignore)
 
 bool UnixSocketNode::connected(void) const
 {
-	return (nullptr != _fh);
+	return (nullptr != _fh) or (0 <= _listen_fd);
 }
 
 // ==============================================================
@@ -211,13 +217,17 @@ bool UnixSocketNode::connected(void) const
 // This will read one line from the socket, and return that line.
 // This is a line-oriented, buffered interface.
 // This blocks, waiting for input, if there is no input.
+// On the first call, this will also block waiting for a client
+// to connect (via accept()).
 std::string UnixSocketNode::do_read(void) const
 {
 	static const std::string empty_string;
 
-	// Check if connection is open (with lock)
+	// If no client yet, accept one (blocks until a client connects).
+	if (nullptr == _fh)
 	{
 		std::lock_guard<std::mutex> lock(_mtx);
+		do_accept();
 		if (nullptr == _fh) return empty_string;
 	}
 
@@ -252,6 +262,13 @@ std::string UnixSocketNode::do_read(void) const
 
 void UnixSocketNode::do_write(const std::string& str)
 {
+	// If no client yet, accept one (blocks until a client connects).
+	if (nullptr == _fh)
+	{
+		std::lock_guard<std::mutex> lock(_mtx);
+		do_accept();
+	}
+
 	if (nullptr == _fh)
 		throw RuntimeException(TRACE_INFO,
 			"UnixSocket not open: URI \"%s\"\n", _name.c_str());

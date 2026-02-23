@@ -12,10 +12,11 @@
 ;
 ; To use this demo:
 ; 1. Start a guile shell, and cut-n-paste from this demo to the shell.
-; 2. The open command will block, waiting for a connection.
+; 2. The open command creates the socket and starts listening.
 ; 3. In another terminal, run:  socat - UNIX-CONNECT:/tmp/chat-sock
-; 4. Now you can type in the socat terminal and read here, or
-;    write from here and see it in the socat terminal.
+; 4. The first read will block until the socat client connects and
+;    sends a line. After that, you can type in the socat terminal
+;    and read here, or write from here and see it in the socat terminal.
 ;
 ; This demo is almost identical to the xterm-io demo, and provides
 ; a basic sanity check that everything works.
@@ -24,11 +25,10 @@
 
 ; --------------------------------------------------------
 ; Create a Unix domain socket. Sending the UnixSocketNode object the
-; *-open-* message will create the socket, bind it, and wait for a
-; client to connect.
+; *-open-* message will create the socket, bind it, and start listening.
+; The open returns immediately; the accept happens on the first read.
 ;
-; Important: the open will block until a client connects!
-; In another terminal, run: socat - UNIX-CONNECT:/tmp/chat-sock
+; After opening, run in another terminal: socat - UNIX-CONNECT:/tmp/chat-sock
 (PipeLink (NameNode "usock") (UnixSocketNode "unix:///tmp/chat-sock"))
 (Trigger
 	(SetValue (NameNode "usock") (Predicate "*-open-*") (Type 'StringValue)))

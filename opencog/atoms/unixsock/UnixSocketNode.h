@@ -36,8 +36,9 @@ namespace opencog
  * attach to the socket.
  *
  * The node acts as a server: on open, it creates, binds, and listens
- * on the socket, and then waits for a client to connect. Once
- * connected, line-oriented text can be read and written.
+ * on the socket. The accept is deferred to the first read or write,
+ * which blocks until a client connects. Once connected, line-oriented
+ * text can be read and written.
  *
  * The close/read interaction is thread safe: the only way to break
  * out of a blocking read in one thread is to call close() from a
@@ -56,9 +57,10 @@ class UnixSocketNode
 protected:
 	mutable std::mutex _mtx;  // Protects _fh and coordinates close/read
 	mutable FILE* _fh;        // FILE* for the accepted client connection
-	int _listen_fd;            // Listening socket file descriptor
+	mutable int _listen_fd;   // Listening socket file descriptor
 	std::string _sock_path;   // Filesystem path to the socket
 
+	void do_accept(void) const;
 	virtual void do_write(const std::string&);
 
 	virtual void open(const ValuePtr&);

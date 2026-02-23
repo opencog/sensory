@@ -9,9 +9,12 @@
 ; acts as its own client, using Guile's built-in socket API to connect,
 ; so there is no dependency on external tools like socat.
 ;
+; The open message creates the socket and starts listening but does NOT
+; block. The accept happens lazily on the first read, which does block.
+; So the test connects a client between the open and the first read.
+;
 (use-modules (opencog) (opencog sensory))
 (use-modules (opencog test-runner))
-(use-modules (ice-9 threads))
 (use-modules (ice-9 rdelim))
 
 (opencog-test-runner)
@@ -27,49 +30,32 @@
 	(lambda (key . args) #f))
 
 ; ----------------------------------------------------------
-; Test 1: Open the socket and connect a client.
+; Test 1: Open the socket (non-blocking).
 ;
-; UnixSocketNode::open() blocks in accept(), waiting for a client.
-; So we open in a background thread, then connect from the main thread.
+; open() creates the socket, binds, and listens. It returns
+; immediately without waiting for a client to connect.
 
 (define sock-node (UnixSocketNode (string-append "unix://" test-sock-path)))
 
-; Open in a background Scheme thread.
-(define open-exception #f)
-(define open-thread
-	(call-with-new-thread
-		(lambda ()
-			(catch #t
-				(lambda ()
-					(Trigger
-						(SetValue sock-node
-							(Predicate "*-open-*") (Type 'StringValue))))
-				(lambda (key . args)
-					(set! open-exception (cons key args)))))))
+(Trigger
+	(SetValue sock-node (Predicate "*-open-*") (Type 'StringValue)))
 
-; Give the server thread time to create the socket and start listening.
-(usleep 500000) ; 500ms
-
-; Now connect as a client, using Guile's built-in socket support.
-(define client-sock (socket AF_UNIX SOCK_STREAM 0))
-(connect client-sock AF_UNIX test-sock-path)
-
-; Wait for the open thread to finish (accept should now return).
-(join-thread open-thread)
-
-(test-assert "open-no-exception"
-	(not open-exception))
-
-; The socket file should exist on disk.
+; The socket file should exist on disk immediately after open.
 (test-assert "socket-file-exists"
 	(file-exists? test-sock-path))
 
 ; ----------------------------------------------------------
-; Test 2: Write from client, read from UnixSocketNode.
+; Test 2: Connect a client, write from client, read from server.
 ;
-; Send a line of text from the client side. Then read it back
-; using the *-read-* message on the UnixSocketNode.
+; Connect using Guile's built-in socket support. Then send a line
+; of text from the client side and read it back via *-read-*.
+; The first read triggers accept() internally.
 
+(define client-sock (socket AF_UNIX SOCK_STREAM 0))
+(connect client-sock AF_UNIX test-sock-path)
+
+; Send data before reading. The data will be buffered in the kernel
+; socket until the server side reads it.
 (display "Hello from client\n" client-sock)
 (force-output client-sock)
 
