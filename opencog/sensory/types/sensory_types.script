@@ -36,8 +36,8 @@ FILE_SYS_NODE <- TEXT_STREAM_NODE
 // Read and write to an Unix Domain Socket
 UNIX_SOCKET_NODE <- TEXT_STREAM_NODE
 
-// TODO Same as above, but for TCP/IP
-// TCP_SOCKET_NODE <- TEXT_STREAM_NODE
+// Same as above, but for TCP/IP
+TCP_SOCKET_NODE <- TEXT_STREAM_NODE
 
 // Read and write to an xterm
 TERMINAL_NODE <- TEXT_STREAM_NODE
