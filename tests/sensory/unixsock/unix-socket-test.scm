@@ -12,6 +12,7 @@
 (use-modules (opencog) (opencog sensory))
 (use-modules (opencog test-runner))
 (use-modules (ice-9 threads))
+(use-modules (ice-9 rdelim))
 
 (opencog-test-runner)
 
