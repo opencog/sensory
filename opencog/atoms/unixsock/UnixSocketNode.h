@@ -48,7 +48,9 @@ namespace opencog
  * This is experimental.
  * Unsolved issues:
  * -- Fails to handle lines longer than 4096
- * -- Accepts only one client at a time.
+ * -- Accepts only one client at a time (this listen socket will
+ *    accept only one connection at a time) This seems like a
+ *    reasonable limitation at this time.
  */
 class UnixSocketNode
 	: public TextStreamNode
