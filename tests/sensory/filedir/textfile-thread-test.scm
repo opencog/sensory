@@ -8,7 +8,7 @@
 ; another thread is blocked waiting for data in follow (tail) mode.
 ; This tests proper cleanup and unblocking behavior.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog sensory))
 (use-modules (opencog test-runner))
 (use-modules (ice-9 threads))
 
@@ -28,12 +28,12 @@
 (define file-node-1 (TextFile (string-append "file://" test-file)))
 
 ; Open and enable follow mode
-(cog-execute! (SetValue file-node-1 (Predicate "*-open-*") (Type 'StringValue)))
+(Trigger (SetValue file-node-1 (Predicate "*-open-*") (Type 'StringValue)))
 (cog-set-value! file-node-1 (Predicate "*-follow-*") (BoolValue #t))
 
 ; Read the two existing lines
-(define line1 (cog-execute! (ValueOf file-node-1 (Predicate "*-read-*"))))
-(define line2 (cog-execute! (ValueOf file-node-1 (Predicate "*-read-*"))))
+(define line1 (Trigger (ValueOf file-node-1 (Predicate "*-read-*"))))
+(define line2 (Trigger (ValueOf file-node-1 (Predicate "*-read-*"))))
 
 (test-assert "read-initial-lines"
 	(and (equal? 'StringValue (cog-type line1))
@@ -49,7 +49,7 @@
 			(catch #t
 				(lambda ()
 					(set! reader-result
-						(cog-execute! (ValueOf file-node-1 (Predicate "*-read-*")))))
+						(Trigger (ValueOf file-node-1 (Predicate "*-read-*")))))
 				(lambda (key . args)
 					(set! reader-exception (cons key args)))))))
 
@@ -77,12 +77,12 @@
 	(lambda () (display "line1\nline2\n")))
 
 ; Open and enable follow mode
-(cog-execute! (SetValue file-node-2 (Predicate "*-open-*") (Type 'StringValue)))
+(Trigger (SetValue file-node-2 (Predicate "*-open-*") (Type 'StringValue)))
 (cog-set-value! file-node-2 (Predicate "*-follow-*") (BoolValue #t))
 
 ; Read the two existing lines first
-(cog-execute! (ValueOf file-node-2 (Predicate "*-read-*")))
-(cog-execute! (ValueOf file-node-2 (Predicate "*-read-*")))
+(Trigger (ValueOf file-node-2 (Predicate "*-read-*")))
+(Trigger (ValueOf file-node-2 (Predicate "*-read-*")))
 
 ; Create pure Atomese threaded execution:
 ; Thread 1: Try to read (will block)
@@ -106,7 +106,7 @@
 
 (catch #t
 	(lambda ()
-		(set! threaded-result (cog-execute! threaded-test)))
+		(set! threaded-result (Trigger threaded-test)))
 	(lambda (key . args)
 		(set! threaded-exception (cons key args))))
 
@@ -126,10 +126,10 @@
 (define file-node-3 (TextFile (string-append "file://" test-file)))
 
 ; Should be able to open again without issues
-(cog-execute! (SetValue file-node-3 (Predicate "*-open-*") (Type 'StringValue)))
+(Trigger (SetValue file-node-3 (Predicate "*-open-*") (Type 'StringValue)))
 
 ; Read a line normally
-(define normal-read (cog-execute! (ValueOf file-node-3 (Predicate "*-read-*"))))
+(define normal-read (Trigger (ValueOf file-node-3 (Predicate "*-read-*"))))
 
 (test-assert "no-corruption-after-threaded-close"
 	(equal? 'StringValue (cog-type normal-read)))

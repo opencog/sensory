@@ -9,7 +9,7 @@
 ; acts as its own client, using Guile's built-in socket API to connect,
 ; so there is no dependency on external tools like socat.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog sensory))
 (use-modules (opencog test-runner))
 (use-modules (ice-9 threads))
 
@@ -40,7 +40,7 @@
 		(lambda ()
 			(catch #t
 				(lambda ()
-					(cog-execute!
+					(Trigger
 						(SetValue sock-node
 							(Predicate "*-open-*") (Type 'StringValue))))
 				(lambda (key . args)
@@ -73,7 +73,7 @@
 (force-output client-sock)
 
 (define read-result
-	(cog-execute! (ValueOf sock-node (Predicate "*-read-*"))))
+	(Trigger (ValueOf sock-node (Predicate "*-read-*"))))
 
 (test-assert "read-from-client"
 	(and (equal? 'StringValue (cog-type read-result))
@@ -85,7 +85,7 @@
 ; Write a line using the *-write-* message. Then read it from
 ; the client socket using Guile's read-line.
 
-(cog-execute!
+(Trigger
 	(SetValue sock-node (Predicate "*-write-*")
 		(StringValue "Hello from server\n")))
 
@@ -103,9 +103,9 @@
 (force-output client-sock)
 
 (define read-a
-	(cog-execute! (ValueOf sock-node (Predicate "*-read-*"))))
+	(Trigger (ValueOf sock-node (Predicate "*-read-*"))))
 (define read-b
-	(cog-execute! (ValueOf sock-node (Predicate "*-read-*"))))
+	(Trigger (ValueOf sock-node (Predicate "*-read-*"))))
 
 (test-assert "multi-read-a"
 	(and (equal? 'StringValue (cog-type read-a))
@@ -122,7 +122,7 @@
 (close-port client-sock)
 
 ; Close the server side.
-(cog-execute!
+(Trigger
 	(SetValue sock-node (Predicate "*-close-*") (Number 1)))
 
 ; After close, the socket file should be gone.
