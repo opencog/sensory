@@ -51,6 +51,13 @@ IF (HTTPLIB_FOUND)
 ENDIF (HTTPLIB_FOUND)
 
 # ----------------------------------------------------------
+# Optional: ollama binary, needed for OllamaNode tests
+FIND_PROGRAM(OLLAMA_PROGRAM ollama)
+IF (OLLAMA_PROGRAM)
+	SET(HAVE_OLLAMA 1)
+ENDIF (OLLAMA_PROGRAM)
+
+# ----------------------------------------------------------
 ADD_SUBDIRECTORY (opencog)
 ADD_SUBDIRECTORY (cmake)
 
@@ -62,5 +69,6 @@ OPENCOG_SETUP_TESTING()
 # Show a summary of what we found, what we will do.
 
 SUMMARY_ADD("Ollama" "Ollama LLM interface" HAVE_HTTPLIB)
+SUMMARY_ADD("Ollama tests" "Ollama unit tests (ollama binary found)" HAVE_OLLAMA)
 SUMMARY_ADD("Python bindings" "Python (cython) bindings" HAVE_CYTHON)
 SUMMARY_SHOW()
