@@ -66,6 +66,7 @@ private:
 	void looper(void);
 	std::string do_generate(const std::string& prompt);
 	std::string do_chat(const std::string& json_messages);
+	std::vector<float> do_embed(const std::string& text);
 
 protected:
 	QueueValuePtr _qvp;
@@ -82,6 +83,8 @@ public:
 	OllamaNode(const std::string&&);
 	OllamaNode(Type, const std::string&&);
 	virtual ~OllamaNode();
+
+	virtual void setValue(const Handle& key, const ValuePtr& value);
 
 	static Handle factory(const Handle&);
 };

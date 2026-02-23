@@ -2,4 +2,7 @@
 # Sensory subsystem tests
 
 ADD_SUBDIRECTORY(filedir)
+IF (HAVE_OLLAMA)
+	ADD_SUBDIRECTORY(ollama)
+ENDIF (HAVE_OLLAMA)
 ADD_SUBDIRECTORY(sockets)
