@@ -8,7 +8,6 @@
 ; new lines to be appended and returning them as a stream.
 ;
 (use-modules (opencog))
-(use-modules (opencog exec))
 (use-modules (opencog test-runner))
 (use-modules (opencog sensory))
 
@@ -37,20 +36,20 @@
 (define file-node-normal (TextFile (string-append "file://" test-file)))
 
 ; Open in normal mode (no follow) - use Item type to get Nodes back
-(cog-execute! (SetValue file-node-normal (Predicate "*-open-*") (Type 'Item)))
+(Trigger (SetValue file-node-normal (Predicate "*-open-*") (Type 'Item)))
 
 ; Read first line using *-read-* message
-(define line1 (cog-execute! (ValueOf file-node-normal (Predicate "*-read-*"))))
+(define line1 (Trigger (ValueOf file-node-normal (Predicate "*-read-*"))))
 (test-assert "normal-mode-line1"
 	(string-contains (cog-name line1) "Line 1"))
 
 ; Read second line
-(define line2 (cog-execute! (ValueOf file-node-normal (Predicate "*-read-*"))))
+(define line2 (Trigger (ValueOf file-node-normal (Predicate "*-read-*"))))
 (test-assert "normal-mode-line2"
 	(string-contains (cog-name line2) "Line 2"))
 
 ; Read EOF - should return VoidValue
-(define eof-marker (cog-execute! (ValueOf file-node-normal (Predicate "*-read-*"))))
+(define eof-marker (Trigger (ValueOf file-node-normal (Predicate "*-read-*"))))
 (test-assert "normal-mode-eof"
 	(equal? 'VoidValue (cog-type eof-marker)))
 
@@ -69,10 +68,10 @@
 (cog-set-value! file-node-tail (Predicate "*-follow-*") (BoolValue #t))
 
 ; Open in tail mode - use Item type to get Nodes back
-(cog-execute! (SetValue file-node-tail (Predicate "*-open-*") (Type 'Item)))
+(Trigger (SetValue file-node-tail (Predicate "*-open-*") (Type 'Item)))
 
 ; Read the initial line using *-read-* message
-(define start-line (cog-execute! (ValueOf file-node-tail (Predicate "*-read-*"))))
+(define start-line (Trigger (ValueOf file-node-tail (Predicate "*-read-*"))))
 (test-assert "tail-mode-initial"
 	(string-contains (cog-name start-line) "Start"))
 
@@ -85,7 +84,7 @@
 
 ; This read should block until the append happens, then return the new line
 ; Note: This will wait up to ~1 second for the append
-(define appended-line (cog-execute! (ValueOf file-node-tail (Predicate "*-read-*"))))
+(define appended-line (Trigger (ValueOf file-node-tail (Predicate "*-read-*"))))
 (test-assert "tail-mode-appended"
 	(string-contains (cog-name appended-line) "Appended"))
 
@@ -94,7 +93,7 @@
 
 ; After disabling tail mode, reading at EOF should return VoidValue immediately
 ; (not block waiting for more data)
-(define eof-after-disable (cog-execute! (ValueOf file-node-tail (Predicate "*-read-*"))))
+(define eof-after-disable (Trigger (ValueOf file-node-tail (Predicate "*-read-*"))))
 (test-assert "tail-mode-disabled-eof"
 	(equal? 'VoidValue (cog-type eof-after-disable)))
 
@@ -102,8 +101,8 @@
 ; Clean up
 
 ; Close files - using Number 1 as a simple atom to trigger close
-(cog-execute! (SetValue file-node-normal (Predicate "*-close-*") (Number 1)))
-(cog-execute! (SetValue file-node-tail (Predicate "*-close-*") (Number 1)))
+(Trigger (SetValue file-node-normal (Predicate "*-close-*") (Number 1)))
+(Trigger (SetValue file-node-tail (Predicate "*-close-*") (Number 1)))
 
 (catch #t
 	(lambda () (delete-file test-file))

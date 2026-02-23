@@ -7,7 +7,7 @@
 ; Tests that FileSysNode can watch a directory using inotify, detecting
 ; file creation, modification, and move events.
 ;
-(use-modules (opencog) (opencog exec) (opencog sensory))
+(use-modules (opencog) (opencog sensory))
 (use-modules (opencog test-runner))
 
 (opencog-test-runner)
@@ -42,7 +42,7 @@
 
 ; Read from the FileSysNode - this will block until an event occurs
 ; The UnisetValue's remove() method blocks until an item is available
-(define event1 (cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
+(define event1 (Trigger (ValueOf fsnode (Predicate "*-read-*"))))
 (test-assert "file-creation-detected"
 	(and (equal? 'StringValue (cog-type event1))
 	     (string-contains (cog-value-ref event1 0) "test1.txt")))
@@ -54,7 +54,7 @@
 (system (string-append "sleep 1 && echo 'data' > " test-dir "/test1.txt &"))
 
 ; Read the modification event
-(define event2 (cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
+(define event2 (Trigger (ValueOf fsnode (Predicate "*-read-*"))))
 (test-assert "file-modification-detected"
 	(and (equal? 'StringValue (cog-type event2))
 	     (string-contains (cog-value-ref event2 0) "test1.txt")))
@@ -69,7 +69,7 @@
 (system (string-append "sleep 1 && mv /tmp/test-move-source.txt " test-dir "/test2.txt &"))
 
 ; Read the MOVED_TO event
-(define event3 (cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
+(define event3 (Trigger (ValueOf fsnode (Predicate "*-read-*"))))
 (test-assert "file-move-detected"
 	(and (equal? 'StringValue (cog-type event3))
 	     (string-contains (cog-value-ref event3 0) ".txt")))
@@ -79,13 +79,13 @@
 
 ; Create files one at a time to ensure reliable event delivery
 (system (string-append "sleep 1 && touch " test-dir "/file1.txt &"))
-(define multi-event1 (cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
+(define multi-event1 (Trigger (ValueOf fsnode (Predicate "*-read-*"))))
 
 (system (string-append "sleep 1 && touch " test-dir "/file2.txt &"))
-(define multi-event2 (cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
+(define multi-event2 (Trigger (ValueOf fsnode (Predicate "*-read-*"))))
 
 (system (string-append "sleep 1 && touch " test-dir "/file3.txt &"))
-(define multi-event3 (cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
+(define multi-event3 (Trigger (ValueOf fsnode (Predicate "*-read-*"))))
 
 ; All three should be StringValues containing filenames
 (test-assert "multiple-files-detected"
@@ -103,7 +103,7 @@
 (system (string-append "sleep 1 && touch " test-dir "/stream1.txt &"))
 
 ; Read using StreamValueOf - should return a LinkValue containing the sample
-(define stream-event1 (cog-execute! (StreamValueOf fsnode (Predicate "*-stream-*"))))
+(define stream-event1 (Trigger (StreamValueOf fsnode (Predicate "*-stream-*"))))
 (test-assert "stream-value-returns-linkvalue"
 	(equal? 'LinkValue (cog-type stream-event1)))
 
@@ -117,7 +117,7 @@
 (system (string-append "sleep 1 && touch " test-dir "/stream2.txt &"))
 
 ; Read another event using StreamValueOf
-(define stream-event2 (cog-execute! (StreamValueOf fsnode (Predicate "*-stream-*"))))
+(define stream-event2 (Trigger (StreamValueOf fsnode (Predicate "*-stream-*"))))
 (test-assert "stream-value-second-sample"
 	(and (equal? 'LinkValue (cog-type stream-event2))
 	     (= 1 (cog-arity stream-event2))
@@ -131,7 +131,7 @@
 (system (string-append "sleep 1 && touch " test-dir "/compare.txt &"))
 
 ; Read with ValueOf - returns unwrapped sample
-(define valueof-result (cog-execute! (ValueOf fsnode (Predicate "*-read-*"))))
+(define valueof-result (Trigger (ValueOf fsnode (Predicate "*-read-*"))))
 (test-assert "valueof-returns-stringvalue"
 	(equal? 'StringValue (cog-type valueof-result)))
 
@@ -139,7 +139,7 @@
 (system (string-append "sleep 1 && touch " test-dir "/stream-compare.txt &"))
 
 ; Read with StreamValueOf - returns wrapped sample
-(define streamvalueof-result (cog-execute! (StreamValueOf fsnode (Predicate "*-stream-*"))))
+(define streamvalueof-result (Trigger (StreamValueOf fsnode (Predicate "*-stream-*"))))
 (test-assert "streamvalueof-wraps-in-linkvalue"
 	(and (equal? 'LinkValue (cog-type streamvalueof-result))
 	     (= 1 (cog-arity streamvalueof-result))
