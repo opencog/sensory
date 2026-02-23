@@ -76,7 +76,7 @@
 
 (Trigger
 	(SetValue sock-node (Predicate "*-write-*")
-		(StringValue "Hello from server\n")))
+		(Item "Hello from server\n")))
 
 (define client-line (read-line client-sock))
 
