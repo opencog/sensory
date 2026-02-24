@@ -24,7 +24,7 @@ want it to do; and so I'm exploring some more basic technologies.
 
 A "memory" architecture
 -----------------------
-The core archtiecture builds on the conventional notion of a
+The core architecture builds on the conventional notion of a
 conversational context, or of a memory subsystem.  Here, some large
 collection of text paragraphs (e.g. my diary, or perhaps these design
 notes) are split up into paragraph (or half-page) sized chunks. These
@@ -51,9 +51,14 @@ Atomese is directly executable (with questionable performance, as well
 as having other issues, like an unclear API specification).
 
 FWIW, the pure-Atomese version needs to also implement the search algo.
-Claude mentions HNSW, IVF and more:
-* ColBERT -- vectorize tokes, sum max tokens
-* (Others that seem not relevant here)
+* IVF -- inverted file index: Assign the vectors to k-means clusters,
+  then do dot-products against the clusters.
+* HNSW -- "Hierarchical Navigable Small World" -- build a graph of
+  nearest neightbors, and then hill-climb (i.e. "greedy") to find
+  closest
+* ColBERT -- vectorize tokens, sum max tokens (???)
+* My old "membership club" idea from the learn project.
+
 
 Off-the-shelf
 -------------
