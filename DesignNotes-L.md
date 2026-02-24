@@ -156,3 +156,8 @@ shallow, inane questions that reveal it does not understand the big
 picture, but is quite eager to get lost in the details. That is how
 spaghetti code is born: the urge to write code, before understanding teh
 problem. Hmm.
+
+Implementation
+--------------
+I will attempt to implement some variant of the above ideas in the
+[agents project](https://github.com/opencog/agents). Wish me luck.
