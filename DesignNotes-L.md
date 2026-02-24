@@ -1,7 +1,7 @@
 Memory, Assembly, Understanding
 ===============================
 Below follows some ruminations on a simple design that could provide a
-verbal (text) interface to complex strutural systems, as well as a
+verbal (text) interface to complex structural systems, as well as a
 rudimentary form of memory. It is based on using an LLM, such as ollama,
 to generate vector embeddings of text snippets; these vector embeddings
 can then be associated with matching structural (symbolic) entities. It
@@ -54,7 +54,7 @@ FWIW, the pure-Atomese version needs to also implement the search algo.
 * IVF -- inverted file index: Assign the vectors to k-means clusters,
   then do dot-products against the clusters.
 * HNSW -- "Hierarchical Navigable Small World" -- build a graph of
-  nearest neightbors, and then hill-climb (i.e. "greedy") to find
+  nearest neighbors, and then hill-climb (i.e. "greedy") to find
   closest
 * ColBERT -- vectorize tokens, sum max tokens (???)
 * My old "membership club" idea from the learn project.
@@ -101,7 +101,7 @@ The first stumbling block is how to plug in the value for X into the
 Atomese. The standard solution is "prompt-based tool calling", where I
 have an extra paragraph explaining to ollama how to extract filenames
 from user text. This solution is fragile: as complexity grows, the LLM
-is increasingly confused about what is going on, where the paramters
+is increasingly confused about what is going on, where the parameters
 are.
 
 Few-shot prompting, giving examples, is more effective.
@@ -114,7 +114,7 @@ The following comes up:
   dot-product? (or rather, can I trick Claude into doing this?)
 * I need to (initially, at least) pair the Atomese expression, e.g.
   for a dot product, with a verbal description. This pairing is already
-  avaiable as a demo.scm file somewhere, but it is informal. A more
+  available as a demo.scm file somewhere, but it is informal. A more
   direct, formalized pairing seems desirable ... but how?
 * I need a way of composing jigsaws, mediating in English.  I can
   verify formal compositionality by running them through LG or perhaps
@@ -159,7 +159,7 @@ avoid that, here.
 Basically, Claude echoed back what I said above, then asked a bunch of
 shallow, inane questions that reveal it does not understand the big
 picture, but is quite eager to get lost in the details. That is how
-spaghetti code is born: the urge to write code, before understanding teh
+spaghetti code is born: the urge to write code, before understanding the
 problem. Hmm.
 
 Implementation

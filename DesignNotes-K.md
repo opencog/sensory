@@ -21,9 +21,9 @@ ValuePtr StreamNode::stream(void) const {
 In this implementation, `this` holds the handle to the thing being
 streamed, and `ReadStream` plucks out one item at a time from the object
 being read. This provides a reasonable implementation for those classes
-that do not provide thier own implementation.
+that do not provide their own implementation.
 
-Classes that do provide thier own implementation typically return a
+Classes that do provide their own implementation typically return a
 ContainerValue (QueueValue or UnisetValue). The ReadStream is a plain
 LinkValue. So one minor question mark: Should it have been a
 ContainerValue instead? Right now, that extra complexity seems
@@ -43,7 +43,7 @@ These are "minor" design issues, and are easily correctable at this
 point. And yet, they reveal a "fluid design boundary": adding new
 methods called `follow()` and `watch()` feels entirely natural. The
 names reflect the functions they will provide, and the functions are
-generic enouch that one imagines there will be other sensory nodes that
+generic enough that one imagines there will be other sensory nodes that
 will want to provide these functions. These could have been accepted
 into the C++ code. But they would cause down-stream issues. Right?
 
