@@ -3,7 +3,7 @@ Watching and Following
 Working with a "real world" user of the file/directory interfaces.
 Two needs arise: the ability to tail a file as it is being written by
 some external writer, and the ability to watch directory contents, as
-they are being manipulted by some external agent.
+they are being manipulated by some external agent.
 
 I gave these tasks to Claude, which seems to be coding up what I asked
 for in a literal manner, but Claude is mindless and unthinking, and

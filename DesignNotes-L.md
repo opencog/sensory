@@ -12,7 +12,7 @@ The perspective is that of "semantic routing": the LLM is treated as a
 natural language API into non-verbal systems; the "thinking" happens
 non-verbally, while the text LLM provides a way of manipulating,
 controlling and working with the non-verbal elements. The idea is to
-build on the concept of RAG (retreival-augumented generation), semantic
+build on the concept of RAG (retrieval-augmented generation), semantic
 search or semantic routing, by building triples of
 ```
    (text, vector-embedding-of-text, symbolic-structure).
@@ -42,9 +42,9 @@ A list of the obvious issues:
   commercial.
 * I need a vector DB. There are two possibilities: (1) create an Atomese
   wrapper around Faiss, the open source facebook vector DB, (2) create a
-  pure-atomese implementation of a vector DB, or (3) do both.
+  pure-Atomese implementation of a vector DB, or (3) do both.
 
-Option (3) above is the interesting one. This creates a pure atomese
+Option (3) above is the interesting one. This creates a pure Atomese
 description of what a vector DB should do. In essence, the Atomese can
 be thought of as pseudo-code, except that its a bit more precise, since
 Atomese is directly executable (with questionable performance, as well
@@ -128,7 +128,7 @@ I have a demo file, called dot-product.scm  that is written to be an
 example tutorial for human readers. It shows how to compute the dot
 product of two vectors, in pure Atomese. It is annotated in such a way
 as to explain exactly what is going on. But it is also entirely
-stand-alone -- it inpcludes boilerplate to set things up, and print
+stand-alone -- it includes boilerplate to set things up, and print
 statements that print to stdout -- it assumes that a human will be
 cutting and pasting from that file to a guile REPL prompt.  I need this
 converted to a lexical entry, which will be stored in the AtomSpace.
