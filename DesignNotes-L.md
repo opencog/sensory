@@ -177,8 +177,34 @@ can be recursively applied.
 
 Contrast to MCP
 ---------------
-This need to be contrasted to the existing AtomSpace MCP interfaces.
-These have several problems.
+The proposal above can be contrasted with  the existing AtomSpace MCP
+interfaces.  There are several problems with MCP:
+
+* The MCP resources are quite large, and fill up a big part of the
+  context window.
+
+* Claude has difficulty staying focused. It can perform simple tasks
+  easily, soch as "create a ConceptNode called 'foo'".  More complex
+  tasks result in syntax errors, which Claude attempts to self-correct,
+  but then gets tangled toggling between Atomese and json, chewing ever
+  more deeply into the context window, until it gets lost as to the
+  meta-goal.
+
+* There is no way for me to use Atomese to control the attentional focus
+  of Claude. I have to manually write long extensive prompts, keeping
+  Claude on a short leash, keeping it on track. I have to manually trim
+  the LLM slop, and halt it before it gets tangled in it's own spaghetti
+  code.
+
+The hope here, in this project/design proposal, is that by explicitly
+chunking the conversational interface into small small pieces, and
+having explicit Atomese control over the attentional focus, I will be
+able to create a system that can be sharper and more directly involved
+with a repository of active memory.
+
+The above might be a naive hope, but I'm at the point where it needs to
+be tried out, because I can't keep theorizing without having some kind
+of contrete experience to draw from...
 
 
 Storyboard
