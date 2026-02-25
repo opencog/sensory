@@ -156,14 +156,30 @@ That is, how is the lexis (of connectable functions) to be created?
 How will it be managed?
 
 The proposed but foggy answer to the above is that the lexis can be
-maintained, managed and controlled by a textual LLM interface
+maintained, managed and controlled by a textual LLM interface. The
+textual interface is implemented with triples:
 
-created a
+```
+   (text, vector-embedding-of-text, symbolic-structure)
+```
+or possibly quads:
+```
+   (text, vector-embedding, symbolic-structure, jigsaw-connectors)
+```
+or possibly a fifth part, the "textual reply" for the result of
+executing the `symbolic-structure`, if that structure is a query.
 
-The idea of using an LLM to provide text embeddings coupled to symbolic
-systems, in a triple of (text, embedding, symbols) is that perhaps the
-LLM can be used to smooth over the above issues. Maybe. I have an
-inkling, here, the challenge is to work out the details.
+At this level, the idea now becomes shallow: the LLM only provides a
+natural-language API to working with jigsaws. The novelty here is that
+perhaps this can be used to boot-strap the system: use a natural
+language API to build Atomese expressions. The day-dream is that this
+can be recursively applied.
+
+Contrast to MCP
+---------------
+This need to be contrasted to the existing AtomSpace MCP interfaces.
+These have several problems.
+
 
 Storyboard
 ----------
