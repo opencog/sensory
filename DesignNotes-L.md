@@ -98,16 +98,16 @@ representations for the same thing.)
 
 However, the Atomese expression is also incomplete. For example, there
 is no obvious way to convert the Atomese expression to some arbitrary
-programming langauge: Java, python, rust, whatever. Although the Atomese
+programming language: Java, python, rust, whatever. Although the Atomese
 can be thought of as "pseudocode", there aren't any existing compilers
 that will convert this expression into functional code.
 
 There are at least two solutions to the above problem, neither of which
-are entirely satsifying. One solution is to ask Claude code to read the
+are entirely satisfying. One solution is to ask Claude code to read the
 Atomese, and convert it to Java, python, rust... whatever. For
 reasonably short Atomese snippets, and lots of hand-holding, and human
 verification, and unit tests, this is possible. It's not at all
-automatic; it requires human intervention and dilligence.
+automatic; it requires human intervention and diligence.
 
 Another solution is to write a compiler, an Atomese-to-whichever-
 language compiler.  This is doable. Such a compiler would be large,
@@ -204,7 +204,7 @@ with a repository of active memory.
 
 The above might be a naive hope, but I'm at the point where it needs to
 be tried out, because I can't keep theorizing without having some kind
-of contrete experience to draw from...
+of concrete experience to draw from...
 
 
 Storyboard
