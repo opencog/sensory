@@ -69,17 +69,62 @@ Some existing systems:
 
 Jigsaw API's
 ------------
-At the center of the vector DB is the vector dot-product. One of the
-Atomese demos implements that vector dot product.  It works because
-All Atomese has C++ as an underlying default implementation. This
-exposes two issues:
+At the center of the vector DB is the vector dot-product.
+Mathematically, computationally, this is "trivial" -- its just a loop
+that sums (accumulates) the product of two vectors. So that's
+"conceptually easy". The "hard parts" are these:
 
-* There's no obvious way to "port" that Atomese to a GPU. Even is some
-  automated Atomese-to-GPU compiler were built, there's no obvious
-  location where to store that code (except as, duhh, a Value at some
-  well-known key).
-* There's no obvious way to specify the API to the lambda that
-  implements the dot product. In the abstract, the notion of jigsaws
+* What is the correct notation for the pseudo-code for a dot-product?
+  What do the symbols in that notation mean, and how do we symbolically
+  express this idea?
+
+A partial, but incomplete answer to the above is to express it in
+Atomese. First, an explanation of why its an OK-ish answer, and then
+why it fails, and is incomplete.
+
+Expressing the dot product in Atomese is an OK-ish answer because there
+already is a demo that does this. It not only provides a symbolic
+expression for the dot product, but it also "runs". This is because
+all Atomese has C++ as an underlying default implementation. Supply the
+data, and say "execute" and bingo: the result is computed.
+
+Another reason that the Atomese for the dot-product is an OK-ish answer
+is that it is sufficiently symbolic to formally capture the idea of what
+the words "dot-product" mean. The Atomese is entirely recognizable in
+terms of what a school textbook might say about dot-products.  human can
+look at th textbook, and the Atomese, and say "oh, yes, I see these
+these are the same thing" (or do the same thing, or are different
+representations for the same thing.)
+
+However, the Atomese expression is also incomplete. For example, there
+is no obvious way to convert the Atomese expression to some arbitrary
+programming langauge: Java, python, rust, whatever. Although the Atomese
+can be thought of as "pseudocode", there aren't any existing compilers
+that will convert this expression into functional code.
+
+There are at least two solutions to the above problem, neither of which
+are entirely satsifying. One solution is to ask Claude code to read the
+Atomese, and convert it to Java, python, rust... whatever. For
+reasonably short Atomese snippets, and lots of hand-holding, and human
+verification, and unit tests, this is possible. It's not at all
+automatic; it requires human intervention and dilligence.
+
+Another solution is to write a compiler, an Atomese-to-whichever-
+language compiler.  This is doable. Such a compiler would be large,
+complex, and quite the beast. This exposes a different issue: the "so
+what" issue. So what if I have such a compiler? What would I do with it?
+Who is going to write the Atomese that will be compiled down to some
+existing software programming language?
+
+There are some provisional answers to this "so what" question, but they
+first thread through a different concern:
+
+* What is the API to the lambda that
+  implements the dot product.
+
+
+
+ In the abstract, the notion of jigsaws
   and connectors provides the exactly-needed device for this. In
   practice, as seen in sensory-v0, the actual creation of hand-written
   API spec as jigsaws is untenable. Yes, the LG infrastructure can
