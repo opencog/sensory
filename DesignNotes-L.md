@@ -119,16 +119,46 @@ existing software programming language?
 There are some provisional answers to this "so what" question, but they
 first thread through a different concern:
 
-* What is the API to the lambda that
-  implements the dot product.
+* What is the API to the lambda that implements the dot product?
 
+This API is needed, because it needs to be converted to Java, python,
+rust... Somewhere, there needs to be engineering documentation that says
+"this code here implements the dot product. It is a function call that
+takes to arguments that are arrays, and it returns a float." This
+documentation needs to be adapted to Java, python, rust ... as
+appropriate. Even within a single programming language, there are
+choices: should python decorators be used? Should it be a stand-alone
+function, or should it be a method on a class?
 
+Part of what the API does is to define the calling convention: it
+specifies the inputs and outputs. This interface definition is needed,
+if the function is to be used in some more complex algorithm.
 
- In the abstract, the notion of jigsaws
-  and connectors provides the exactly-needed device for this. In
-  practice, as seen in sensory-v0, the actual creation of hand-written
-  API spec as jigsaws is untenable. Yes, the LG infrastructure can
-  connect them up. But how is the lexis to be created?
+For Atomese, the notion of jigsaws and connectors provides the needed
+device. The input connectors define what the inputs are; the output
+connectors define the outputs. This allows algos to be defined that know
+how to hook up connectors. There is a rich variety of such algos; the
+Link Grammar infrastructure is one; the odometer (in the 'generate'
+github project) is another. More can be invented & created. The Viterbi
+algo is an OK approach, although it has trouble scaling.
+
+A prototype for such a connector-description infrastructure can be found
+in the `sensory-v0` subdirectory of this project. This prototype exposed
+another issue:
+
+* Hand-writing IDL's as jigsaws is untenable. Each jigsaw will usually
+  have three or more connectors. Each might offer several kinds of
+  connectivity options. The description is verbose, and writing it is
+  error-prone. And that is for just one function, say, the dot-product.
+  How are hundreds or thousands of these to be handled?
+
+That is, how is the lexis (of connectable functions) to be created?
+How will it be managed?
+
+The proposed but foggy answer to the above is that the lexis can be
+maintained, managed and controlled by a textual LLM interface
+
+created a
 
 The idea of using an LLM to provide text embeddings coupled to symbolic
 systems, in a triple of (text, embedding, symbols) is that perhaps the
